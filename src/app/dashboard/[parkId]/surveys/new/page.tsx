@@ -29,12 +29,12 @@ const categories = [
     { id: 'Reptile', icon: Bug, color: 'from-amber-600 to-orange-700', bg: 'bg-amber-50', text: 'text-amber-700', shadow: 'shadow-amber-200' },
 ];
 
-const fadeUp = {
+const fadeUp: any = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
 };
 
-const stagger = {
+const stagger: any = {
     show: { transition: { staggerChildren: 0.1 } }
 };
 

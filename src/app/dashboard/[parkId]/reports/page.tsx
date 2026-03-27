@@ -24,7 +24,7 @@ const PDFDownloadLink = dynamic(
   { ssr: false }
 );
 
-const fadeUp = {
+const fadeUp: any = {
   hidden: { opacity: 0, y: 15 },
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
 };
@@ -220,7 +220,7 @@ export default function ReportsPage({ params }: { params: { parkId: string } }) 
                   fileName={`WEZ_${park.name.replace(/\s+/g, '_')}_Report_${survey.year}.pdf`}
                   style={{ textDecoration: 'none' }}
                 >
-                  {({ loading: pdfLoading }: any) => (
+                  {(( { loading: pdfLoading }: any ) => (
                     <button 
                       style={{ 
                         width: '100%', 

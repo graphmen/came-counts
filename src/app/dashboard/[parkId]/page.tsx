@@ -21,12 +21,12 @@ import PremiumBarChart from '@/components/charts/PremiumBarChart';
 import PremiumDoughnutChart from '@/components/charts/PremiumDoughnutChart';
 import { getWildlifeMetadata } from '@/lib/constants';
 
-const fadeUp = {
+const fadeUp: any = {
   hidden: { opacity: 0, y: 15 },
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
 };
 
-const stagger = {
+const stagger: any = {
   show: { transition: { staggerChildren: 0.08 } }
 };
 
