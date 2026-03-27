@@ -12,5 +12,5 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 });
 
 // Alias gc to supabase for existing code compatibility
-// Last forced build trigger: 2026-03-27
+// Consolidate all fixes and force Vercel build: 2026-03-27_v2
 export const gc = supabase;
