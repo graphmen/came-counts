@@ -244,7 +244,7 @@ export default function ReportsPage({ params }: { params: { parkId: string } }) 
                       <FileDown size={20} />
                       {pdfLoading ? 'Analyzing Data...' : 'Generate PDF Report'}
                     </button>
-                  )}
+                  )) as any}
                 </PDFDownloadLink>
               ) : (
                 <button style={{ width: '100%', padding: '1.125rem', borderRadius: '1.25rem', backgroundColor: '#f1f5f9', color: '#94a3b8', fontWeight: 900, border: 'none', cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', fontSize: '14px' }} disabled>
