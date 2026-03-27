@@ -12,4 +12,5 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 });
 
 // Alias gc to supabase for existing code compatibility
+// Last forced build trigger: 2026-03-27
 export const gc = supabase;
