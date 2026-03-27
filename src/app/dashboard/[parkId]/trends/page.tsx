@@ -16,9 +16,9 @@ const SPECIES_LIST = [
     { name: 'Eland', emoji: '🦣', color: '#b45309', bgLight: '#fef3c7', border: '#b45309' },
 ];
 
-const fadeUp = {
-    hidden: { opacity: 0, y: 14 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } }
+const fadeUp: any = {
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
 };
 
 export default function TrendAnalysisPage({ params }: { params: { parkId: string } }) {
