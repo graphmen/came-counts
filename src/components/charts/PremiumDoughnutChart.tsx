@@ -42,7 +42,7 @@ export default function PremiumDoughnutChart({ data }: Props) {
                     usePointStyle: true,
                     pointStyle: 'circle',
                     padding: 24,
-                    font: { family: 'Outfit, sans-serif', size: 12, weight: '700' },
+                    font: { family: 'Outfit, sans-serif', size: 12, weight: 700 },
                     color: '#64748b'
                 }
             },
@@ -50,8 +50,8 @@ export default function PremiumDoughnutChart({ data }: Props) {
                 backgroundColor: '#0f172a',
                 padding: 14,
                 cornerRadius: 16,
-                titleFont: { family: 'Outfit, sans-serif', size: 13, weight: '800' },
-                bodyFont: { family: 'Inter, sans-serif', size: 12, weight: '600' },
+                titleFont: { family: 'Outfit, sans-serif', size: 13, weight: 800 },
+                bodyFont: { family: 'Inter, sans-serif', size: 12, weight: 600 },
                 callbacks: {
                     label: (item: any) => `  ${item.raw.toLocaleString()} individuals`,
                 }

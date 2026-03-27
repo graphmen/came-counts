@@ -50,8 +50,8 @@ export default function PremiumBarChart({ data }: Props) {
                 backgroundColor: '#0f172a',
                 padding: 12,
                 cornerRadius: 12,
-                titleFont: { family: 'Outfit, sans-serif', size: 13, weight: '800' },
-                bodyFont: { family: 'Inter, sans-serif', size: 12, weight: '600' },
+                titleFont: { family: 'Outfit, sans-serif', size: 13, weight: 800 },
+                bodyFont: { family: 'Inter, sans-serif', size: 12, weight: 600 },
                 callbacks: {
                     label: (item: any) => `  ${item.raw.toLocaleString()} individuals`,
                     title: (items: any) => {
@@ -70,7 +70,7 @@ export default function PremiumBarChart({ data }: Props) {
             y: {
                 grid: { display: false },
                 ticks: {
-                    font: { family: 'Outfit, sans-serif', size: 12, weight: '700' },
+                    font: { family: 'Outfit, sans-serif', size: 12, weight: 800 },
                     color: '#475569',
                     padding: 10
                 }

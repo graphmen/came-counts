@@ -77,8 +77,8 @@ export default function PremiumTrendChart({ data, selectedSpecies, speciesList =
                 boxPadding: 8,
                 cornerRadius: 16,
                 usePointStyle: true,
-                titleFont: { family: 'Outfit, sans-serif', size: 14, weight: '800' },
-                bodyFont: { family: 'Inter, sans-serif', size: 13, weight: '600' },
+                titleFont: { family: 'Outfit, sans-serif', size: 14, weight: 800 },
+                bodyFont: { family: 'Inter, sans-serif', size: 13, weight: 600 },
                 callbacks: {
                     title: (items) => `Year ${items[0].label}`,
                     label: (ctx: any) =>
@@ -93,7 +93,7 @@ export default function PremiumTrendChart({ data, selectedSpecies, speciesList =
                 grid: { display: false },
                 border: { display: false },
                 ticks: {
-                    font: { family: 'Inter, sans-serif', size: 11, weight: '700' },
+                    font: { family: 'Inter, sans-serif', size: 11, weight: 700 },
                     color: '#94a3b8',
                     padding: 14,
                     // Show every 5 years so it doesn't crowd
@@ -108,7 +108,7 @@ export default function PremiumTrendChart({ data, selectedSpecies, speciesList =
                 border: { display: false },
                 grid: { color: '#f1f5f9', lineWidth: 1 },
                 ticks: {
-                    font: { family: 'Inter, sans-serif', size: 11, weight: '700' },
+                    font: { family: 'Inter, sans-serif', size: 11, weight: 700 },
                     color: '#94a3b8',
                     padding: 14,
                     callback: (v: any) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v,
