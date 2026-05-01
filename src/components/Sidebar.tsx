@@ -156,7 +156,7 @@ export default function Sidebar() {
             <div style={{ padding: '20px 24px', borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.2)' }}>
                 <div style={{ fontSize: 10, color: '#475569', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Operational Unit</div>
                 <div style={{ color: '#94a3b8', fontWeight: 700, fontSize: 11 }}>Wildlife & Environment Zimbabwe</div>
-                <div style={{ fontSize: 9, color: '#475569', marginTop: 4 }}>v1.2.0 • Digital Perimeter</div>
+                <div style={{ fontSize: 9, color: '#475569', marginTop: 4 }}>v1.2.1 • Digital Perimeter</div>
             </div>
         </aside>
     );
