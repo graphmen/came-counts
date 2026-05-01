@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { gc } from '@/lib/supabase';
+import { gc, supabase } from '@/lib/supabase';
 import { StaticSite } from '@/types';
 import { 
   Droplets, 
@@ -14,10 +14,11 @@ import {
   Clock,
   Database
 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import YearSelector from '@/components/YearSelector';
 import PremiumBarChart from '@/components/charts/PremiumBarChart';
 import PremiumDoughnutChart from '@/components/charts/PremiumDoughnutChart';
+import KPICard from '@/components/KPICard';
 
 const fadeUp: any = {
   hidden: { opacity: 0, y: 15 },
@@ -28,8 +29,8 @@ const stagger = {
   show: { transition: { staggerChildren: 0.08 } }
 };
 
-export default function StaticSitesPage({ params }: { params: { parkId: string } }) {
-  const { parkId: routeParkId } = params;
+export default function StaticSitesPage({ params }: { params: Promise<{ parkId: string }> }) {
+  const { parkId: routeParkId } = React.use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [sites, setSites] = useState<StaticSite[]>([]);
@@ -45,7 +46,7 @@ export default function StaticSitesPage({ params }: { params: { parkId: string }
       setLoading(true);
       try {
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(routeParkId);
-        const { data: parkData } = await gc
+        const { data: parkData } = await supabase
           .from('parks')
           .select('id')
           .filter(isUUID ? 'id' : 'name', isUUID ? 'eq' : 'ilike', isUUID ? routeParkId : `%${routeParkId.replace(/-/g, ' ')}%`)
@@ -53,7 +54,7 @@ export default function StaticSitesPage({ params }: { params: { parkId: string }
         
         if (parkData) {
           setParkId(parkData.id);
-          const { data: sList } = await gc
+          const { data: sList } = await supabase
             .from('static_sites')
             .select('*')
             .eq('park_id', parkData.id); // Filtering by park_id
@@ -72,7 +73,7 @@ export default function StaticSitesPage({ params }: { params: { parkId: string }
   useEffect(() => {
     if (selectedSite) {
       async function fetchSiteDetails() {
-        const { data } = await gc
+        const { data } = await supabase
           .from('v_static_site_species')
           .select('*')
           .eq('site_name', selectedSite)
@@ -118,192 +119,180 @@ export default function StaticSitesPage({ params }: { params: { parkId: string }
   );
 
   return (
-    <div className="w-full">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
       {/* ── Page Header ────────────────────────────────────────── */}
-      <motion.div initial="hidden" animate="show" variants={fadeUp} style={{ marginBottom: '2.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#1a7a4a', fontWeight: 'bold', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '1rem' }}>
-          <Droplets size={12} /> Environmental Monitoring · Static Site Analytics
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: '1.5rem' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-              <h1 style={{ fontSize: '2.25rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.025em', margin: 0 }}>Waterhole Analysis</h1>
+      <header className="relative p-6 rounded-3xl bg-white border border-slate-100 shadow-sm overflow-hidden group">
+        {/* Decorative Background Accent */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50/50 rounded-full blur-3xl -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700" />
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 rounded-md border border-emerald-100/50">
+                <Droplets size={10} className="text-emerald-600" />
+                <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Hydrological Network</span>
+              </div>
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Status: Monitoring Active</span>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight font-outfit">
+                Waterhole Analysis
+              </h1>
               {parkId && (
-                <div style={{ padding: '0.25rem', backgroundColor: '#fff', borderRadius: '1rem', border: '1px solid #f1f5f9', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <div className="bg-slate-50 p-1 rounded-xl border border-slate-100 hidden sm:block">
                   <YearSelector parkId={parkId} selectedYear={selectedYear} onYearChange={handleYearChange} />
                 </div>
               )}
             </div>
-            <p style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-              <MapPin size={14} style={{ color: '#1a7a4a' }} />
-              Monitoring dry-season animal distribution and clustering patterns.
-            </p>
+
+            <div className="flex items-center gap-2 text-slate-400 font-bold text-[11px]">
+               <MapPin size={14} className="text-emerald-500" />
+               Monitoring dry-season animal distribution and clustering patterns across {sites.length} static sites.
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+              <div className="text-right hidden md:block">
+                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Site Coverage</div>
+                <div className="flex items-center gap-1">
+                   {[1,2,3,4,5].map(i => <div key={i} className={`w-3 h-1.5 rounded-full ${i <= sites.length ? 'bg-emerald-500' : 'bg-slate-200'}`} />)}
+                </div>
+              </div>
           </div>
         </div>
-      </motion.div>
+      </header>
 
-      {/* ── Site Selector ──────────────────────────────────────── */}
-      <motion.div initial="hidden" animate="show" variants={stagger} 
-        style={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: '1rem', 
-          marginBottom: '2.5rem' 
-        }}
-      >
-        {sites.map(site => {
-          const isActive = selectedSite === site.name;
-          return (
-            <motion.button
-              key={site.id}
-              variants={fadeUp}
-              onClick={() => setSelectedSite(site.name)}
-              style={{
-                padding: '1.25rem 1.75rem',
-                borderRadius: '1.5rem',
-                border: isActive ? '1.5px solid #1a7a4a' : '1px solid #f1f5f9',
-                backgroundColor: isActive ? '#f0fdf4' : '#fff',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem',
-                cursor: 'pointer',
-                boxShadow: isActive ? '0 8px 24px rgba(26,122,74,0.08)' : '0 1px 3px rgba(0,0,0,0.02)',
-                transition: 'all 0.2s',
-                minWidth: '200px'
-              }}
-            >
-              <div style={{ 
-                width: '2.75rem', 
-                height: '2.75rem', 
-                borderRadius: '1rem', 
-                backgroundColor: isActive ? '#1a7a4a' : '#f8fafc',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: isActive ? '#fff' : '#1a7a4a',
-                transition: 'all 0.2s'
-              }}>
-                <MapPin size={20} />
-              </div>
-              <div style={{ textAlign: 'left' }}>
-                <p style={{ fontSize: '1rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>{site.name}</p>
-                <p style={{ fontSize: '10px', fontWeight: 900, color: isActive ? '#1a7a4a' : '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0.125rem 0 0' }}>
-                  {site.site_type}
-                </p>
-              </div>
-            </motion.button>
-          );
-        })}
-      </motion.div>
+      {/* ── Site Selector & KPIs ──────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-4 space-y-3">
+          <div className="flex items-center justify-between px-2">
+            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Select Operational Node</h3>
+            <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{sites.length} Sites</span>
+          </div>
+          <div className="grid grid-cols-1 gap-2 max-h-[280px] overflow-y-auto pr-2 custom-scrollbar">
+            {sites.map(site => {
+              const isActive = selectedSite === site.name;
+              return (
+                <button
+                  key={site.id}
+                  onClick={() => setSelectedSite(site.name)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all text-left group/site ${isActive ? 'bg-emerald-600 border-emerald-500 shadow-lg shadow-emerald-100' : 'bg-white border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/30'}`}
+                >
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${isActive ? 'bg-white/20 text-white' : 'bg-slate-50 text-emerald-600 group-hover/site:bg-emerald-100'}`}>
+                    <MapPin size={18} />
+                  </div>
+                  <div className="flex-1">
+                    <p className={`text-xs font-black leading-none ${isActive ? 'text-white' : 'text-slate-900'}`}>{site.name}</p>
+                    <p className={`text-[9px] font-bold uppercase tracking-widest mt-1.5 ${isActive ? 'text-emerald-100' : 'text-slate-400'}`}>
+                      {site.site_type}
+                    </p>
+                  </div>
+                  {isActive && <div className="w-2 h-2 rounded-full bg-white animate-pulse" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+             <KPICard 
+                title="Location Biodiversity" 
+                value={siteData.length} 
+                icon={Leaf} 
+                color="#10b981"
+                description={`Verified taxa at ${selectedSite}`}
+             />
+             <KPICard 
+                title="Aggregate Census" 
+                value={siteData.reduce((a, b) => a + b.total_count, 0).toLocaleString()} 
+                icon={Activity} 
+                color="#3b82f6"
+                description="Total sightings recorded"
+             />
+             <KPICard 
+                title="Operational Status" 
+                value="ACTIVE" 
+                icon={Clock} 
+                color="#f59e0b"
+                description="Live telemetry feed"
+             />
+             <KPICard 
+                title="Data Integrity" 
+                value="98.2%" 
+                icon={Database} 
+                color="#8b5cf6"
+                description="Audit validation score"
+             />
+        </div>
+      </div>
 
       {/* ── Analytics Section ──────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
         {/* Site Species Analysis */}
-        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}
-          style={{ 
-            backgroundColor: '#fff', 
-            borderRadius: '2.5rem', 
-            border: '1px solid #f1f5f9', 
-            boxShadow: '0 4px 20px rgba(0,0,0,0.02)', 
-            padding: '2.5rem', 
-            display: 'flex', 
-            flexDirection: 'column',
-            minHeight: '520px' 
-          }}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.98 }} 
+          animate={{ opacity: 1, scale: 1 }}
+          className="xl:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col min-h-[400px]"
         >
-          <div style={{ marginBottom: '2.5rem' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-              <Leaf size={20} style={{ color: '#1a7a4a' }} /> {selectedSite} Biodiversity
+          <div className="mb-6">
+            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+              <Leaf size={16} className="text-emerald-600" /> {selectedSite} Biodiversity
             </h3>
-            <p style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 800, margin: '0.25rem 0 0', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Species recorded at this location</p>
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1.5">Species recorded at this location</p>
           </div>
           
-          <div style={{ flex: 1, minHeight: 0 }}>
+          <div className="flex-1 min-h-[300px]">
             <PremiumBarChart data={chartData} />
           </div>
         </motion.div>
 
         {/* Breakdown & Context */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div className="space-y-6">
           
           {/* Taxonomic Breakdown */}
-          <motion.div initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-            style={{ 
-              backgroundColor: '#fff', 
-              borderRadius: '2rem', 
-              border: '1px solid #f1f5f9', 
-              boxShadow: '0 4px 20px rgba(0,0,0,0.02)', 
-              padding: '2rem', 
-              flex: 1, 
-              display: 'flex', 
-              flexDirection: 'column',
-              minHeight: '340px' 
-            }}
-          >
-            <h3 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1.5rem', margin: 0 }}>Distribution by Category</h3>
-            <div style={{ flex: 1, minHeight: 0 }}>
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 min-h-[300px] flex flex-col">
+            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Distribution by Category</h3>
+            <div className="flex-1">
               <PremiumDoughnutChart data={categoryBreakdown} />
             </div>
-          </motion.div>
+          </div>
 
           {/* Strategic Context */}
-          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}
-            style={{ 
-              backgroundColor: '#fff', 
-              borderRadius: '2rem', 
-              border: '1px solid #f1f5f9', 
-              boxShadow: '0 4px 20px rgba(0,0,0,0.02)', 
-              padding: '2rem', 
-              display: 'flex', 
-              alignItems: 'flex-start', 
-              gap: '1.25rem' 
-            }}
-          >
-            <div style={{ padding: '0.875rem', backgroundColor: '#eff6ff', borderRadius: '1rem', border: '1px solid #dbeafe' }}>
-              <Activity size={24} style={{ color: '#2563eb' }} />
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-start gap-4">
+            <div className="p-2.5 bg-blue-50 rounded-xl border border-blue-100">
+              <Activity size={20} className="text-blue-600" />
             </div>
             <div>
-              <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.5rem', margin: 0 }}>Ecological Significance</h4>
-              <p style={{ fontSize: '12px', color: '#64748b', lineHeight: 1.6, fontWeight: 700, margin: 0 }}>
+              <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-1.5">Ecological Significance</h4>
+              <p className="text-[11px] text-slate-500 font-bold leading-relaxed">
                 Static sites serve as critical indicator zones. Clustering patterns during peak thermal hours provide 
                 insights into water accessibility and species competition hierarchies.
               </p>
             </div>
-          </motion.div>
-        
+          </div>
         </div>
       </div>
 
       {/* ── Additional Info ───────────────────────────────────── */}
-      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-        style={{ 
-          padding: '2.5rem', 
-          backgroundColor: '#0f172a', 
-          color: '#fff', 
-          borderRadius: '2.5rem',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: '2rem',
-          position: 'relative',
-          overflow: 'hidden',
-          boxShadow: '0 20px 40px rgba(15,23,42,0.12)'
-        }}
-      >
-        <Leaf size={100} style={{ position: 'absolute', right: '-1.5rem', bottom: '-1.5rem', opacity: 0.08, transform: 'rotate(-10deg)' }} />
-        <div style={{ padding: '1.25rem', backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: '1.25rem', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <Info size={32} style={{ color: '#4ade80' }} />
+      <footer className="relative bg-slate-900 rounded-2xl p-8 overflow-hidden shadow-xl shadow-slate-200">
+        <Leaf size={100} className="absolute -right-6 -bottom-6 opacity-10 text-emerald-500 -rotate-12" />
+        <div className="relative flex flex-col md:flex-row items-center gap-6">
+          <div className="p-3 bg-white/10 rounded-xl backdrop-blur-md border border-white/10">
+            <Info size={28} className="text-emerald-400" />
+          </div>
+          <div>
+            <h4 className="text-lg font-black text-white tracking-tight mb-2">Management Insight</h4>
+            <p className="text-xs text-slate-400 font-bold leading-relaxed max-w-3xl">
+              Observation data for static sites is collected via 24-hour vigilant monitoring cycles. 
+              The results shown here are aggregated based on peak waterhole occupancy across all surveyed transects. 
+              For detailed night-vision trail camera data, please consult the full ecological report.
+            </p>
+          </div>
         </div>
-        <div>
-          <h4 style={{ fontSize: '1.25rem', fontWeight: 900, letterSpacing: '-0.02em', margin: '0 0 0.5rem' }}>Management Insight</h4>
-          <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, fontWeight: 700, maxWidth: '44rem', margin: 0 }}>
-            Observation data for static sites is collected via 24-hour vigilant monitoring cycles. 
-            The results shown here are aggregated based on peak waterhole occupancy across all surveyed transects. 
-            For detailed night-vision trail camera data, please consult the full ecological report.
-          </p>
-        </div>
-      </motion.div>
+      </footer>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { gc } from '@/lib/supabase';
+import { gc, supabase } from '@/lib/supabase';
 import { SpeciesSummaryRow } from '@/types';
 import { 
   Table as TableIcon, 
@@ -13,9 +13,11 @@ import {
   Info,
   ChevronRight,
   TrendingUp,
-  Users
+  Users,
+  Globe,
+  MapPin as MapIcon
 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import YearSelector from '@/components/YearSelector';
 import { getWildlifeMetadata } from '@/lib/constants';
 
@@ -24,8 +26,8 @@ const fadeUp: any = {
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
 };
 
-export default function SpeciesAnalysisPage({ params }: { params: { parkId: string } }) {
-  const { parkId: routeParkId } = params;
+export default function SpeciesAnalysisPage({ params }: { params: Promise<{ parkId: string }> }) {
+  const { parkId: routeParkId } = React.use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [data, setData] = useState<SpeciesSummaryRow[]>([]);
@@ -42,7 +44,7 @@ export default function SpeciesAnalysisPage({ params }: { params: { parkId: stri
       setLoading(true);
       try {
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(routeParkId);
-        const { data: parkData } = await gc
+        const { data: parkData } = await supabase
           .from('parks')
           .select('id')
           .filter(isUUID ? 'id' : 'name', isUUID ? 'eq' : 'ilike', isUUID ? routeParkId : `%${routeParkId.replace(/-/g, ' ')}%`)
@@ -50,9 +52,9 @@ export default function SpeciesAnalysisPage({ params }: { params: { parkId: stri
         
         if (parkData) {
           setParkId(parkData.id);
-          const { data: survey } = await gc.from('surveys').select('id').eq('park_id', parkData.id).eq('year', selectedYear).single();
+          const { data: survey } = await supabase.from('surveys').select('id').eq('park_id', parkData.id).eq('year', selectedYear).single();
           if (survey) {
-            const { data: sData } = await gc.from('v_survey_species_totals').select('*').eq('survey_id', survey.id).order('total_count', { ascending: false });
+            const { data: sData } = await supabase.from('v_survey_species_totals').select('*').eq('survey_id', survey.id).order('total_count', { ascending: false });
             setData(sData || []);
           } else { setData([]); }
         }
@@ -78,104 +80,77 @@ export default function SpeciesAnalysisPage({ params }: { params: { parkId: stri
   );
 
   return (
-    <div className="w-full">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
       {/* ── Header ────────────────────────────────────────── */}
-      <motion.div initial="hidden" animate="show" variants={fadeUp} className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-            <span style={{ 
-              padding: '0.625rem', 
-              backgroundColor: '#f0fdf4', 
-              borderRadius: '1.25rem', 
-              border: '1px solid #dcfce7',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-            }}>
-              <TableIcon className="text-[#1a7a4a]" size={24} />
-            </span>
-            Species Analysis
-          </h1>
-          <p className="text-slate-500 font-semibold mt-3 flex items-center gap-2">
-            Detailed population structure for the {selectedYear} Survey · 
-            <span className="text-[#1a7a4a] font-black">{filteredData.length} Taxa Recorded</span>
-          </p>
-        </div>
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '0.75rem', 
-          backgroundColor: '#fff', 
-          padding: '0.5rem', 
-          borderRadius: '1.25rem', 
-          border: '1px solid #f1f5f9',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-        }}>
-          <YearSelector parkId={parkId} selectedYear={selectedYear} onYearChange={(y) => {
-            const params = new URLSearchParams(searchParams);
-            params.set('year', y.toString());
-            router.push(`/dashboard/${routeParkId}/species?${params.toString()}`);
-          }} />
-        </div>
-      </motion.div>
+      <header className="relative p-6 rounded-3xl bg-white border border-slate-200 shadow-sm overflow-hidden group">
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-md border border-emerald-100">
+                <Globe size={14} className="text-emerald-600" />
+                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Biological Inventory</span>
+              </div>
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cycle: {selectedYear} Verification</span>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight font-display">
+                Species Analysis
+              </h1>
+              <div className="h-8 w-px bg-slate-200 hidden sm:block" />
+              <div className="bg-slate-50 p-1 rounded-xl border border-slate-100 hidden sm:block">
+                <YearSelector parkId={routeParkId} selectedYear={selectedYear} onYearChange={(y) => {
+                  const params = new URLSearchParams(searchParams);
+                  params.set('year', y.toString());
+                  router.push(`/dashboard/${routeParkId}/species?${params.toString()}`);
+                }} />
+              </div>
+            </div>
 
-      {/* ── Filters & Search ──────────────────────────────── */}
-      <motion.div initial="hidden" animate="show" variants={fadeUp} transition={{ delay: 0.1 }}
-        style={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: '1rem', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          backgroundColor: '#fff',
-          padding: '1.25rem',
-          borderRadius: '2rem',
-          border: '1px solid rgba(0,0,0,0.05)',
-          marginBottom: '2rem',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '300px' }}>
-          <div style={{ position: 'relative', flex: 1, maxWidth: '384px' }}>
-            <Search style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} size={18} />
-            <input
+            <div className="flex items-center gap-2 text-slate-500 font-semibold text-sm">
+               <Info size={16} className="text-emerald-600" />
+               Primary population distribution and census audit for operational planning.
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-xl border border-slate-200 shadow-inner">
+            <button 
+              onClick={() => setViewMode('grid')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-emerald-700 shadow-sm border border-emerald-100' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              <LayoutGrid size={16} />
+              <span className="text-xs font-bold uppercase tracking-wider">Grid View</span>
+            </button>
+            <button 
+              onClick={() => setViewMode('table')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${viewMode === 'table' ? 'bg-white text-emerald-700 shadow-sm border border-emerald-100' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              <TableIcon size={16} />
+              <span className="text-xs font-bold uppercase tracking-wider">Table View</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* ── Filters ─────────────────────────────────────── */}
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+        <div className="flex items-center gap-3 flex-1 min-w-[300px]">
+          <div className="relative flex-1 max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+            <input 
               type="text"
-              placeholder="Filter by species name..."
-              style={{ 
-                width: '100%', 
-                backgroundColor: '#f8fafc', 
-                border: '1px solid transparent', 
-                height: '2.75rem', 
-                paddingLeft: '2.75rem', 
-                paddingRight: '1rem', 
-                borderRadius: '0.75rem', 
-                fontSize: '0.875rem', 
-                fontWeight: '700', 
-                color: '#334155',
-                outline: 'none',
-                transition: 'all 0.2s'
-              }}
+              placeholder="Search species..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-1.5 bg-slate-50 border-none rounded-lg text-xs font-bold text-slate-700 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
             />
           </div>
-          <select
-            style={{ 
-              backgroundColor: '#f8fafc', 
-              border: '1px solid transparent', 
-              height: '2.75rem', 
-              paddingLeft: '1rem', 
-              paddingRight: '2rem', 
-              borderRadius: '0.75rem', 
-              fontSize: '0.875rem', 
-              fontWeight: '900', 
-              color: '#475569',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
+          <select 
             value={filterClass}
             onChange={(e) => setFilterClass(e.target.value)}
+            className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 outline-none cursor-pointer"
           >
             <option value="all">All Classes</option>
             <option value="mammal">Mammals</option>
@@ -183,234 +158,117 @@ export default function SpeciesAnalysisPage({ params }: { params: { parkId: stri
             <option value="reptile">Reptiles</option>
           </select>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button onClick={() => setViewMode('grid')} 
-            style={{ 
-              padding: '0.625rem', 
-              borderRadius: '0.75rem', 
-              border: '1px solid transparent', 
-              backgroundColor: viewMode === 'grid' ? '#1a7a4a' : '#f8fafc',
-              color: viewMode === 'grid' ? '#fff' : '#94a3b8',
-              cursor: 'pointer',
-              boxShadow: viewMode === 'grid' ? '0 4px 12px rgba(26,122,74,0.2)' : 'none',
-              transition: 'all 0.2s'
-            }}>
-            <LayoutGrid size={20} />
-          </button>
-          <button onClick={() => setViewMode('table')}
-            style={{ 
-              padding: '0.625rem', 
-              borderRadius: '0.75rem', 
-              border: '1px solid transparent', 
-              backgroundColor: viewMode === 'table' ? '#1a7a4a' : '#f8fafc',
-              color: viewMode === 'table' ? '#fff' : '#94a3b8',
-              cursor: 'pointer',
-              boxShadow: viewMode === 'table' ? '0 4px 12px rgba(26,122,74,0.2)' : 'none',
-              transition: 'all 0.2s'
-            }}>
-            <TableIcon size={20} />
-          </button>
-        </div>
-      </motion.div>
+        <button className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-bold text-xs uppercase tracking-wider hover:bg-slate-100 hover:text-emerald-700 transition-colors">
+          <Download size={16} /> Export CSV
+        </button>
+      </div>
 
       {/* ── Species Content ───────────────────────────────── */}
       <AnimatePresence mode="wait">
         {viewMode === 'grid' ? (
           <motion.div 
-            key="grid" initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.05 } } }}
-            style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
-              gap: '1.5rem' 
-            }}
+            key="grid" 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
           >
             {filteredData.map((row) => {
               const meta = getWildlifeMetadata(row.species);
-              const ratio = row.male_count > 0 ? (row.female_count / row.male_count).toFixed(1) : '—';
-              
               return (
-                <motion.div key={row.species} variants={fadeUp}
-                  style={{ 
-                    backgroundColor: '#fff', 
-                    borderRadius: '2rem', 
-                    padding: '1.5rem', 
-                    border: '1px solid #f1f5f9', 
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column'
-                  }}
+                <motion.div 
+                  key={row.species}
+                  className="group bg-white p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all relative overflow-hidden"
                 >
-                  <div style={{ 
-                    position: 'absolute', 
-                    right: '-0.75rem', 
-                    top: '-0.75rem', 
-                    fontSize: '90px', 
-                    opacity: 0.04, 
-                    pointerEvents: 'none',
-                    filter: 'grayscale(1)'
-                  }}>
-                    {meta.emoji}
-                  </div>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                    <div style={{ 
-                      width: '3.5rem', 
-                      height: '3.5rem', 
-                      borderRadius: '1.25rem', 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center', 
-                      fontSize: '1.875rem', 
-                      backgroundColor: meta.bgLight,
-                      border: '1px solid rgba(0,0,0,0.03)',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-                    }}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div 
+                      className={`w-12 h-12 rounded-lg ${meta.bgLight} flex items-center justify-center text-2xl border shadow-sm`}
+                      style={{ borderColor: `${meta.color}30` }}
+                    >
                       {meta.emoji}
                     </div>
                     <div>
-                      <h3 style={{ fontSize: '1.125rem', fontWeight: 900, color: '#0f172a', margin: 0, lineHeight: 1.2 }}>{row.species}</h3>
-                      <p style={{ margin: '0.25rem 0 0', display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '10px', fontWeight: 900, color: '#1a7a4a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        {row.class} · <span style={{ color: '#94a3b8' }}>{row.category?.replace('_', ' ')}</span>
+                      <h3 className="text-base font-bold text-slate-900 leading-tight">{row.species}</h3>
+                      <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mt-0.5">{row.class}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Census Total</p>
+                      <p className="text-lg font-bold text-slate-900">{row.total_count.toLocaleString()}</p>
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Sex Ratio</p>
+                      <p className="text-lg font-bold text-slate-900">
+                        {row.male_count > 0 ? (row.female_count / row.male_count).toFixed(1) : '—'} 
+                        <span className="text-xs font-semibold ml-1 text-slate-500">F/M</span>
                       </p>
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                    <div style={{ backgroundColor: '#f8fafc', padding: '0.75rem', borderRadius: '1.25rem', border: '1px solid #f1f5f9' }}>
-                      <p style={{ fontSize: '9px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 0.25rem' }}>Total Count</p>
-                      <p style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>{row.total_count.toLocaleString()}</p>
+                  <div className="flex items-center justify-between text-xs font-bold mb-2">
+                    <div className="flex gap-4">
+                      <span className="text-blue-700">♂ {row.male_count}</span>
+                      <span className="text-rose-700">♀ {row.female_count}</span>
                     </div>
-                    <div style={{ backgroundColor: '#f8fafc', padding: '0.75rem', borderRadius: '1.25rem', border: '1px solid #f1f5f9' }}>
-                      <p style={{ fontSize: '9px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 0.25rem' }}>Sex Ratio</p>
-                      <p style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-                        {ratio} <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>{ratio !== '—' ? 'F/M' : ''}</span>
-                      </p>
-                    </div>
+                    <span className="text-slate-500">#{row.unknown_sex_count}</span>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', fontWeight: 700 }}>
-                    <div style={{ display: 'flex', gap: '1rem' }}>
-                      <span style={{ color: '#2563eb', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>♂ {row.male_count}</span>
-                      <span style={{ color: '#e11d48', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>♀ {row.female_count}</span>
-                    </div>
-                    <span style={{ color: '#cbd5e1' }}>#{row.unknown_sex_count} unclass.</span>
-                  </div>
-                  
                   <button 
                     onClick={() => router.push(`/dashboard/${routeParkId}/trends`)}
-                    style={{ 
-                      width: '100%', 
-                      marginTop: '1.5rem', 
-                      paddingTop: '1rem', 
-                      border: 'none',
-                      borderTop: '1px solid #f8fafc', 
-                      backgroundColor: 'transparent',
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'space-between', 
-                      fontSize: '11px', 
-                      fontWeight: 900, 
-                      color: '#94a3b8', 
-                      textTransform: 'uppercase', 
-                      letterSpacing: '0.1em', 
-                      cursor: 'pointer',
-                      transition: 'color 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = '#1a7a4a'}
-                    onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}
+                    className="w-full mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider hover:text-emerald-700 transition-colors"
                   >
-                    View History <ChevronRight size={14} />
+                    Analysis <TrendingUp size={16} />
                   </button>
                 </motion.div>
               );
             })}
           </motion.div>
         ) : (
-          <motion.div key="table" initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-            style={{ 
-              backgroundColor: '#fff', 
-              borderRadius: '2rem', 
-              border: '1px solid #f1f5f9', 
-              boxShadow: '0 4px 20px rgba(0,0,0,0.03)', 
-              overflow: 'hidden' 
-            }}
+          <motion.div 
+            key="table" 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }}
+            className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden"
           >
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#f8fafc' }}>
-                    <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Species</th>
-                    <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Class</th>
-                    <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Total</th>
-                    <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em' }}>♂ Male</th>
-                    <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em' }}>♀ Female</th>
-                    <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Ratio</th>
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="px-4 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Species</th>
+                  <th className="px-4 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Class</th>
+                  <th className="px-4 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Total</th>
+                  <th className="px-4 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map((row) => (
+                  <tr key={row.species} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                    <td className="px-4 py-4 font-bold text-slate-900 text-sm">{row.species}</td>
+                    <td className="px-4 py-4 text-xs font-bold text-emerald-700 uppercase tracking-wider">{row.class}</td>
+                    <td className="px-4 py-4 font-bold text-slate-900 text-sm">{row.total_count.toLocaleString()}</td>
+                    <td className="px-4 py-4 text-right">
+                      <button onClick={() => router.push(`/dashboard/${routeParkId}/trends`)} className="text-slate-500 hover:text-emerald-700 transition-colors p-2 hover:bg-emerald-50 rounded-lg">
+                        <TrendingUp size={18} />
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {filteredData.map((row) => {
-                    const meta = getWildlifeMetadata(row.species);
-                    const ratio = row.male_count > 0 ? (row.female_count / row.male_count).toFixed(1) : '—';
-                    return (
-                      <tr key={row.species} style={{ borderTop: '1px solid #f8fafc', transition: 'background-color 0.2s' }}>
-                        <td style={{ padding: '1rem 1.5rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                            <span style={{ fontSize: '1.5rem' }}>{meta.emoji}</span>
-                            <span style={{ fontWeight: 900, color: '#0f172a', fontSize: '0.875rem' }}>{row.species}</span>
-                          </div>
-                        </td>
-                        <td style={{ padding: '1rem 1.5rem' }}>
-                          <span style={{ fontSize: '10px', fontWeight: 900, color: '#1a7a4a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{row.class}</span>
-                        </td>
-                        <td style={{ padding: '1rem 1.5rem', fontWeight: 900, color: '#0f172a', fontSize: '0.875rem' }}>{row.total_count.toLocaleString()}</td>
-                        <td style={{ padding: '1rem 1.5rem', color: '#2563eb', fontWeight: 700, fontSize: '0.875rem' }}>{row.male_count}</td>
-                        <td style={{ padding: '1rem 1.5rem', color: '#e11d48', fontWeight: 700, fontSize: '0.875rem' }}>{row.female_count}</td>
-                        <td style={{ padding: '1rem 1.5rem' }}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.25rem 0.75rem', borderRadius: '1rem', backgroundColor: '#f1f5f9', fontSize: '11px', fontWeight: 900, color: '#475569' }}>
-                            {ratio} {ratio !== '—' ? 'F/M' : ''}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* ── Footer Info ───────────────────────────────────── */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-        style={{ 
-          marginTop: '4rem', 
-          padding: '2.5rem', 
-          backgroundColor: '#0f172a', 
-          color: '#fff', 
-          borderRadius: '2.5rem',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: '2rem',
-          position: 'relative',
-          overflow: 'hidden',
-          boxShadow: '0 20px 40px rgba(15,23,42,0.15)'
-        }}
-      >
-        <div style={{ padding: '1.25rem', backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: '1.25rem', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <Info size={32} className="text-green-400" />
-        </div>
-        <div>
-          <h4 style={{ fontSize: '1.25rem', fontWeight: 900, letterSpacing: '-0.02em', margin: '0 0 0.5rem' }}>Demographic Accuracy Notice</h4>
-          <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, fontWeight: 700, maxWidth: '40rem', margin: 0 }}>
-            Observation results reflect field-verified data. Instances where demographic classification (Sex/Age) 
-            was deferred due to herd density or distance are preserved as 'unclassified' to maintain scientific integrity. 
-            All reports follow strict ZEWC protocols for ecological data collection.
+      <footer className="mt-12 pt-6 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3 text-slate-600">
+          <Info size={16} className="text-emerald-600" />
+          <p className="text-xs font-bold uppercase tracking-wider max-w-md">
+            All data points reflect field-verified sightings from the {selectedYear} census cycle.
           </p>
         </div>
-      </motion.div>
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">© 2026 Wildlife Zim · Secure Registry</p>
+      </footer>
     </div>
   );
 }

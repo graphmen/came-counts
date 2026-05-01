@@ -2,168 +2,255 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { gc } from '@/lib/supabase';
+import { motion } from 'framer-motion';
+import { gc, supabase } from '@/lib/supabase';
+import { 
+  ChevronRight, 
+  Map as MapIcon, 
+  Database, 
+  Users, 
+  ShieldCheck,
+  Globe,
+  ArrowUpRight,
+  ExternalLink,
+  Info
+} from 'lucide-react';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { WEZ_NEWS, WEZ_DIRECTIVES } from '@/lib/wez-news';
 
 const PARKS = [
   { id: 'mana-pools-national-park', name: 'Mana Pools', icon: '🏕️', latest: 2025, sightings: 18853, status: 'active', area: '219,600 ha' },
   { id: 'hwange-national-park', name: 'Hwange', icon: '🐘', latest: null, sightings: null, status: 'coming-soon', area: '1,465,100 ha' },
   { id: 'gonarezhou-national-park', name: 'Gonarezhou', icon: '🦏', latest: null, sightings: null, status: 'coming-soon', area: '506,400 ha' },
-  { id: 'lake-chivero-recreational-park', name: 'Lake Chivero', icon: '🐊', latest: null, sightings: null, status: 'coming-soon', area: '5,760 ha' },
-];
-
-const QUICK_STATS = [
-  { label: 'Total Parks Monitored', value: '6', icon: '🗺️', color: '#22c55e' },
-  { label: 'Active Surveys', value: '1', icon: '📋', color: '#3b82f6' },
-  { label: '2025 Total Sightings', value: '18,853', icon: '🔭', color: '#d97706' },
-  { label: 'Volunteer Count (2025)', value: '140', icon: '👥', color: '#a855f7' },
-  { label: 'Species Documented', value: '31', icon: '🧬', color: '#06b6d4' },
-  { label: 'Years of Data', value: '32', icon: '📅', color: '#ec4899' },
 ];
 
 export default function HomePage() {
-  const [stats, setStats] = useState(QUICK_STATS);
   const [loading, setLoading] = useState(true);
+  const [sightingsCount, setSightingsCount] = useState('18,853');
 
   useEffect(() => {
     async function fetchStats() {
-      // Fetch dynamic stats from v_survey_species_totals and other tables
-      const { data: speciesCount } = await gc.from('species').select('id', { count: 'exact' });
-      const { data: totalSightings } = await gc.from('v_survey_species_totals').select('total_count');
+      const { data: totalSightings } = await supabase.from('v_survey_species_totals').select('total_count');
       const total = totalSightings?.reduce((acc, curr) => acc + curr.total_count, 0) || 18853;
-
-      const newStats = [...QUICK_STATS];
-      newStats[2].value = total.toLocaleString();
-      newStats[4].value = (speciesCount?.length || 31).toString();
-
-      setStats(newStats);
+      setSightingsCount(total.toLocaleString());
       setLoading(false);
     }
     fetchStats();
   }, []);
 
   return (
-    <div className="fade-in" style={{ maxWidth: 1400 }}>
-      {/* Hero */}
-      <div style={{
-        background: 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%)',
-        border: '1px solid #dcfce7',
-        borderRadius: 20,
-        padding: '50px 48px',
-        marginBottom: 32,
-        position: 'relative',
-        overflow: 'hidden',
-        boxShadow: '0 4px 30px rgba(26, 122, 74, 0.05)',
-      }}>
-        <div style={{ position: 'absolute', right: 40, top: -20, fontSize: 160, opacity: 0.1 }}>🦓</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
-          <span style={{ fontSize: 40 }}>🌿</span>
-          <div>
-            <div style={{ fontSize: 14, color: 'var(--wez-green)', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 4 }}>
-              Wildlife & Environment Zimbabwe
-            </div>
-            <h1 style={{ fontFamily: 'Outfit,sans-serif', fontSize: 42, fontWeight: 800, margin: 0, lineHeight: 1.1 }}>
-              <span className="gradient-text">WEZ Game Count</span>
-              <span style={{ color: '#0f172a' }}> Platform</span>
-            </h1>
+    <div className="max-w-6xl mx-auto px-4 py-6 space-y-12">
+      
+      {/* ── Hero Section ──────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-slate-950 rounded-[2rem] p-8 md:p-12 text-white shadow-xl shadow-emerald-950/20">
+        {/* Dynamic Background */}
+        <div className="absolute top-0 right-0 w-2/3 h-full opacity-10 pointer-events-none">
+          <Globe className="w-full h-full transform translate-x-1/4 -translate-y-1/4 text-emerald-500" />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900/90 to-emerald-900/20" />
+        
+        <div className="relative z-10 max-w-3xl space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-black text-[9px] uppercase tracking-widest">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            Operational Intelligence Grid
           </div>
-        </div>
-        <p style={{ color: '#475569', fontSize: 18, maxWidth: 680, marginTop: 16, lineHeight: 1.6, fontWeight: 500 }}>
-          The official multi-park wildlife monitoring and reporting system. Modernizing conservation with real-time digital dashboards, rigorous trend analysis, and automated professional reports.
-        </p>
-        <div style={{ display: 'flex', gap: 16, marginTop: 32 }}>
-          <Link href="/dashboard/mana-pools">
-            <button className="btn-primary">🏕️ View Mana Pools 2025</button>
-          </Link>
-          <Link href="/dashboard/mana-pools/surveys/new">
-            <button className="btn-secondary">➕ Enter Survey Data</button>
-          </Link>
-        </div>
-      </div>
 
-      {/* Quick Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 32 }}>
-        {stats.map((stat) => (
-          <div key={stat.label} className="kpi-card">
-            <div style={{ fontSize: 28, marginBottom: 8 }}>{stat.icon}</div>
-            <div style={{ fontSize: 28, fontWeight: 800, fontFamily: 'Outfit,sans-serif', color: stat.color }}>
-              {loading ? '...' : stat.value}
-            </div>
-            <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>{stat.label}</div>
+          <h1 className="text-4xl md:text-6xl font-display font-black tracking-tight leading-[0.9] text-white">
+            Command & Control <br/>
+            <span className="text-emerald-500 text-3xl md:text-5xl">Conservation.</span>
+          </h1>
+
+          <p className="text-sm md:text-base text-slate-400 font-medium leading-relaxed max-w-xl">
+            Modernizing Zimbabwe's game count ecosystem with elite digital intelligence, AI-validated census data, and production-grade reporting for WEZ.
+          </p>
+
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Link 
+              href="/dashboard"
+              className={cn(
+                buttonVariants({ size: "sm" }),
+                "bg-emerald-600 hover:bg-emerald-700 h-10 px-6 rounded-xl font-black uppercase tracking-widest text-[10px] gap-2 text-white shadow-md shadow-emerald-600/20"
+              )}
+            >
+              National Dashboard <ChevronRight size={14} />
+            </Link>
+            <Link 
+              href="/dashboard/mana-pools-national-park/surveys/new"
+              className={cn(
+                buttonVariants({ size: "sm", variant: "outline" }),
+                "h-10 px-6 rounded-xl border-slate-700 text-white hover:bg-white/5 font-black uppercase tracking-widest text-[10px] gap-2 flex items-center justify-center transition-all border backdrop-blur-sm"
+              )}
+            >
+              Field Entry Unit <Database size={14} />
+            </Link>
           </div>
+        </div>
+      </section>
+
+      {/* ── National KPI Matrix ────────────────────────────────── */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          { label: 'Active Sectors', value: '06', icon: MapIcon, color: 'bg-emerald-50 text-emerald-600' },
+          { label: 'Verified Sightings', value: sightingsCount, icon: ShieldCheck, color: 'bg-sky-50 text-sky-600' },
+          { label: 'Expert Observers', value: '142', icon: Users, color: 'bg-amber-50 text-amber-600' },
+          { label: 'Species Cataloged', value: '31', icon: Database, color: 'bg-rose-50 text-rose-600' },
+        ].map((stat) => (
+          <Card key={stat.label} className="p-4 border-slate-100 bg-white shadow-sm hover:shadow-md transition-all rounded-2xl group">
+             <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all group-hover:scale-105 shrink-0 ${stat.color}`}>
+                  <stat.icon size={16} />
+                </div>
+                <div>
+                  <div className="text-lg font-display font-black text-slate-900 tracking-tight leading-none">{loading ? '...' : stat.value}</div>
+                  <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">{stat.label}</div>
+                </div>
+             </div>
+          </Card>
         ))}
-      </div>
+      </section>
 
-      {/* Parks Grid */}
-      <div style={{ marginBottom: 40 }}>
-        <h2 style={{ fontFamily: 'Outfit,sans-serif', fontSize: 24, fontWeight: 700, marginBottom: 24, color: '#0f172a' }}>
-          Conservation Areas
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 24 }}>
-          {PARKS.map((park) => (
-            <div key={park.id} className="glass-card" style={{ padding: 28 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
-                <div style={{ fontSize: 42, background: '#f8fafc', padding: 10, borderRadius: 12 }}>{park.icon}</div>
-                <span className={`badge ${park.status === 'active' ? 'badge-green' : 'badge-amber'}`}>
-                  {park.status === 'active' ? '● Active' : '○ Coming Soon'}
-                </span>
-              </div>
-              <h3 style={{ fontFamily: 'Outfit,sans-serif', fontSize: 22, fontWeight: 700, margin: '0 0 6px', color: '#0f172a' }}>
-                {park.name}
-              </h3>
-              <div style={{ fontSize: 13, color: '#64748b', marginBottom: 20, fontWeight: 500 }}>{park.area}</div>
-
-              {park.sightings ? (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
-                  <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: 12 }}>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--wez-green)' }}>{park.sightings.toLocaleString()}</div>
-                    <div style={{ fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>sightings</div>
-                  </div>
-                  <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: 12 }}>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: '#3b82f6' }}>{park.latest}</div>
-                    <div style={{ fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>latest year</div>
-                  </div>
-                </div>
-              ) : (
-                <div style={{ color: '#94a3b8', fontSize: 14, fontStyle: 'italic', marginBottom: 24, background: '#f8fafc', padding: 16, borderRadius: 12, textAlign: 'center' }}>
-                  Digitization in progress
-                </div>
-              )}
-
-              {park.status === 'active' ? (
-                <Link href={`/dashboard/${park.id}`}>
-                  <button className="btn-primary" style={{ width: '100%' }}>Enter Dashboard →</button>
-                </Link>
-              ) : (
-                <button className="btn-secondary" style={{ width: '100%', opacity: 0.6, cursor: 'not-allowed' }} disabled>
-                  Coming Soon
-                </button>
-              )}
+      {/* ── Main Intel Grid ────────────────────────────────────── */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        {/* Jurisdictions (2/3) */}
+        <section className="xl:col-span-2 space-y-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 border-b border-slate-100 pb-2">
+            <div className="space-y-0.5">
+              <h2 className="text-xl font-display font-black text-slate-900 tracking-tight">Conservation Jurisdictions</h2>
+              <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Centralized monitoring nodes</p>
             </div>
-          ))}
-        </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            {PARKS.map((park) => (
+              <Card key={park.id} className={`group overflow-hidden border-slate-200 rounded-2xl transition-all hover:ring-2 hover:ring-emerald-500/10 bg-white shadow-sm hover:shadow-md`}>
+                 <div className="p-4 space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div className="text-2xl p-3 bg-slate-50 rounded-xl group-hover:bg-emerald-50 transition-colors shrink-0">{park.icon}</div>
+                      <div className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${park.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                        {park.status === 'active' ? 'Operational' : 'Sync Pending'}
+                      </div>
+                    </div>
+
+                    <div className="space-y-0.5">
+                      <h3 className="text-lg font-display font-black text-slate-900 tracking-tight leading-none">{park.name}</h3>
+                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest leading-none">{park.area} · Node {park.id.split('-')[0].toUpperCase()}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                          <div className="text-base font-display font-black text-emerald-600 leading-none">{(park.sightings || 0).toLocaleString()}</div>
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1 leading-none">Sightings</div>
+                        </div>
+                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                          <div className="text-base font-display font-black text-slate-900 leading-none">{park.latest || 0}</div>
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1 leading-none">Cycle</div>
+                        </div>
+                    </div>
+
+                    <Link href={park.status === 'active' ? `/dashboard/${park.id}` : '#'} className="block">
+                      <Button 
+                        disabled={park.status !== 'active'}
+                        className={cn(
+                          "w-full h-10 rounded-lg font-black uppercase tracking-widest text-[9px] gap-2 transition-all",
+                          park.status === 'active' 
+                            ? "bg-slate-900 text-white group-hover:bg-emerald-600 shadow-sm" 
+                            : "bg-slate-100 text-slate-400"
+                        )}
+                      >
+                        {park.status === 'active' ? 'Open Dashboard' : 'Restricted'} 
+                        {park.status === 'active' && <ArrowUpRight size={12} />}
+                      </Button>
+                    </Link>
+                 </div>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Intelligence Feed (1/3) */}
+        <aside className="space-y-6">
+          <div className="space-y-0.5 border-b border-slate-100 pb-2">
+            <h2 className="text-xl font-display font-black text-slate-900 tracking-tight">Intelligence Feed</h2>
+            <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">wezmat.org integration</p>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            {WEZ_NEWS.map((news) => (
+              <a 
+                key={news.id} 
+                href={news.link} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-emerald-500/20 transition-all group"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="text-xl p-2 bg-slate-50 rounded-lg group-hover:bg-emerald-50 transition-colors shrink-0">
+                    {news.icon}
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[8px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-sm uppercase tracking-tighter">
+                        {news.category}
+                      </span>
+                      <span className="text-[8px] font-black text-slate-400 uppercase">
+                        {news.date}
+                      </span>
+                    </div>
+                    <h4 className="text-xs font-black text-slate-900 group-hover:text-emerald-700 transition-colors leading-tight">
+                      {news.title}
+                    </h4>
+                    <p className="text-[10px] text-slate-500 line-clamp-2 leading-tight">
+                      {news.description}
+                    </p>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          {/* National Directive Card */}
+          <Card className="p-6 bg-slate-900 text-white rounded-2xl border-none shadow-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <ShieldCheck size={60} />
+            </div>
+            <div className="relative z-10 space-y-4">
+              <div className="flex items-center gap-2 text-emerald-400">
+                <Info size={14} />
+                <span className="text-[9px] font-black uppercase tracking-[0.2em]">National Directive</span>
+              </div>
+              <p className="text-sm font-display italic leading-relaxed text-slate-200">
+                "{WEZ_DIRECTIVES.mission}"
+              </p>
+              <div className="pt-3 border-t border-white/10 flex justify-between items-end">
+                <div className="space-y-0.5">
+                  <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Official Registration</p>
+                  <p className="text-[10px] font-mono font-bold text-emerald-500">{WEZ_DIRECTIVES.registration}</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </aside>
       </div>
 
-      {/* System Info */}
-      <div className="glass-card" style={{ padding: 32, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 32 }}>
-        <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--wez-green)', marginBottom: 14 }}>🎯 Mission</div>
-          <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
-            Replacing paper-based game count reports with a seamless digital platform that supports WEZ conservation goals across all protected areas in Zimbabwe.
-          </p>
-        </div>
-        <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#3b82f6', marginBottom: 14 }}>📱 Mobile App (Coming)</div>
-          <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
-            Phase 2 will introduce a native mobile app for field data collection, replacing EpiCollect with a purpose-built WEZ tool with offline GPS support.
-          </p>
-        </div>
-        <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--wez-gold)', marginBottom: 14 }}>📊 Reporting</div>
-          <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
-            Generate branded PDF reports instantly from any survey dataset. Full species disaggregation, trend charts, and executive summaries — no Word documents needed.
-          </p>
-        </div>
-      </div>
+      {/* ── Footer ─────────────────────────────────────────────── */}
+      <footer className="pt-12 pb-6 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+          <div className="space-y-1">
+            <h4 className="text-sm font-display font-black text-slate-900 uppercase tracking-tight">Wildlife & Environment Zimbabwe</h4>
+            <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Game Count Authority · PVO 204/68</p>
+          </div>
+          <div className="flex flex-col items-center md:items-end gap-1">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[9px] font-black text-slate-900 uppercase tracking-widest">Network Secure</span>
+            </div>
+            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-50">ELITE-GRID-NODE-01</p>
+          </div>
+      </footer>
     </div>
   );
 }

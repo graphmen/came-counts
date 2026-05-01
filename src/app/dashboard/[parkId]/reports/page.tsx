@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
-import { gc } from '@/lib/supabase';
+import { gc, supabase } from '@/lib/supabase';
 import { Park, Survey, SpeciesSummaryRow } from '@/types';
 import { 
   FileDown, 
@@ -14,7 +14,7 @@ import {
   ShieldCheck,
   Zap
 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import YearSelector from '@/components/YearSelector';
 import { ManaPoolsReportPDF } from '@/components/pdf/ManaPoolsReport';
 
@@ -29,14 +29,19 @@ const fadeUp: any = {
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
 };
 
-export default function ReportsPage({ params }: { params: { parkId: string } }) {
-  const { parkId: routeParkId } = params;
+export default function ReportsPage({ params }: { params: Promise<{ parkId: string }> }) {
+  const { parkId: routeParkId } = React.use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [park, setPark] = useState<Park | null>(null);
   const [survey, setSurvey] = useState<Survey | null>(null);
   const [speciesData, setSpeciesData] = useState<SpeciesSummaryRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const selectedYear = Number(searchParams.get('year')) || 2025;
 
@@ -45,7 +50,7 @@ export default function ReportsPage({ params }: { params: { parkId: string } }) 
       setLoading(true);
       try {
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(routeParkId);
-        const { data: parkData } = await gc
+        const { data: parkData } = await supabase
           .from('parks')
           .select('*')
           .filter(isUUID ? 'id' : 'name', isUUID ? 'eq' : 'ilike', isUUID ? routeParkId : `%${routeParkId.replace(/-/g, ' ')}%`)
@@ -53,7 +58,7 @@ export default function ReportsPage({ params }: { params: { parkId: string } }) 
         
         if (parkData) {
           setPark(parkData);
-          const { data: sLoad } = await gc
+          const { data: sLoad } = await supabase
             .from('surveys')
             .select('*')
             .eq('park_id', parkData.id)
@@ -62,7 +67,7 @@ export default function ReportsPage({ params }: { params: { parkId: string } }) 
 
           if (sLoad) {
             setSurvey(sLoad);
-            const { data: spData } = await gc
+            const { data: spData } = await supabase
               .from('v_survey_species_totals')
               .select('*')
               .eq('survey_id', sLoad.id)
@@ -95,103 +100,97 @@ export default function ReportsPage({ params }: { params: { parkId: string } }) 
   );
 
   return (
-    <div className="w-full">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
       {/* ── Page Header ────────────────────────────────────────── */}
-      <motion.div initial="hidden" animate="show" variants={fadeUp} style={{ marginBottom: '2.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#1a7a4a', fontWeight: 'bold', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '1rem' }}>
-          <FileText size={12} /> Publication Engine · Official Documentation
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: '1.5rem' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-              <h1 style={{ fontSize: '2.25rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.025em', margin: 0 }}>Report Generator</h1>
+      <header className="relative p-6 rounded-3xl bg-white border border-slate-100 shadow-sm overflow-hidden group">
+        {/* Decorative Background Accent */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50/50 rounded-full blur-3xl -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700" />
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 rounded-md border border-emerald-100/50">
+                <FileText size={10} className="text-emerald-600" />
+                <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Publication Intelligence</span>
+              </div>
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Compiler Engine: Active</span>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight font-outfit">
+                Report Generator
+              </h1>
               {park && (
-                <div style={{ padding: '0.25rem', backgroundColor: '#fff', borderRadius: '1rem', border: '1px solid #f1f5f9', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <div className="bg-slate-50 p-1 rounded-xl border border-slate-100 hidden sm:block">
                   <YearSelector parkId={park.id} selectedYear={selectedYear} onYearChange={handleYearChange} />
                 </div>
               )}
             </div>
-            <p style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-              <Zap size={14} style={{ color: '#1a7a4a' }} />
-              Real-time generation of ecological census reports for stakeholders.
-            </p>
+
+            <div className="flex items-center gap-2 text-slate-400 font-bold text-[11px]">
+               <Zap size={14} className="text-emerald-500" />
+               Automated synthesis of ecological census data for official {park?.name} documentation.
+            </div>
+          </div>
+
+          <div className="hidden lg:flex items-center gap-4">
+              <div className="text-right">
+                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Doc Integrity</div>
+                <div className="flex items-center gap-1 text-emerald-600 font-black text-xs">
+                   <ShieldCheck size={14} /> 100% SECURE
+                </div>
+              </div>
           </div>
         </div>
-      </motion.div>
+      </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Main Document Preview Card */}
-        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}
-          style={{ 
-            backgroundColor: '#fff', 
-            borderRadius: '2.5rem', 
-            border: '1px solid #f1f5f9', 
-            boxShadow: '0 10px 40px rgba(0,0,0,0.03)', 
-            overflow: 'hidden' 
-          }}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="xl:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden"
         >
           {/* Decorative Header Area */}
-          <div style={{ 
-            padding: '3rem 2.5rem', 
-            backgroundColor: '#f8fafc', 
-            borderBottom: '1px solid #f1f5f9',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1.5rem'
-          }}>
-            <div style={{ 
-              fontSize: '48px', 
-              backgroundColor: '#fff', 
-              padding: '1.25rem', 
-              borderRadius: '1.5rem', 
-              boxShadow: '0 4px 15px rgba(0,0,0,0.04)',
-              border: '1px solid #f1f5f9'
-            }}>📄</div>
+          <div className="px-6 py-6 bg-slate-50 border-b border-slate-100 flex items-center gap-4">
+            <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center text-2xl">
+              📄
+            </div>
             <div>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+              <h3 className="text-lg font-black text-slate-900 tracking-tight">
                 {survey?.year || selectedYear} Annual Game Count
               </h3>
-              <p style={{ fontSize: '11px', fontWeight: 900, color: '#1a7a4a', textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '0.375rem', margin: 0 }}>
+              <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mt-0.5">
                 Official Ecological Report · {park?.name}
               </p>
             </div>
           </div>
 
-          <div style={{ padding: '2.5rem' }}>
-            <div style={{ marginBottom: '2.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                <CheckCircle size={18} style={{ color: '#1a7a4a' }} />
-                <span style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Document Components</span>
+          <div className="p-6">
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-4">
+                <CheckCircle size={14} className="text-emerald-600" />
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Document Components</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {[
                   'Executive Summary', 'Transect Methodology', 'Species Disaggregation', 
                   'Sex & Age Analysis', 'Static Site Summary', 'Historical Trends', 
                   'Volunteer Log', 'Spatial Analytics'
                 ].map(item => (
-                  <div key={item} style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '0.75rem', 
-                    fontSize: '13px', 
-                    fontWeight: 700, 
-                    color: '#475569', 
-                    padding: '0.875rem 1rem', 
-                    backgroundColor: '#f8fafc', 
-                    borderRadius: '1rem', 
-                    border: '1px solid #f1f5f9' 
-                  }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', boxShadow: '0 0 8px rgba(34,197,94,0.4)' }} />
+                  <div key={item} className="flex items-center gap-2 px-3 py-2 bg-slate-50/50 rounded-lg border border-slate-100 text-[11px] font-bold text-slate-600">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
                     {item}
                   </div>
                 ))}
               </div>
             </div>
 
-            <div style={{ paddingTop: '2rem', borderTop: '1px solid #f8fafc' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', backgroundColor: '#eff6ff', padding: '1.25rem', borderRadius: '1.5rem', border: '1px solid #dbeafe' }}>
-                <ShieldCheck size={24} style={{ color: '#2563eb', flexShrink: 0 }} />
-                <p style={{ fontSize: '12px', color: '#64748b', fontWeight: 700, lineHeight: 1.6, margin: 0 }}>
+            <div className="pt-6 border-t border-slate-50">
+              <div className="flex items-start gap-3 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
+                <ShieldCheck size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                <p className="text-[10px] text-slate-500 font-bold leading-relaxed">
                   This engine synthesizes observational matrices directly from the Supabase ecosystem. 
                   Reports are digitally signed and optimized for professional stakeholder presentations.
                 </p>
@@ -201,20 +200,16 @@ export default function ReportsPage({ params }: { params: { parkId: string } }) 
         </motion.div>
 
         {/* Sidebar Actions */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-            style={{ 
-              backgroundColor: '#fff', 
-              borderRadius: '2rem', 
-              padding: '2rem', 
-              border: '1px solid #f1f5f9', 
-              boxShadow: '0 4px 25px rgba(0,0,0,0.02)' 
-            }}
+        <div className="space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }} 
+            animate={{ opacity: 1, x: 0 }}
+            className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"
           >
-            <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '1.5rem', margin: 0 }}>Publication Actions</h4>
+            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Publication Actions</h4>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {park && survey && speciesData.length > 0 ? (
+            <div className="space-y-2">
+              {mounted && park && survey && speciesData.length > 0 ? (
                 <PDFDownloadLink
                   document={<ManaPoolsReportPDF park={park} survey={survey} speciesData={speciesData} />}
                   fileName={`WEZ_${park.name.replace(/\s+/g, '_')}_Report_${survey.year}.pdf`}
@@ -222,73 +217,51 @@ export default function ReportsPage({ params }: { params: { parkId: string } }) 
                 >
                   {(( { loading: pdfLoading }: any ) => (
                     <button 
-                      style={{ 
-                        width: '100%', 
-                        padding: '1.125rem', 
-                        borderRadius: '1.25rem', 
-                        backgroundColor: '#1a7a4a', 
-                        color: '#fff', 
-                        fontWeight: 900, 
-                        border: 'none', 
-                        cursor: pdfLoading ? 'wait' : 'pointer', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        gap: '0.75rem',
-                        boxShadow: '0 8px 24px rgba(26,122,74,0.2)',
-                        fontSize: '14px',
-                        transition: 'all 0.2s'
-                      }}
+                      className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 text-white text-xs font-black shadow-md shadow-emerald-100 transition-all hover:bg-emerald-800 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none ${pdfLoading ? 'cursor-wait' : 'cursor-pointer'}`}
                       disabled={pdfLoading}
                     >
-                      <FileDown size={20} />
-                      {pdfLoading ? 'Analyzing Data...' : 'Generate PDF Report'}
+                      <FileDown size={16} />
+                      {pdfLoading ? 'Processing...' : 'Download PDF Report'}
                     </button>
                   )) as any}
                 </PDFDownloadLink>
               ) : (
-                <button style={{ width: '100%', padding: '1.125rem', borderRadius: '1.25rem', backgroundColor: '#f1f5f9', color: '#94a3b8', fontWeight: 900, border: 'none', cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', fontSize: '14px' }} disabled>
+                <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 text-slate-400 text-xs font-black cursor-not-allowed" disabled>
                   Data Unavailable
                 </button>
               )}
 
-              <button style={{ width: '100%', padding: '1.125rem', borderRadius: '1.25rem', backgroundColor: '#fff', color: '#0f172a', fontWeight: 900, border: '1px solid #f1f5f9', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', fontSize: '14px', transition: 'all 0.2s' }}>
-                <FileText size={20} /> Preview Document
+              <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-black hover:bg-slate-50 transition-colors">
+                <FileText size={16} /> Preview Online
               </button>
             </div>
 
-            <div style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid #f8fafc' }}>
-              <p style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1.25rem', margin: 0 }}>Publication Metadata</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+            <div className="mt-6 pt-6 border-t border-slate-50 space-y-4">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Metadata Registry</p>
+              <div className="space-y-2">
                 {[
-                  { label: 'Standard', value: 'ZEWC Ecological Protocol' },
-                  { label: 'Format', value: 'PDF/A4 Landscape' },
-                  { label: 'Version', value: 'v1.1.0 Stable', color: '#1a7a4a' }
+                  { label: 'Standard', value: 'ZEWC Protocol' },
+                  { label: 'Format', value: 'PDF/A4' },
+                  { label: 'Version', value: 'v1.1.0 Stable', isStatus: true }
                 ].map(m => (
-                  <div key={m.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700 }}>
-                    <span style={{ color: '#94a3b8' }}>{m.label}</span>
-                    <span style={{ color: m.color || '#334155', fontWeight: 900 }}>{m.value}</span>
+                  <div key={m.label} className="flex justify-between text-[11px] font-bold">
+                    <span className="text-slate-400">{m.label}</span>
+                    <span className={m.isStatus ? 'text-emerald-600 font-black' : 'text-slate-700 font-black'}>{m.value}</span>
                   </div>
                 ))}
               </div>
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.35 }}
-            style={{ 
-              padding: '1.5rem', 
-              backgroundColor: '#fffbeb', 
-              borderRadius: '1.5rem', 
-              border: '1px solid #fef3c7', 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '1rem' 
-            }}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }} 
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-amber-50/50 p-4 rounded-xl border border-amber-100/50 flex items-start gap-3"
           >
-            <div style={{ padding: '0.625rem', backgroundColor: '#fff', borderRadius: '0.75rem', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-              <Info size={20} style={{ color: '#d97706' }} />
+            <div className="p-1.5 bg-white rounded-lg shadow-sm border border-amber-100">
+              <Info size={14} className="text-amber-600" />
             </div>
-            <p style={{ fontSize: '11px', color: '#92400e', fontWeight: 700, lineHeight: 1.5, margin: 0 }}>
+            <p className="text-[10px] text-amber-800 font-bold leading-relaxed">
               Reports are cached for 24 hours. Use 'Refresh Node' to force current parity.
             </p>
           </motion.div>

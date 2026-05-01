@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WEZ Command & Control Platform
 
-## Getting Started
+A high-performance, professional wildlife management and survey platform built for **Wildlife & Environment Zimbabwe (WEZ)**.
 
-First, run the development server:
+## 🏗 Architecture Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This platform is a Next.js 15 (App Router) application designed for robust data collection, elite analytics, and geospatial visualization.
+
+### Tech Stack
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS + Custom Design Tokens
+- **Design System**: shadcn/ui + Lucide React
+- **Analytics**: Tremor.so
+- **Validation**: Zod
+- **Database/Auth**: Supabase
+- **Mapping**: MapLibre GL JS / Google Maps API
+
+### Directory Structure
+```text
+/src
+  /app           # Next.js App Router (Routes, Layouts, Actions)
+  /components    # Modular React Components
+    /ui          # Professional-grade UI primitives (shadcn)
+    /charts      # Higher-level Tremor/ChartJS analytics
+    /maps        # Geospatial components
+  /lib           # Core utilities and shared logic
+    /utils.ts    # Styling & general helpers
+    /schemas     # Zod validation schemas
+    /supabase    # Database client & types
+  /hooks         # Reusable business logic hooks
+  /types         # Global Type definitions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Digital Field Survey**: Robust, validatable data entry for field observations.
+2. **Elite Analytics**: KPI dashboards and trend visualization for conservation efforts.
+3. **Geospatial Intelligence**: Satellite-based mapping for tracking survey areas and sightings.
+4. **Server-Safe Logic**: Move complex data processing to the edge via Server Actions.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠 Setup & Installation
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm install
+npm run dev
+```

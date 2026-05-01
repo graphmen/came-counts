@@ -1,22 +1,54 @@
 import type { Metadata } from 'next';
+import { Inter, Outfit, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import Sidebar from '@/components/Sidebar';
 
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-outfit',
+  display: 'swap',
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
-  title: 'WEZ Game Count Platform',
-  description: 'Wildlife & Environment Zimbabwe — Multi-Park Game Count Reporting System',
+  title: {
+    template: '%s | WEZ Wildlife Platform',
+    default: 'WEZ Command & Control | Wildlife Game Count Zimbabwe',
+  },
+  description: 'The official multi-park wildlife monitoring and reporting platform for Wildlife & Environment Zimbabwe (WEZ). Real-time digital dashboards, rigorous trend analysis, and automated professional reports.',
+  keywords: ['WEZ', 'Wildlife', 'Zimbabwe', 'Game Count', 'Conservation', 'Mana Pools', 'Hwange'],
+  authors: [{ name: 'WEZ Conservation Tech Team' }],
+  openGraph: {
+    title: 'WEZ Command & Control | Wildlife Game Count',
+    description: 'Modernizing Zimbabwe\'s wildlife monitoring with elite digital intelligence.',
+    url: 'https://wez-platform.vercel.app',
+    siteName: 'WEZ Wildlife Platform',
+    locale: 'en_ZW',
+    type: 'website',
+  },
+  icons: {
+    icon: '/wez-logo.jpg',
+    apple: '/wez-logo.jpg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      </head>
-      <body>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable}`}>
+      <body suppressHydrationWarning className="font-sans bg-slate-50 antialiased overflow-x-hidden">
         <Sidebar />
-        <main className="main-content">
+        <main className="main-content min-h-screen">
           {children}
         </main>
       </body>

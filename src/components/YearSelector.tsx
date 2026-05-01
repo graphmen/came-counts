@@ -16,7 +16,7 @@ export default function YearSelector({ parkId, selectedYear, onYearChange }: Yea
 
     useEffect(() => {
         async function fetchYears() {
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('surveys')
                 .select('year')
                 .eq('park_id', parkId)

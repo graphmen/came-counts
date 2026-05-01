@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { gc } from '@/lib/supabase';
+import { gc, supabase } from '@/lib/supabase';
 import { Species, Park, Survey } from '@/types';
 import { MapPin, Plus, Save, Trash2, ArrowRight } from 'lucide-react';
 
@@ -20,9 +20,9 @@ export default function TransectEntryPage() {
 
     useEffect(() => {
         async function init() {
-            const { data: pData } = await gc.from('parks').select('*');
+            const { data: pData } = await supabase.from('parks').select('*');
             setParks(pData || []);
-            const { data: sList } = await gc.from('species').select('*').order('common_name');
+            const { data: sList } = await supabase.from('species').select('*').order('common_name');
             setSpecies(sList || []);
         }
         init();

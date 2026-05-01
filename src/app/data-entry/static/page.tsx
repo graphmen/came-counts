@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { gc } from '@/lib/supabase';
+import { gc, supabase } from '@/lib/supabase';
 import { Species, Park, Survey, StaticSite } from '@/types';
 import { Droplets, Plus, Save, Trash2, Clock } from 'lucide-react';
 
@@ -19,8 +19,8 @@ export default function StaticEntryPage() {
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        gc.from('parks').select('*').then(({ data }) => setParks(data || []));
-        gc.from('species').select('*').order('common_name').then(({ data }) => setSpecies(data || []));
+        supabase.from('parks').select('*').then(({ data }) => setParks(data || []));
+        supabase.from('species').select('*').order('common_name').then(({ data }) => setSpecies(data || []));
     }, []);
 
     useEffect(() => {

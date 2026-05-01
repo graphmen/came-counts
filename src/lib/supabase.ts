@@ -3,14 +3,18 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-// Create client targeting public schema by default
-// This resolves 406 Not Acceptable issues in environments where gamecount is not exposed
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    db: {
-        schema: 'public'
-    }
-});
+/**
+ * Standard Supabase client targeting the 'public' schema.
+ * Used for core metadata: parks, surveys, species, users, etc.
+ */
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Alias gc to supabase for existing code compatibility
-// Consolidate all fixes and force Vercel build: 2026-03-27_v2
-export const gc = supabase;
+/**
+ * Specialized client targeting the 'gamecount' schema.
+ * Used for real-time field observations and mobile sync data.
+ */
+export const gc = createClient(supabaseUrl, supabaseAnonKey, {
+  db: {
+    schema: 'gamecount',
+  },
+});

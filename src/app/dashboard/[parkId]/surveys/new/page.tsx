@@ -12,63 +12,63 @@ import {
     Bird, 
     Cat, 
     Bug, 
-    Activity, 
-    Trees,
-    Compass,
     Users,
     ArrowLeft,
     CheckCircle2,
-    Database,
-    RefreshCcw
+    RefreshCcw,
+    AlertCircle
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { gc, supabase } from '@/lib/supabase';
+import { submitSurvey } from '@/app/actions';
+import { WildlifeSurveySchema } from '@/lib/schemas/survey';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 
 const categories = [
-    { id: 'Mammal', icon: Cat, color: 'from-emerald-600 to-teal-700', bg: 'bg-emerald-50', text: 'text-emerald-700', shadow: 'shadow-emerald-200' },
-    { id: 'Bird', icon: Bird, color: 'from-sky-600 to-indigo-700', bg: 'bg-sky-50', text: 'text-sky-700', shadow: 'shadow-sky-200' },
-    { id: 'Reptile', icon: Bug, color: 'from-amber-600 to-orange-700', bg: 'bg-amber-50', text: 'text-amber-700', shadow: 'shadow-amber-200' },
+    { id: 'Mammal', icon: Cat, color: 'emerald' },
+    { id: 'Bird', icon: Bird, color: 'sky' },
+    { id: 'Reptile', icon: Bug, color: 'amber' },
 ];
 
-const fadeUp: any = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
-};
-
-const stagger: any = {
-    show: { transition: { staggerChildren: 0.1 } }
-};
-
-export default function NewSurveyPage() {
-    const { parkId } = useParams();
+export default function NewSurveyPage({ params }: { params: Promise<{ parkId: string }> }) {
+    const { parkId } = React.use(params);
     const router = useRouter();
     const [step, setStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const [parkName, setParkName] = useState('');
+    const [park, setPark] = useState<any>(null);
     const [speciesList, setSpeciesList] = useState<any[]>([]);
+    const [errors, setErrors] = useState<any>(null);
 
-    const [form, setForm] = useState({
-        classification: 'Mammal',
-        speciesId: '',
-        otherSpecies: '',
-        photo: null as any,
-        adult_m: 0, adult_f: 0, adult_u: 0,
-        sub_adult_m: 0, sub_adult_f: 0, sub_adult_u: 0,
-        juv_m: 0, juv_f: 0, juv_u: 0,
-        lat: '', long: '', accuracy: '',
-        distance: '', bearing: '',
-        activity: '', habitat: ''
+    const [formData, setFormData] = useState<any>({
+        park_id: '',
+        survey_date: new Date().toISOString().split('T')[0],
+        observers: ['Field Agent'],
+        area_block: '',
+        observations: [{
+            species: '',
+            count: 0,
+            adults: 0,
+            juveniles: 0,
+            notes: '',
+            classification: 'Mammal'
+        }]
     });
 
     useEffect(() => {
         const fetchContext = async () => {
-            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(parkId as string);
-            const { data: park } = await supabase
+            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(parkId as string);
+            const { data: pData } = await supabase
                 .from('parks')
-                .select('name')
+                .select('*')
                 .filter(isUUID ? 'id' : 'name', isUUID ? 'eq' : 'ilike', isUUID ? parkId : `%${(parkId as string).replace(/-/g, ' ')}%`)
                 .single();
-            if (park) setParkName(park.name);
+            if (pData) {
+                setPark(pData);
+                setFormData((prev: any) => ({ ...prev, park_id: pData.id, area_block: pData.name + ' Central' }));
+            }
 
             const { data: species } = await supabase.from('species').select('*').order('common_name');
             if (species) setSpeciesList(species);
@@ -76,366 +76,254 @@ export default function NewSurveyPage() {
         fetchContext();
     }, [parkId]);
 
-    const totalGroupSize = 
-        Number(form.adult_m) + Number(form.adult_f) + Number(form.adult_u) +
-        Number(form.sub_adult_m) + Number(form.sub_adult_f) + Number(form.sub_adult_u) +
-        Number(form.juv_m) + Number(form.juv_f) + Number(form.juv_u);
+    const handleUpdateObservation = (index: number, updates: any) => {
+        const newObs = [...formData.observations];
+        newObs[index] = { ...newObs[index], ...updates };
+        setFormData({ ...formData, observations: newObs });
+    };
 
-    const handleNext = () => setStep(s => Math.min(s + 1, 3));
+    const handleNext = () => {
+        // Simple step-level validation
+        if (step === 1 && !formData.observations[0].species) {
+            setErrors({ observations: { 0: { species: "Select a species" } } });
+            return;
+        }
+        setErrors(null);
+        setStep(s => Math.min(s + 1, 3));
+    };
+
     const handleBack = () => setStep(s => Math.max(s - 1, 1));
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         setIsSubmitting(true);
-        setTimeout(() => {
-            setIsSubmitting(false);
+        setErrors(null);
+
+        const result = await submitSurvey(formData);
+        
+        if (result.success) {
             setIsSuccess(true);
             setTimeout(() => router.push(`/dashboard/${parkId}`), 2500);
-        }, 1800);
+        } else {
+            setErrors(result.error);
+            setIsSubmitting(false);
+        }
     };
 
     if (isSuccess) {
         return (
-            <div style={{ position: 'fixed', inset: 0, background: '#f8fafc', zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, textAlign: 'center' }}>
-                <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ marginBottom: 24, position: 'relative' }}>
-                    <div style={{ position: 'absolute', inset: 0, background: '#dcfce7', borderRadius: '50%', filter: 'blur(30px)', opacity: 0.5 }} />
-                    <CheckCircle2 style={{ width: 96, height: 96, color: 'var(--wez-green)', position: 'relative', zIndex: 10 }} />
+            <div className="fixed inset-0 bg-slate-50 z-[100] flex flex-col items-center justify-center p-6 text-center">
+                <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="mb-8 relative">
+                    <div className="absolute inset-0 bg-emerald-100 rounded-full blur-3xl opacity-50" />
+                    <CheckCircle2 className="w-24 h-24 text-emerald-600 relative z-10" />
                 </motion.div>
-                <motion.h2 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} style={{ fontSize: 36, fontWeight: 900, marginBottom: 8, color: '#0f172a' }}>Observation Synced!</motion.h2>
-                <motion.p initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} style={{ color: '#64748b', fontWeight: 700, maxWidth: 400 }}>Data has been successfully recorded in the central database for {parkName}.</motion.p>
+                <motion.h2 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="text-4xl font-display font-black text-slate-900 mb-4">Observation Synced!</motion.h2>
+                <motion.p initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} className="text-slate-500 font-bold max-w-md">The telemetry has been verified and recorded in the {park?.name} archives.</motion.p>
             </div>
         );
     }
 
-    return (
-        <div style={{ minHeight: '100vh', background: '#f8fafc', position: 'relative' }}>
-            {/* Elite Background Decor */}
-            <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', opacity: 0.3, overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(26,101,52,0.1) 0%, transparent 70%)' }} />
-                <div style={{ position: 'absolute', bottom: '-10%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(2,132,199,0.1) 0%, transparent 70%)' }} />
-            </div>
+    const currentObs = formData.observations[0];
 
-            {/* Header Module */}
-            <div style={{ background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #e2e8f0', position: 'sticky', top: 0, zIndex: 50 }}>
-                <div style={{ maxWidth: 1000, margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                        <button onClick={() => router.back()} className="btn-secondary" style={{ padding: '8px 12px', borderRadius: 8 }}>
-                            <ArrowLeft size={16} />
+    return (
+        <div className="min-h-screen bg-slate-50 relative pb-24">
+            {/* Header */}
+            <div className="bg-white/90 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-50 overflow-hidden">
+                {/* Decorative Background Accent */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl -mr-16 -mt-16" />
+                
+                <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between relative z-10">
+                    <div className="flex items-center gap-4">
+                        <button 
+                            className="w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:border-emerald-200 transition-all shadow-sm"
+                            onClick={() => router.back()}
+                        >
+                            <ArrowLeft size={18} />
                         </button>
                         <div>
-                            <h1 style={{ fontSize: 18, fontWeight: 900, margin: 0 }}>Field Data Entry</h1>
-                            <p style={{ fontSize: 10, color: 'var(--wez-green)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>{parkName || 'Loading Area...'}</p>
+                            <div className="flex items-center gap-2 mb-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                <h1 className="text-xs font-black text-slate-900 uppercase tracking-widest leading-none">Field Command Alpha</h1>
+                            </div>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{park?.name || 'Loading...'}</p>
                         </div>
                     </div>
 
-                    {/* Elite Stepper Fallback */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f1f5f9', padding: 6, borderRadius: 12, border: '1px solid #e2e8f0', marginLeft: 'auto' }}>
+                    <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
                         {[
-                            { id: 1, label: 'Sighting', icon: Camera },
-                            { id: 2, label: 'Population', icon: Users },
-                            { id: 3, label: 'Geodata', icon: MapPin }
+                            { id: 1, label: 'Taxa', icon: Camera },
+                            { id: 2, label: 'Herd', icon: Users },
+                            { id: 3, label: 'Geo', icon: MapPin }
                         ].map((s) => (
-                            <div key={s.id} className={`stepper-item ${step === s.id ? 'active' : ''}`} style={{ padding: '6px 12px', whiteSpace: 'nowrap' }}>
-                                <s.icon size={14} />
-                                <span style={{ fontSize: 10, fontWeight: 800 }}>{s.label.toUpperCase()}</span>
+                            <div key={s.id} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${step === s.id ? 'bg-white shadow-sm text-emerald-600 border border-emerald-100' : 'text-slate-400'}`}>
+                                <s.icon size={12} />
+                                <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">{s.label}</span>
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
 
-            {/* Form Content */}
-            <main style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px 100px', position: 'relative', zIndex: 10 }}>
+            <main className="max-w-4xl mx-auto px-6 pt-6 space-y-8">
                 <AnimatePresence mode="wait">
                     {step === 1 && (
-                        <motion.div key="step1" variants={stagger} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-                            <motion.section variants={fadeUp}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-                                    <div style={{ padding: 8, background: 'var(--wez-green)', borderRadius: 8, color: 'white' }}><Cat size={18} /></div>
-                                    <h3 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>What did you see?</h3>
+                        <motion.div key="step1" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
+                            <section className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="p-1.5 bg-emerald-600 rounded-lg text-white"><Cat size={16} /></div>
+                                    <h2 className="text-xl font-display font-black text-slate-900 tracking-tight">Classification</h2>
                                 </div>
-                                
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 32 }}>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     {categories.map(cat => (
-                                        <button
+                                        <Card 
                                             key={cat.id}
-                                            onClick={() => setForm({ ...form, classification: cat.id })}
-                                            className="category-card"
-                                            style={{ 
-                                                background: form.classification === cat.id ? 'white' : 'rgba(255,255,255,0.6)',
-                                                borderColor: form.classification === cat.id ? 'var(--wez-green)' : '#e2e8f0',
-                                                borderWidth: 2,
-                                                borderStyle: 'solid',
-                                                boxShadow: form.classification === cat.id ? '0 10px 30px rgba(26,122,74,0.1)' : 'none',
-                                                transform: form.classification === cat.id ? 'translateY(-4px)' : 'none'
-                                            }}
+                                            onClick={() => handleUpdateObservation(0, { classification: cat.id })}
+                                            className={`cursor-pointer group hover:border-emerald-500 transition-all p-4 text-center space-y-3 ${currentObs.classification === cat.id ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600' : 'border-slate-200'}`}
                                         >
-                                            <div style={{ 
-                                                padding: 16, 
-                                                borderRadius: 12, 
-                                                background: form.classification === cat.id ? 'var(--wez-green)' : '#f1f5f9',
-                                                color: form.classification === cat.id ? 'white' : '#94a3b8',
-                                                marginBottom: 16,
-                                                transition: 'all 0.3s'
-                                            }}>
-                                                <cat.icon size={32} />
+                                            <div className={`mx-auto w-12 h-12 rounded-xl flex items-center justify-center transition-all ${currentObs.classification === cat.id ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-100' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'}`}>
+                                                <cat.icon size={24} />
                                             </div>
-                                            <div style={{ fontWeight: 800, fontSize: 16, color: '#0f172a' }}>{cat.id}</div>
-                                            <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginTop: 4 }}>Field Records</div>
-                                        </button>
+                                            <div className="space-y-0.5">
+                                                <h4 className="text-xs font-display font-black text-slate-900 uppercase tracking-tight">{cat.id}</h4>
+                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Select Mode</p>
+                                            </div>
+                                        </Card>
                                     ))}
                                 </div>
+                            </section>
 
-                                <div className="glass-card" style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 24 }}>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                            <label style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', marginLeft: 4 }}>Species from Database</label>
-                                            <select 
-                                                className="form-input"
-                                                value={form.speciesId}
-                                                onChange={(e) => setForm({ ...form, speciesId: e.target.value })}
-                                                style={{ height: 56, fontWeight: 700 }}
-                                            >
-                                                <option value="">Choose Recorded Taxon...</option>
-                                                {speciesList.filter(s => s.class === form.classification.toLowerCase()).map(s => (
-                                                    <option key={s.id} value={s.id}>{s.common_name}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                            <label style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', marginLeft: 4 }}>Other / Specific Variety</label>
-                                            <input 
-                                                type="text" 
-                                                placeholder="e.g. Rare sighting note..."
-                                                className="form-input"
-                                                value={form.otherSpecies}
-                                                onChange={(e) => setForm({ ...form, otherSpecies: e.target.value })}
-                                                style={{ height: 56, fontWeight: 700 }}
-                                            />
-                                        </div>
-                                    </div>
+                            <section className="space-y-3">
+                                <Label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Species Precision Target</Label>
+                                <div className="relative">
+                                    <select 
+                                        className="w-full h-12 pl-4 pr-10 bg-white border border-slate-200 rounded-xl font-bold text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500 outline-none transition-all appearance-none"
+                                        value={currentObs.species}
+                                        onChange={(e) => handleUpdateObservation(0, { species: e.target.value })}
+                                    >
+                                        <option value="">Select Target Species...</option>
+                                        {speciesList.filter(s => s.class === currentObs.classification.toLowerCase()).map(s => (
+                                            <option key={s.id} value={s.common_name}>{s.common_name}</option>
+                                        ))}
+                                    </select>
+                                    <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90" size={14} />
                                 </div>
-                            </motion.section>
-
-                            <motion.section variants={fadeUp}>
-                                <div className="glass-card" style={{ padding: 60, borderStyle: 'dashed', borderWidth: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, background: 'rgba(255,255,255,0.4)' }}>
-                                    <div style={{ padding: 16, background: 'white', borderRadius: 24, boxShadow: '0 10px 20px rgba(0,0,0,0.05)', color: 'var(--wez-green)' }}>
-                                        <Camera size={32} />
-                                    </div>
-                                    <div style={{ textAlign: 'center' }}>
-                                        <div style={{ fontWeight: 800, fontSize: 18, color: '#0f172a' }}>Capture Visual Evidence</div>
-                                        <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0' }}>Standard ZEWC protocol photo for AI validation</p>
-                                    </div>
-                                </div>
-                            </motion.section>
+                                {errors?.observations && <p className="text-rose-500 text-[10px] font-black uppercase tracking-widest px-1 flex items-center gap-1"><AlertCircle size={10} /> Precision Error: Selection required</p>}
+                            </section>
                         </motion.div>
                     )}
 
                     {step === 2 && (
-                        <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <div style={{ padding: 8, background: 'var(--wez-green)', borderRadius: 8, color: 'white' }}><Users size={18} /></div>
-                                <h3 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>Population & Activity</h3>
-                            </div>
-
-                            <div className="glass-card" style={{ overflow: 'hidden' }}>
-                                <table className="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th style={{ padding: 24 }}>Stage</th>
-                                            <th style={{ padding: 24, textAlign: 'center', background: 'rgba(26,122,74,0.03)' }}>Male</th>
-                                            <th style={{ padding: 24, textAlign: 'center', background: 'rgba(2,132,199,0.03)' }}>Female</th>
-                                            <th style={{ padding: 24, textAlign: 'center' }}>Unclassified</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody style={{ borderTop: '1px solid #f1f5f9' }}>
-                                        {[
-                                            { label: 'Adult', keys: ['adult_m', 'adult_f', 'adult_u'] },
-                                            { label: 'Sub-Adult', keys: ['sub_adult_m', 'sub_adult_f', 'sub_adult_u'] },
-                                            { label: 'Juvenile', keys: ['juv_m', 'juv_f', 'juv_u'] }
-                                        ].map((row) => (
-                                            <tr key={row.label}>
-                                                <td style={{ padding: 24 }}>
-                                                    <div style={{ fontWeight: 800, color: '#0f172a' }}>{row.label}</div>
-                                                    <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase' }}>Verified Phase</div>
-                                                </td>
-                                                {row.keys.map((key) => (
-                                                    <td key={key} style={{ padding: 16 }}>
-                                                        <input 
-                                                            type="number" min="0"
-                                                            className="form-input"
-                                                            style={{ textAlign: 'center', fontWeight: 900, fontSize: 18, height: 48, background: '#f8fafc' }}
-                                                            value={(form as any)[key]}
-                                                            onChange={(e) => setForm({ ...form, [key]: parseInt(e.target.value) || 0 })}
-                                                        />
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                
-                                <div style={{ background: '#0f172a', padding: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'white' }}>
-                                    <div>
-                                        <div style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: 'var(--wez-green-light)', letterSpacing: 2 }}>Total Herd Dynamics</div>
-                                        <p style={{ fontSize: 12, color: '#94a3b8', margin: '4px 0 0' }}>Aggregate sighting size across all age sets.</p>
-                                    </div>
-                                    <div style={{ textAlign: 'right' }}>
-                                        <div style={{ fontSize: 40, fontWeight: 900 }}>{totalGroupSize}</div>
-                                        <div style={{ fontSize: 10, color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>Individuals</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-                                <div className="glass-card" style={{ padding: 32 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                                        <Activity size={18} style={{ color: 'var(--wez-green)' }} />
-                                        <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, textTransform: 'uppercase' }}>Primary Activity</h4>
-                                    </div>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                                        {['Eating/Foraging', 'Standing/Resting', 'Movement', 'Drinking'].map(act => (
-                                            <button
-                                                key={act}
-                                                onClick={() => setForm({ ...form, activity: act })}
-                                                className="btn-secondary"
-                                                style={{ 
-                                                    padding: '8px 16px', 
-                                                    fontSize: 11, 
-                                                    fontWeight: 800, 
-                                                    background: form.activity === act ? '#0f172a' : 'white',
-                                                    color: form.activity === act ? 'white' : '#64748b',
-                                                    borderColor: form.activity === act ? '#0f172a' : '#e2e8f0'
-                                                }}
-                                            >
-                                                {act.toUpperCase()}
-                                            </button>
-                                        ))}
-                                    </div>
+                        <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                            <section className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="p-1.5 bg-emerald-600 rounded-lg text-white"><Users size={16} /></div>
+                                    <h2 className="text-xl font-display font-black text-slate-900 tracking-tight">Herd Dynamics</h2>
                                 </div>
 
-                                <div className="glass-card" style={{ padding: 32 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                                        <Trees size={18} style={{ color: 'var(--wez-green)' }} />
-                                        <h4 style={{ fontSize: 14, fontWeight: 800, margin: 0, textTransform: 'uppercase' }}>Habitat Profile</h4>
+                                <Card className="overflow-hidden border-slate-200 shadow-sm transition-all hover:shadow-md">
+                                    <div className="grid grid-cols-3 bg-slate-50/50 border-b border-slate-100">
+                                        <div className="p-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">Adults</div>
+                                        <div className="p-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center border-l border-r border-slate-100">Sub-Adults</div>
+                                        <div className="p-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">Juveniles</div>
                                     </div>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                                        {['Open Grassland', 'Sparse Woodland', 'Dense Thicket', 'Riverine'].map(hab => (
-                                            <button
-                                                key={hab}
-                                                onClick={() => setForm({ ...form, habitat: hab })}
-                                                className="btn-secondary"
-                                                style={{ 
-                                                    padding: '8px 16px', 
-                                                    fontSize: 11, 
-                                                    fontWeight: 800, 
-                                                    background: form.habitat === hab ? 'var(--wez-green)' : 'white',
-                                                    color: form.habitat === hab ? 'white' : '#64748b',
-                                                    borderColor: form.habitat === hab ? 'var(--wez-green)' : '#e2e8f0'
-                                                }}
-                                            >
-                                                {hab.toUpperCase()}
-                                            </button>
-                                        ))}
+                                    <div className="grid grid-cols-3 h-20">
+                                        <input 
+                                            type="number" min="0" className="w-full h-full text-center text-xl font-display font-black text-slate-900 outline-none focus:bg-emerald-50 transition-colors"
+                                            value={currentObs.count}
+                                            onChange={(e) => handleUpdateObservation(0, { count: parseInt(e.target.value) || 0 })}
+                                        />
+                                        <input 
+                                            type="number" min="0" className="w-full h-full text-center text-xl font-display font-black text-slate-900 border-l border-r border-slate-100 outline-none focus:bg-emerald-50 transition-colors"
+                                            value={currentObs.adults}
+                                            onChange={(e) => handleUpdateObservation(0, { adults: parseInt(e.target.value) || 0 })}
+                                        />
+                                        <input 
+                                            type="number" min="0" className="w-full h-full text-center text-xl font-display font-black text-slate-900 outline-none focus:bg-emerald-50 transition-colors"
+                                            value={currentObs.juveniles}
+                                            onChange={(e) => handleUpdateObservation(0, { juveniles: parseInt(e.target.value) || 0 })}
+                                        />
                                     </div>
-                                </div>
-                            </div>
+                                    <div className="bg-slate-900 px-6 py-4 flex justify-between items-center text-white">
+                                        <div>
+                                            <h4 className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Tactical Composite</h4>
+                                            <p className="text-[10px] text-slate-400 font-bold mt-0.5">Aggregated census telemetry.</p>
+                                        </div>
+                                        <div className="text-3xl font-display font-black text-emerald-400">{currentObs.count + currentObs.adults + currentObs.juveniles}</div>
+                                    </div>
+                                </Card>
+                            </section>
                         </motion.div>
                     )}
 
                     {step === 3 && (
-                        <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <div style={{ padding: 8, background: 'var(--wez-green)', borderRadius: 8, color: 'white' }}><MapPin size={18} /></div>
-                                <h3 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>Spatial Intelligence</h3>
-                            </div>
-
-                            <div className="glass-card" style={{ padding: 40, background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                                <label style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>Latitude Fix</label>
-                                                <input 
-                                                    className="form-input"
-                                                    value={form.lat}
-                                                    onChange={(e) => setForm({ ...form, lat: e.target.value })}
-                                                    placeholder="-15.7585"
-                                                    style={{ height: 64, fontSize: 18, fontWeight: 800, background: 'white' }}
-                                                />
-                                            </div>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                                <label style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>Longitude Fix</label>
-                                                <input 
-                                                    className="form-input"
-                                                    value={form.long}
-                                                    onChange={(e) => setForm({ ...form, long: e.target.value })}
-                                                    placeholder="29.2927"
-                                                    style={{ height: 64, fontSize: 18, fontWeight: 800, background: 'white' }}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                <label style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>Accuracy Buffer (M)</label>
-                                                <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--wez-green)' }}>{form.accuracy || 0}m</span>
-                                            </div>
-                                            <input 
-                                                type="range" min="1" max="50"
-                                                style={{ width: '100%', accentColor: 'var(--wez-green)' }}
-                                                value={form.accuracy}
-                                                onChange={(e) => setForm({ ...form, accuracy: e.target.value })}
-                                            />
-                                        </div>
-                                    </div>
-                                    
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: 24, background: 'rgba(255,255,255,0.4)', borderRadius: 24, border: '1px solid #e2e8f0' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                            <label style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>Observed Distance (Meters)</label>
-                                            <input 
-                                                type="number"
-                                                className="form-input"
-                                                value={form.distance}
-                                                onChange={(e) => setForm({ ...form, distance: e.target.value })}
-                                                style={{ height: 64, fontSize: 24, fontWeight: 900, color: 'var(--wez-green)' }}
-                                            />
-                                        </div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                            <label style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>Sight Bearing (Degrees)</label>
-                                            <input 
-                                                type="number"
-                                                className="form-input"
-                                                value={form.bearing}
-                                                onChange={(e) => setForm({ ...form, bearing: e.target.value })}
-                                                style={{ height: 64, fontSize: 24, fontWeight: 900, color: '#3b82f6' }}
-                                            />
-                                        </div>
-                                    </div>
+                        <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                           <section className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="p-1.5 bg-emerald-600 rounded-lg text-white"><MapPin size={16} /></div>
+                                    <h2 className="text-xl font-display font-black text-slate-900 tracking-tight">Geospatial Fix</h2>
                                 </div>
-                            </div>
+
+                                <Card className="p-6 space-y-6 border-slate-200 shadow-sm">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Survey Area Block</Label>
+                                            <Input 
+                                                value={formData.area_block} 
+                                                onChange={(e) => setFormData({ ...formData, area_block: e.target.value })}
+                                                className="h-11 text-sm font-bold border-slate-200"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Log Timestamp</Label>
+                                            <Input 
+                                                type="date"
+                                                value={formData.survey_date} 
+                                                onChange={(e) => setFormData({ ...formData, survey_date: e.target.value })}
+                                                className="h-11 text-sm font-bold border-slate-200"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Technician Notes</Label>
+                                        <textarea 
+                                            className="w-full min-h-[100px] p-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-xs text-slate-900 focus:ring-2 focus:ring-emerald-500 outline-none transition-all placeholder:text-slate-300"
+                                            placeholder="Environmental conditions, herd health, particular sightings..."
+                                            value={currentObs.notes}
+                                            onChange={(e) => handleUpdateObservation(0, { notes: e.target.value })}
+                                        />
+                                    </div>
+                                </Card>
+                           </section>
                         </motion.div>
                     )}
                 </AnimatePresence>
             </main>
 
-            {/* Float Action Bar Fallback */}
-            <div className="float-action-bar" style={{ maxWidth: 600, margin: '0 auto' }}>
-                {step > 1 ? (
-                    <button onClick={handleBack} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 20px' }}>
-                        <ChevronLeft size={18} /> Prev Step
-                    </button>
-                ) : <div style={{ width: 100 }} />}
+            {/* ActionBar */}
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-xl border-t border-slate-200 z-50">
+                <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+                    {step > 1 ? (
+                        <Button variant="outline" className="h-11 px-6 rounded-lg font-black uppercase tracking-widest text-[9px] gap-2 border-slate-200" onClick={handleBack}>
+                            <ChevronLeft size={14} /> Back
+                        </Button>
+                    ) : <div className="w-24 hidden sm:block" />}
 
-                <div style={{ display: 'flex', gap: 12 }}>
-                    {step < 3 ? (
-                        <button onClick={handleNext} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 32px' }}>
-                            Next Module <ChevronRight size={18} />
-                        </button>
-                    ) : (
-                        <button onClick={handleSubmit} disabled={isSubmitting} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 40px', background: 'linear-gradient(90deg, #166534, #1a7a4a)' }}>
-                            {isSubmitting ? <RefreshCcw className="animate-spin" size={20} /> : <><Save size={20} /> Sync Observation</>}
-                        </button>
-                    )}
+                    <div className="flex gap-3 w-full sm:w-auto">
+                        {step < 3 ? (
+                            <Button className="w-full sm:w-auto h-11 px-10 rounded-lg font-black uppercase tracking-widest text-[9px] gap-2 bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-100" onClick={handleNext}>
+                                Next Module <ChevronRight size={14} />
+                            </Button>
+                        ) : (
+                            <Button 
+                                disabled={isSubmitting} 
+                                className="w-full sm:w-auto h-11 px-12 rounded-lg font-black uppercase tracking-widest text-[9px] gap-2 bg-slate-900 hover:bg-black shadow-lg" 
+                                onClick={handleSubmit}
+                            >
+                                {isSubmitting ? <RefreshCcw className="animate-spin" size={16} /> : <><Save size={16} /> Deploy Telemetry</>}
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
