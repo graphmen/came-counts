@@ -38,8 +38,8 @@ export const metadata: Metadata = {
     type: 'website',
   },
   icons: {
-    icon: '/wez-logo.jpg',
-    apple: '/wez-logo.jpg',
+    icon: '/favicon.png',
+    apple: '/favicon.png',
   },
 };
 
