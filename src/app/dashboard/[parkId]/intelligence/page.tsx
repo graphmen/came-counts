@@ -1,6 +1,6 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
+
 
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,9 +27,9 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import DataLedger from '@/components/intel/DataLedger';
 import ExportEngine from '@/components/intel/ExportEngine';
 import IntelligenceAnalytics from '@/components/intel/IntelligenceAnalytics';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 
-const SurveyMap = dynamic(() => import('@/components/intel/SurveyMap'), { 
+const SurveyMap = nextDynamic(() => import('@/components/intel/SurveyMap'), { 
   ssr: false,
   loading: () => <div className="h-[500px] bg-slate-50 rounded-2xl flex items-center justify-center animate-pulse text-slate-400 font-bold uppercase tracking-widest text-xs">Initializing Map Node...</div>
 });
