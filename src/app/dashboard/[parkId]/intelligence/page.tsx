@@ -62,9 +62,13 @@ function routeParamToParkId(routeParam: string): string {
 
 function resolvePhotoUrl(url: string | null, payload?: any) {
   if (!url && payload?.photo_uri) {
-    // Handle legacy mobile app property
-    if (payload.photo_uri.startsWith('file://')) return null;
-    url = payload.photo_uri;
+    // If it's a local file path from mobile, extract the filename to try and find it in our cloud storage
+    if (payload.photo_uri.includes('ImagePicker') || payload.photo_uri.startsWith('file://')) {
+       const fileName = payload.photo_uri.split('/').pop();
+       url = fileName;
+    } else {
+       url = payload.photo_uri;
+    }
   }
   
   if (!url) return null;
