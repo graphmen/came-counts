@@ -202,6 +202,13 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
           <div style="font-family: var(--font-sans), sans-serif; padding: 4px;">
             <div style="font-family: var(--font-display), sans-serif; font-size:9px;font-weight:900;text-transform:uppercase;color:#64748b;letter-spacing:0.08em;">${obs.type} Survey</div>
             <div style="font-family: var(--font-display), sans-serif; font-size:14px;font-weight:900;color:#0f172a;margin:4px 0;">${emoji} ${obs.species}</div>
+            
+            ${obs.photo_url ? `
+              <div style="width:100%; height:100px; border-radius:8px; overflow:hidden; margin:8px 0; border:1px solid #e2e8f0;">
+                <img src="${obs.photo_url}" style="width:100%; height:100%; object-cover: cover;" />
+              </div>
+            ` : ''}
+
             <div style="font-family: var(--font-display), sans-serif; font-size:10px;color:#059669;font-weight:700;text-transform:uppercase;">${obs.class}</div>
             <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;">
               <div style="text-align:center;background:#f0fdf4;padding:6px;border-radius:8px;">

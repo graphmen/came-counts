@@ -59,6 +59,22 @@ function routeParamToParkId(routeParam: string): string {
   return MAP[routeParam] || routeParam;
 }
 
+function resolvePhotoUrl(url: string | null, payload?: any) {
+  if (!url && payload?.photo_uri) {
+    // If it's a file URI from the mobile app, it won't work on web
+    if (payload.photo_uri.startsWith('file://')) return null;
+    url = payload.photo_uri;
+  }
+  
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  
+  // If it's a relative path (e.g. obs_123.jpg), prepend the Supabase public storage URL
+  // The bucket name found in wez-mobile is 'photos'
+  const supabaseUrl = 'https://pqfbcvxisrmtmhmuxbjk.supabase.co';
+  return `${supabaseUrl}/storage/v1/object/public/photos/${url}`;
+}
+
 function normalizeObservation(o: any) {
   const p = o.payload || {};
   const adultSum = (Number(p.adult_m)||0) + (Number(p.adult_f)||0) + (Number(p.adult_u)||0);
@@ -91,7 +107,7 @@ function normalizeObservation(o: any) {
     accuracy:   o.accuracy || p.accuracy || '5',
     habitat:    p.habitat  || 'N/A',
     activity:   p.activity || 'N/A',
-    photo_url:  o.photo_url || p.photo_uri || null,
+    photo_url:  resolvePhotoUrl(o.photo_url, p),
     park_name:  o.park_name || p.park_name || o.park_id || '',
     male_count:    o.male_count    || 0,
     female_count:  o.female_count  || 0,
