@@ -48,7 +48,8 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
     boundary: true,
     transects: true,
     campsites: true,
-    observations: true
+    observations: true,
+    heatmap: false
   });
 
   const geoObservations = useMemo(() =>
@@ -94,6 +95,45 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
     m.setLayoutProperty('boundary-outline', 'visibility', visibleLayers.boundary ? 'visible' : 'none');
     m.setLayoutProperty('transects-line', 'visibility', visibleLayers.transects ? 'visible' : 'none');
     m.setLayoutProperty('campsites-circle', 'visibility', visibleLayers.campsites ? 'visible' : 'none');
+
+    // 4. Heatmap (Observations)
+    if (!m.getSource('observations-heat')) {
+      m.addSource('observations-heat', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: geoObservations.map(o => ({
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [parseFloat(o.lng), parseFloat(o.lat)] },
+            properties: { weight: o.count || 1 }
+          }))
+        }
+      });
+
+      m.addLayer({
+        id: 'observations-heatmap',
+        type: 'heatmap',
+        source: 'observations-heat',
+        maxzoom: 15,
+        paint: {
+          'heatmap-weight': ['interpolate', ['linear'], ['get', 'weight'], 0, 0, 10, 1],
+          'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 15, 3],
+          'heatmap-color': [
+            'interpolate', ['linear'], ['heatmap-density'],
+            0, 'rgba(33,102,172,0)',
+            0.2, 'rgb(103,169,207)',
+            0.4, 'rgb(209,229,240)',
+            0.6, 'rgb(253,219,199)',
+            0.8, 'rgb(239,138,98)',
+            1, 'rgb(178,24,43)'
+          ],
+          'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 15, 20],
+          'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 14, 1, 15, 0]
+        }
+      });
+    }
+
+    m.setLayoutProperty('observations-heatmap', 'visibility', visibleLayers.heatmap ? 'visible' : 'none');
   };
 
   // Init map once
@@ -143,6 +183,9 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
       }
       if (m.getLayer('campsites-circle')) {
         m.setLayoutProperty('campsites-circle', 'visibility', visibleLayers.campsites ? 'visible' : 'none');
+      }
+      if (m.getLayer('observations-heatmap')) {
+        m.setLayoutProperty('observations-heatmap', 'visibility', visibleLayers.heatmap ? 'visible' : 'none');
       }
       
       // Handle markers separately
@@ -283,7 +326,8 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
             { id: 'boundary', label: 'Park Boundary', color: 'bg-emerald-500' },
             { id: 'transects', label: 'Transect Lines', color: 'bg-indigo-500' },
             { id: 'campsites', label: 'Campsite Points', color: 'bg-red-500' },
-            { id: 'observations', label: 'Field Observations', color: 'bg-amber-500' }
+            { id: 'observations', label: 'Field Markers', color: 'bg-amber-500' },
+            { id: 'heatmap', label: 'Density Heatmap', color: 'bg-rose-600' }
           ].map((layer) => (
             <button
               key={layer.id}

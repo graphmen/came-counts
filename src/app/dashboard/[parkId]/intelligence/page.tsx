@@ -27,7 +27,8 @@ import KPICard from '@/components/KPICard';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import DataLedger from '@/components/intel/DataLedger';
 import ExportEngine from '@/components/intel/ExportEngine';
-import IntelligenceAnalytics from '@/components/intel/IntelligenceAnalytics';
+import IntelligenceRecon from '@/components/intel/IntelligenceRecon';
+import LiveTicker from '@/components/intel/LiveTicker';
 import nextDynamic from 'next/dynamic';
 
 const SurveyMap = nextDynamic(() => import('@/components/intel/SurveyMap'), { 
@@ -285,11 +286,11 @@ export default function IntelligenceHubPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-sm shadow-inner">
+            <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-sm shadow-inner">
             {[
               { id: 'table', label: 'Data Ledger', icon: TableIcon },
               { id: 'gallery', label: 'Evidence Gallery', icon: ImageIcon },
-              { id: 'analytics', label: 'Analytics', icon: Activity },
+              { id: 'analytics', label: 'Tactical Recon', icon: Activity },
               { id: 'map',   label: 'Geospatial',  icon: MapIcon },
               { id: 'export', label: 'Export Hub', icon: Download },
             ].map((btn) => (
@@ -303,6 +304,11 @@ export default function IntelligenceHubPage() {
               </button>
             ))}
           </div>
+        </div>
+        
+        {/* Ticker integration in header area or just below */}
+        <div className="mt-6 -mx-6 -mb-6">
+           <LiveTicker observations={observations} />
         </div>
       </header>
 
@@ -490,7 +496,7 @@ export default function IntelligenceHubPage() {
               )}
             </div>
           )}
-          {mode === 'analytics' && <IntelligenceAnalytics observations={filteredObservations} />}
+          {mode === 'analytics' && <IntelligenceRecon observations={filteredObservations} />}
           {mode === 'map'    && <SurveyMap  observations={filteredObservations} />}
           {mode === 'export' && <ExportEngine observations={filteredObservations} parkName={parkName} />}
         </motion.div>
