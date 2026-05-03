@@ -148,7 +148,7 @@ export default function NationalDashboard() {
           {parks.map((park) => {
             const parkSightings = allSightings.filter(s => s.park_id === park.id).reduce((acc, curr) => acc + curr.total_count, 0);
             return (
-              <Link key={park.id} href={`/dashboard/${park.id.toLowerCase().replace(/\s+/g, '-')}`}>
+              <Link key={park.id} href={`/dashboard/${park.name.toLowerCase().replace(/\s+/g, '-')}`}>
                 <motion.div 
                   whileHover={{ y: -2 }}
                   className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-emerald-500/20 transition-all group"

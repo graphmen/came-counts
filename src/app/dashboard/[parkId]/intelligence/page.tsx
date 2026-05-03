@@ -20,7 +20,8 @@ import {
   Bird,
   Zap,
   Image as ImageIcon,
-  X
+  X,
+  Camera
 } from 'lucide-react';
 import KPICard from '@/components/KPICard';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
@@ -61,18 +62,27 @@ function routeParamToParkId(routeParam: string): string {
 
 function resolvePhotoUrl(url: string | null, payload?: any) {
   if (!url && payload?.photo_uri) {
-    // If it's a file URI from the mobile app, it won't work on web
+    // Handle legacy mobile app property
     if (payload.photo_uri.startsWith('file://')) return null;
     url = payload.photo_uri;
   }
   
   if (!url) return null;
+  
+  // If it's already a full URL, return it
   if (url.startsWith('http')) return url;
   
   // If it's a relative path (e.g. obs_123.jpg), prepend the Supabase public storage URL
-  // The bucket name found in wez-mobile is 'photos'
+  // Project ID: pqfbcvxisrmtmhmuxbjk
   const supabaseUrl = 'https://pqfbcvxisrmtmhmuxbjk.supabase.co';
-  return `${supabaseUrl}/storage/v1/object/public/photos/${url}`;
+  
+  // Clean up the URL - remove leading slashes or 'photos/' if it's already there
+  let cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+  if (cleanUrl.startsWith('photos/')) {
+    cleanUrl = cleanUrl.replace('photos/', '');
+  }
+  
+  return `${supabaseUrl}/storage/v1/object/public/photos/${cleanUrl}`;
 }
 
 function normalizeObservation(o: any) {
@@ -150,6 +160,11 @@ export default function IntelligenceHubPage() {
           .eq('park_id', mobileParkId)
           .order('created_at', { ascending: false });
 
+        console.log(`[Intel] Fetched ${fieldObs?.length || 0} observations for ${mobileParkId}`);
+        if (fieldObs && fieldObs.length > 0) {
+          console.log('[Intel] Sample observation:', fieldObs[0]);
+        }
+        
         if (error) throw error;
 
         const normalized = (fieldObs || []).map(normalizeObservation);

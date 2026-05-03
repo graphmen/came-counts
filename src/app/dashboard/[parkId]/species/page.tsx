@@ -101,7 +101,7 @@ export default function SpeciesAnalysisPage({ params }: { params: Promise<{ park
               </h1>
               <div className="h-8 w-px bg-slate-200 hidden sm:block" />
               <div className="bg-slate-50 p-1 rounded-xl border border-slate-100 hidden sm:block">
-                <YearSelector parkId={routeParkId} selectedYear={selectedYear} onYearChange={(y) => {
+                <YearSelector parkId={parkId} selectedYear={selectedYear} onYearChange={(y) => {
                   const params = new URLSearchParams(searchParams);
                   params.set('year', y.toString());
                   router.push(`/dashboard/${routeParkId}/species?${params.toString()}`);
