@@ -435,7 +435,14 @@ export default function IntelligenceHubPage() {
                     onClick={() => setLightboxUrl(obs.photo_url!)}
                     className="group relative bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 hover:shadow-xl transition-all aspect-square text-left"
                   >
-                    <img src={obs.photo_url} alt={obs.species} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                    <img 
+                      src={obs.photo_url} 
+                      alt={obs.species} 
+                      className="w-full h-full object-cover transition-transform group-hover:scale-110" 
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Error';
+                      }}
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
                       <p className="text-[10px] font-black text-white uppercase truncate">{obs.species}</p>
                       <p className="text-[8px] font-bold text-emerald-400 uppercase tracking-widest">{obs.observer}</p>

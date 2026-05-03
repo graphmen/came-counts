@@ -104,7 +104,14 @@ export default function DataLedger({ observations, onViewPhoto }: { observations
                         className="shrink-0 w-14 h-14 rounded-xl overflow-hidden border-2 border-emerald-200 hover:border-emerald-500 transition-all hover:scale-105 shadow-sm"
                         title="View field photo"
                       >
-                        <img src={obs.photo_url} alt={obs.species} className="w-full h-full object-cover" />
+                        <img 
+                          src={obs.photo_url} 
+                          alt={obs.species} 
+                          className="w-full h-full object-cover" 
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Error';
+                          }}
+                        />
                       </button>
                     ) : (
                       <div className="shrink-0 w-14 h-14 rounded-xl bg-slate-50 border border-dashed border-slate-200 flex flex-col items-center justify-center gap-1">
