@@ -16,7 +16,9 @@ import {
   Wifi,
   Users,
   Bird,
-  Zap
+  Zap,
+  Image as ImageIcon,
+  X
 } from 'lucide-react';
 import KPICard from '@/components/KPICard';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
@@ -101,11 +103,20 @@ export default function IntelligenceHubPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  const [mode, setMode] = useState<'map' | 'table' | 'export' | 'analytics'>('table');
+  const [mode, setMode] = useState<'map' | 'table' | 'export' | 'analytics' | 'gallery'>('table');
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [parkName, setParkName] = useState('');
   const [observations, setObservations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState({
+    species: 'All',
+    observer: 'All',
+    type: 'All',
+    class: 'All',
+    habitat: 'All',
+    activity: 'All'
+  });
   const [liveCount, setLiveCount] = useState(0);
 
   const mobileParkId = routeParamToParkId(routeParkId as string);
@@ -165,13 +176,32 @@ export default function IntelligenceHubPage() {
   // ────────────────────────────────────────────────────────────────
 
   const filteredObservations = useMemo(() => {
-    return observations.filter(o => 
-      o.species?.toLowerCase().includes(search.toLowerCase()) ||
-      o.location?.toLowerCase().includes(search.toLowerCase()) ||
-      o.type?.toLowerCase().includes(search.toLowerCase()) ||
-      o.observer?.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [observations, search]);
+    return observations.filter(o => {
+      const matchesSearch = !search || 
+        o.species?.toLowerCase().includes(search.toLowerCase()) ||
+        o.location?.toLowerCase().includes(search.toLowerCase()) ||
+        o.observer?.toLowerCase().includes(search.toLowerCase());
+      
+      const matchesSpecies = filters.species === 'All' || o.species === filters.species;
+      const matchesObserver = filters.observer === 'All' || o.observer === filters.observer;
+      const matchesType = filters.type === 'All' || o.type === filters.type;
+      const matchesClass = filters.class === 'All' || o.class === filters.class;
+      const matchesHabitat = filters.habitat === 'All' || o.habitat === filters.habitat;
+      const matchesActivity = filters.activity === 'All' || o.activity === filters.activity;
+
+      return matchesSearch && matchesSpecies && matchesObserver && matchesType && matchesClass && matchesHabitat && matchesActivity;
+    });
+  }, [observations, search, filters]);
+
+  // ── Unique Filter Options ──────────────────────────────────────
+  const filterOptions = useMemo(() => ({
+    species: ['All', ...Array.from(new Set(observations.map(o => o.species))).filter(Boolean).sort()],
+    observers: ['All', ...Array.from(new Set(observations.map(o => o.observer))).filter(Boolean).sort()],
+    types: ['All', ...Array.from(new Set(observations.map(o => o.type))).filter(Boolean).sort()],
+    classes: ['All', ...Array.from(new Set(observations.map(o => o.class))).filter(Boolean).sort()],
+    habitats: ['All', ...Array.from(new Set(observations.map(o => o.habitat))).filter(Boolean).sort()],
+    activities: ['All', ...Array.from(new Set(observations.map(o => o.activity))).filter(Boolean).sort()]
+  }), [observations]);
 
   // ── Computed stats ─────────────────────────────────────────────
   const totalAnimals = useMemo(() => observations.reduce((s, o) => s + (o.count || 0), 0), [observations]);
@@ -221,6 +251,7 @@ export default function IntelligenceHubPage() {
           <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-sm shadow-inner">
             {[
               { id: 'table', label: 'Data Ledger', icon: TableIcon },
+              { id: 'gallery', label: 'Evidence Gallery', icon: ImageIcon },
               { id: 'analytics', label: 'Analytics', icon: Activity },
               { id: 'map',   label: 'Geospatial',  icon: MapIcon },
               { id: 'export', label: 'Export Hub', icon: Download },
@@ -285,17 +316,97 @@ export default function IntelligenceHubPage() {
         </div>
       </div>
 
-      {/* ── Search ───────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-slate-100 p-3">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-          <input
-            type="text"
-            placeholder="Search species, location, observer..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
-          />
+      {/* ── Filters ───────────────────────────────────────── */}
+      <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm space-y-4">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+            <input
+              type="text"
+              placeholder="Search sightings, locations, or notes..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
+            />
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="space-y-1">
+              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Species</label>
+              <select 
+                value={filters.species}
+                onChange={(e) => setFilters(prev => ({ ...prev, species: e.target.value }))}
+                className="block w-32 px-3 py-2 text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                {filterOptions.species.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Observer</label>
+              <select 
+                value={filters.observer}
+                onChange={(e) => setFilters(prev => ({ ...prev, observer: e.target.value }))}
+                className="block w-32 px-3 py-2 text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                {filterOptions.observers.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Survey Type</label>
+              <select 
+                value={filters.type}
+                onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
+                className="block w-32 px-3 py-2 text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                {filterOptions.types.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Classification</label>
+              <select 
+                value={filters.class}
+                onChange={(e) => setFilters(prev => ({ ...prev, class: e.target.value }))}
+                className="block w-32 px-3 py-2 text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                {filterOptions.classes.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Habitat</label>
+              <select 
+                value={filters.habitat}
+                onChange={(e) => setFilters(prev => ({ ...prev, habitat: e.target.value }))}
+                className="block w-32 px-3 py-2 text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                {filterOptions.habitats.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Activity</label>
+              <select 
+                value={filters.activity}
+                onChange={(e) => setFilters(prev => ({ ...prev, activity: e.target.value }))}
+                className="block w-32 px-3 py-2 text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                {filterOptions.activities.map(a => <option key={a} value={a}>{a}</option>)}
+              </select>
+            </div>
+
+            <button 
+              onClick={() => {
+                setSearch('');
+                setFilters({ species: 'All', observer: 'All', type: 'All', class: 'All', habitat: 'All', activity: 'All' });
+              }}
+              className="mt-4 px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-rose-500 transition-colors"
+            >
+              Reset
+            </button>
+          </div>
         </div>
       </div>
 
@@ -309,12 +420,59 @@ export default function IntelligenceHubPage() {
           transition={{ duration: 0.3 }}
           className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm min-h-[500px]"
         >
-          {mode === 'table'  && <DataLedger observations={filteredObservations} />}
+          {mode === 'table'  && <DataLedger observations={filteredObservations} onViewPhoto={setLightboxUrl} />}
+          {mode === 'gallery' && (
+            <div className="p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {filteredObservations.filter(o => o.photo_url).length === 0 ? (
+                <div className="col-span-full py-20 text-center">
+                  <Camera size={40} className="mx-auto text-slate-200 mb-4" />
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">No Field Evidence Photos Found</p>
+                </div>
+              ) : (
+                filteredObservations.filter(o => o.photo_url).map(obs => (
+                  <button 
+                    key={obs.id} 
+                    onClick={() => setLightboxUrl(obs.photo_url!)}
+                    className="group relative bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 hover:shadow-xl transition-all aspect-square text-left"
+                  >
+                    <img src={obs.photo_url} alt={obs.species} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
+                      <p className="text-[10px] font-black text-white uppercase truncate">{obs.species}</p>
+                      <p className="text-[8px] font-bold text-emerald-400 uppercase tracking-widest">{obs.observer}</p>
+                      <p className="text-[7px] text-slate-300 mt-1">{obs.date}</p>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
           {mode === 'analytics' && <IntelligenceAnalytics observations={filteredObservations} />}
           {mode === 'map'    && <SurveyMap  observations={filteredObservations} />}
           {mode === 'export' && <ExportEngine observations={filteredObservations} parkName={parkName} />}
         </motion.div>
       </AnimatePresence>
+
+      {/* ── Photo Lightbox ───────────────────────────────────── */}
+      {lightboxUrl && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-8"
+          onClick={() => setLightboxUrl(null)}
+        >
+          <div className="relative max-w-5xl w-full flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setLightboxUrl(null)}
+              className="absolute -top-12 right-0 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
+            >
+              <X size={24} className="text-white" />
+            </button>
+            <img src={lightboxUrl} alt="Field Evidence" className="max-w-full max-h-[80vh] rounded-3xl shadow-2xl border border-white/10 object-contain" />
+            <div className="mt-6 text-center space-y-1">
+              <p className="text-white font-black text-xs uppercase tracking-[0.3em]">Field Intelligence Evidence</p>
+              <p className="text-emerald-500 font-bold text-[10px] uppercase tracking-widest">Authenticated WEZ Mobile Node Sighting</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <footer className="pt-4 pb-2 border-t border-slate-100 text-center">
         <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.4em]">

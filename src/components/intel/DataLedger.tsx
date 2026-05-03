@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { User, MapPin, Zap, Leaf, Camera, X } from 'lucide-react';
+import { User, MapPin, Zap, Leaf, Camera, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Observation {
   id: string;
@@ -37,29 +37,23 @@ interface Observation {
   };
 }
 
-export default function DataLedger({ observations }: { observations: Observation[] }) {
-  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+export default function DataLedger({ observations, onViewPhoto }: { observations: Observation[], onViewPhoto: (url: string) => void }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+
+  const totalPages = Math.ceil(observations.length / itemsPerPage);
+  const paginatedData = observations.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset to page 1 when data changes (e.g. after filtering)
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [observations.length]);
 
   return (
     <div className="overflow-x-auto">
-      {/* Photo Lightbox */}
-      {lightboxUrl && (
-        <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={() => setLightboxUrl(null)}
-        >
-          <div className="relative max-w-3xl w-full" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => setLightboxUrl(null)}
-              className="absolute -top-3 -right-3 z-10 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg"
-            >
-              <X size={16} className="text-slate-700" />
-            </button>
-            <img src={lightboxUrl} alt="Field Evidence" className="w-full rounded-2xl shadow-2xl" />
-            <p className="text-center text-white/50 text-[9px] font-black uppercase tracking-widest mt-3">Field Evidence — WEZ Mobile Node</p>
-          </div>
-        </div>
-      )}
       <table className="w-full border-collapse text-left">
         <thead>
           <tr className="bg-slate-50 border-b border-slate-100">
@@ -72,14 +66,14 @@ export default function DataLedger({ observations }: { observations: Observation
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-50">
-          {observations.length === 0 ? (
+          {paginatedData.length === 0 ? (
             <tr>
               <td colSpan={6} className="px-4 py-20 text-center">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">No Intelligence Records Found in Active Buffer</p>
               </td>
             </tr>
           ) : (
-            observations.map((obs) => (
+            paginatedData.map((obs) => (
               <tr key={obs.id} className="hover:bg-slate-50/50 transition-colors group border-b border-slate-50">
                 <td className="px-4 py-4 align-top">
                   <div className="space-y-1">
@@ -106,7 +100,7 @@ export default function DataLedger({ observations }: { observations: Observation
                     {/* Photo Evidence Thumbnail */}
                     {obs.photo_url ? (
                       <button
-                        onClick={() => setLightboxUrl(obs.photo_url!)}
+                        onClick={() => onViewPhoto(obs.photo_url!)}
                         className="shrink-0 w-14 h-14 rounded-xl overflow-hidden border-2 border-emerald-200 hover:border-emerald-500 transition-all hover:scale-105 shadow-sm"
                         title="View field photo"
                       >
@@ -204,6 +198,62 @@ export default function DataLedger({ observations }: { observations: Observation
           )}
         </tbody>
       </table>
+
+      {/* ── Pagination Controls ────────────────────────────────── */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-6 py-4 bg-slate-50/50 border-t border-slate-100">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-display">
+            Showing <span className="text-slate-900">{((currentPage - 1) * itemsPerPage) + 1}</span> to <span className="text-slate-900">{Math.min(currentPage * itemsPerPage, observations.length)}</span> of <span className="text-slate-900">{observations.length}</span> nodes
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <div className="flex items-center gap-1">
+              {[...Array(totalPages)].map((_, i) => {
+                const page = i + 1;
+                // Only show a limited number of page buttons
+                if (
+                  page === 1 || 
+                  page === totalPages || 
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`w-8 h-8 rounded-lg text-[10px] font-black transition-all ${
+                        currentPage === page 
+                          ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20' 
+                          : 'bg-white border border-slate-200 text-slate-400 hover:border-emerald-500 hover:text-emerald-600'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                } else if (
+                  page === currentPage - 2 || 
+                  page === currentPage + 2
+                ) {
+                  return <span key={page} className="text-slate-300">...</span>;
+                }
+                return null;
+              })}
+            </div>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { usePathname, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Park } from '@/types';
-import { 
-    LayoutDashboard, 
-    BarChart3, 
-    TrendingUp, 
-    Droplets, 
-    FileText, 
-    Globe, 
+import {
+    LayoutDashboard,
+    BarChart3,
+    TrendingUp,
+    Droplets,
+    FileText,
+    Globe,
     PlusCircle,
     Navigation,
     MapPin,
@@ -22,7 +22,7 @@ export default function Sidebar() {
     const pathname = usePathname();
     const params = useParams();
     const parkId = params?.parkId as string;
-    
+
     const [parks, setParks] = useState<Park[]>([]);
     const [currentPark, setCurrentPark] = useState<Park | null>(null);
 
@@ -32,8 +32,8 @@ export default function Sidebar() {
             if (data) {
                 setParks(data);
                 if (parkId) {
-                    const active = data.find(p => 
-                        p.id === parkId || 
+                    const active = data.find(p =>
+                        p.id === parkId ||
                         p.name.toLowerCase().replace(/\s+/g, '-') === parkId.toLowerCase()
                     );
                     setCurrentPark(active || null);
@@ -58,10 +58,10 @@ export default function Sidebar() {
     ] : [];
 
     const dataNav = [
-        { 
-            label: 'New Survey', 
-            href: parkId ? `/dashboard/${parkId}/surveys/new` : '/dashboard/mana-pools-national-park/surveys/new', 
-            icon: <PlusCircle size={18} /> 
+        {
+            label: 'New Survey',
+            href: parkId ? `/dashboard/${parkId}/surveys/new` : '/dashboard/mana-pools-national-park/surveys/new',
+            icon: <PlusCircle size={18} />
         },
     ];
 
@@ -70,11 +70,11 @@ export default function Sidebar() {
             {/* Logo */}
             <div style={{ padding: '32px 24px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <div style={{ 
+                    <div style={{
                         width: 48,
                         height: 48,
-                        background: '#fff', 
-                        padding: '4px', 
+                        background: '#fff',
+                        padding: '4px',
                         borderRadius: '14px',
                         boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
                         display: 'flex',
@@ -82,14 +82,14 @@ export default function Sidebar() {
                         justifyContent: 'center',
                         overflow: 'hidden'
                     }}>
-                        <img 
-                            src="/wez-logo.jpg" 
-                            alt="WEZ Logo" 
-                            style={{ 
-                                width: '100%', 
-                                height: '100%', 
+                        <img
+                            src="/wez-logo.jpg"
+                            alt="WEZ Logo"
+                            style={{
+                                width: '100%',
+                                height: '100%',
                                 objectFit: 'contain'
-                            }} 
+                            }}
                         />
                     </div>
                     <div>
