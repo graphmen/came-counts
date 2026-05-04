@@ -89,9 +89,9 @@ const SPECIES_PORTRAITS: Record<string, string> = {
 
 const getSpeciesPortrait = (speciesName: string | null) => {
   if (!speciesName) return null;
-  const normalized = speciesName.toLowerCase().trim();
+  const normalized = speciesName.toLowerCase().trim().replace(/-/g, ' ');
   for (const [key, value] of Object.entries(SPECIES_PORTRAITS)) {
-    if (normalized.includes(key)) return value;
+    if (normalized.includes(key.toLowerCase().replace(/-/g, ' '))) return value;
   }
   return null;
 };
