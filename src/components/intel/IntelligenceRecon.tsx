@@ -64,6 +64,7 @@ const SPECIES_PORTRAITS: Record<string, string> = {
   'african skimmer': '/images/species/skimmer.png',
   'monitor': '/images/species/monitor.png',
   'nile monitor': '/images/species/monitor.png',
+  'rock monitor': '/images/species/monitor.png',
   'bateleur': '/images/species/bateleur.png',
   'mamba': '/images/species/mamba.png',
   'black mamba': '/images/species/mamba.png',
@@ -195,25 +196,37 @@ export default function IntelligenceRecon({ observations }: { observations: Obse
               </ResponsiveContainer>
             </div>
             
-            <div className="space-y-4">
-              {speciesData.map((s, i) => (
-                <button 
-                  key={s.name}
-                  onClick={() => setSelectedSpecies(s.name)}
-                  className={`w-full group/row flex items-center justify-between p-3 rounded-2xl border transition-all ${selectedSpecies === s.name ? 'bg-indigo-500/20 border-indigo-500/50 shadow-lg shadow-indigo-500/10' : 'bg-white/5 border-white/5 hover:border-white/20'}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-black">
-                      {i + 1}
+            <div className="space-y-3">
+              {speciesData.map((s, i) => {
+                const portrait = getSpeciesPortrait(s.name);
+                return (
+                  <button 
+                    key={s.name}
+                    onClick={() => setSelectedSpecies(s.name)}
+                    className={`w-full group/row flex items-center justify-between p-2 rounded-2xl border transition-all ${selectedSpecies === s.name ? 'bg-indigo-500/20 border-indigo-500/50 shadow-lg shadow-indigo-500/10' : 'bg-white/5 border-white/5 hover:border-white/20'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-800 border border-white/10 shrink-0">
+                        {portrait ? (
+                          <img src={portrait} className="w-full h-full object-cover group-hover/row:scale-110 transition-transform" alt={s.name} />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-indigo-400/30">
+                            <Target size={16} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <span className="block text-[10px] font-black uppercase tracking-wider leading-none mb-1">{s.name}</span>
+                        <span className="block text-[8px] font-bold text-slate-500 uppercase tracking-widest">Biological Signal</span>
+                      </div>
                     </div>
-                    <span className="text-xs font-black uppercase tracking-wider">{s.name}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-mono font-black text-slate-400">{s.value}</span>
-                    <ChevronRight size={14} className={`transition-transform ${selectedSpecies === s.name ? 'rotate-90 text-indigo-400' : 'text-slate-600 group-hover/row:translate-x-1'}`} />
-                  </div>
-                </button>
-              ))}
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-mono font-black text-slate-400">{s.value}</span>
+                      <ChevronRight size={14} className={`transition-transform ${selectedSpecies === s.name ? 'rotate-90 text-indigo-400' : 'text-slate-600 group-hover/row:translate-x-1'}`} />
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -440,24 +453,38 @@ export default function IntelligenceRecon({ observations }: { observations: Obse
             animate={{ opacity: 1 }}
             className="grid grid-cols-2 md:grid-cols-4 gap-4"
           >
-            {speciesData.slice(0, 4).map(s => (
-               <button 
-                key={s.name}
-                onClick={() => setSelectedSpecies(s.name)}
-                className="bg-white/5 p-6 rounded-3xl border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/10 transition-all text-left group relative overflow-hidden"
-               >
-                 <div className="absolute top-0 right-0 w-16 h-16 bg-white/5 rounded-full -mr-8 -mt-8 group-hover:scale-150 transition-transform" />
-                 <Target size={14} className="text-indigo-400 mb-4 group-hover:rotate-45 transition-transform" />
-                 <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Operational Species</h3>
-                 <div className="text-xl font-display font-black mt-1">{s.name}</div>
-                 <div className="flex items-center gap-2 mt-4">
-                    <div className="h-1 flex-1 bg-white/5 rounded-full overflow-hidden">
-                       <div className="h-full bg-indigo-500" style={{ width: '70%' }} />
+            {speciesData.slice(0, 4).map(s => {
+               const portrait = getSpeciesPortrait(s.name);
+               return (
+                 <button 
+                  key={s.name}
+                  onClick={() => setSelectedSpecies(s.name)}
+                  className="bg-white/5 p-4 rounded-3xl border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/10 transition-all text-left group relative overflow-hidden h-40 flex flex-col justify-end"
+                 >
+                   <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity">
+                      {portrait ? (
+                        <img src={portrait} className="w-full h-full object-cover transition-transform group-hover:scale-110" alt="" />
+                      ) : (
+                        <div className="w-full h-full bg-indigo-500/5 flex items-center justify-center">
+                           <Target size={48} className="text-indigo-400/20" />
+                        </div>
+                      )}
+                   </div>
+                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                   
+                   <div className="relative z-10">
+                    <h3 className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Operational Species</h3>
+                    <div className="text-lg font-display font-black mt-1 uppercase">{s.name}</div>
+                    <div className="flex items-center gap-2 mt-2">
+                        <div className="h-1 flex-1 bg-white/5 rounded-full overflow-hidden">
+                           <div className="h-full bg-indigo-500" style={{ width: `${Math.min(100, (s.value / speciesData[0].value) * 100)}%` }} />
+                        </div>
+                        <span className="text-[10px] font-mono font-black text-indigo-400">{s.value}</span>
                     </div>
-                    <span className="text-[10px] font-mono font-black text-indigo-400">{s.value}</span>
-                 </div>
-               </button>
-            ))}
+                   </div>
+                 </button>
+               );
+            })}
             
             <div className="col-span-2 md:col-span-4 bg-indigo-600 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
