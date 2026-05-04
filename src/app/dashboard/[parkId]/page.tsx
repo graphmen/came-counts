@@ -6,7 +6,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { gc, supabase } from '@/lib/supabase';
 import { Park, Survey, SpeciesSummaryRow } from '@/types';
-import { 
+import {
   ChevronRight,
   TrendingUp,
   Map as MapIcon,
@@ -38,7 +38,7 @@ export default function ParkDashboard({ params }: { params: Promise<{ parkId: st
           .select('*')
           .filter(isUUID ? 'id' : 'name', isUUID ? 'eq' : 'ilike', isUUID ? parkId : `%${parkId.replace(/-/g, ' ')}%`)
           .single();
-        
+
         setPark(pData);
 
         if (pData) {
@@ -84,16 +84,16 @@ export default function ParkDashboard({ params }: { params: Promise<{ parkId: st
   );
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-4"
     >
-      
+
       {/* ── Page Header ────────────────────────────────────────── */}
       <header className="relative p-4 md:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden group">
-        
+
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -102,7 +102,7 @@ export default function ParkDashboard({ params }: { params: Promise<{ parkId: st
                 <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Live Surveillance Mode</span>
               </div>
             </div>
-            
+
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <h1 className="text-2xl md:text-3xl font-display font-bold text-slate-900 tracking-tight">
                 {park.name}
@@ -135,23 +135,23 @@ export default function ParkDashboard({ params }: { params: Promise<{ parkId: st
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3">
-              <button 
-                onClick={() => router.push(`/dashboard/${parkId}/intelligence`)}
-                className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20"
-              >
-                <Radar size={16} className="animate-pulse" />
-                <span>Operational Intel</span>
-              </button>
-              <button className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition-colors shadow-sm">
-                <span>Export Reports</span> 
-                <FileText size={16} className="text-emerald-400" />
-              </button>
-              <button 
-                onClick={() => router.push(`/dashboard/${parkId}/surveys/new`)}
-                className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 border border-slate-300 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-slate-50 transition-colors shadow-sm"
-              >
-                <span>Transmit Data</span> <ChevronRight size={16} className="text-slate-500" />
-              </button>
+            <button
+              onClick={() => router.push(`/dashboard/${parkId}/intelligence`)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20"
+            >
+              <Radar size={16} className="animate-pulse" />
+              <span>Operational Intel</span>
+            </button>
+            <button className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition-colors shadow-sm">
+              <span>Export Reports</span>
+              <FileText size={16} className="text-emerald-400" />
+            </button>
+            <button
+              onClick={() => router.push(`/dashboard/${parkId}/surveys/new`)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 border border-slate-300 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-slate-50 transition-colors shadow-sm"
+            >
+              <span>Transmit Data</span> <ChevronRight size={16} className="text-slate-500" />
+            </button>
           </div>
         </div>
       </header>
@@ -177,10 +177,10 @@ export default function ParkDashboard({ params }: { params: Promise<{ parkId: st
       <footer className="pt-8 pb-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-6 text-slate-500">
         <p className="text-xs font-bold uppercase tracking-wider">© 2026 Wildlife & Environment Zimbabwe · Command Platform v15.0.4</p>
         <div className="flex gap-6">
-            <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Security Link: Active</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Security Link: Active</span>
+          </div>
         </div>
       </footer>
     </motion.div>

@@ -15,7 +15,8 @@ import {
   Eye, 
   ChevronRight,
   Info,
-  TrendingUp
+  TrendingUp,
+  Search
 } from 'lucide-react';
 
 interface Observation {
@@ -129,6 +130,7 @@ const SpecimenImage = ({ speciesName, fieldPhotoUrl }: { speciesName: string, fi
 
 export default function IntelligenceRecon({ observations }: { observations: Observation[] }) {
   const [selectedSpecies, setSelectedSpecies] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const speciesData = useMemo(() => {
     const map: Record<string, number> = {};
@@ -139,6 +141,12 @@ export default function IntelligenceRecon({ observations }: { observations: Obse
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
   }, [observations]);
+
+  const filteredSpecies = useMemo(() => {
+    return speciesData.filter(s => 
+      s.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [speciesData, searchTerm]);
 
   const temporalData = useMemo(() => {
     const slots = ['Sat Morning', 'Sat Afternoon', 'Sun Morning', 'Sun Afternoon'];
@@ -238,20 +246,32 @@ export default function IntelligenceRecon({ observations }: { observations: Obse
       {/* ── Top Dashboard Row ────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         {/* ── Left Sidebar: Species Density Matrix ───────────── */}
-        <div className="lg:col-span-3 flex flex-col h-full">
+        <div className="lg:col-span-3 flex flex-col h-[600px]">
            <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full">
-              <div className="p-5 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
-                 <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Species Density Matrix</span>
-                 <TrendingUp size={14} className="text-indigo-600" />
+              <div className="p-5 bg-slate-50/50 border-b border-slate-100 space-y-4">
+                 <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Species Density Matrix</span>
+                    <TrendingUp size={14} className="text-indigo-600" />
+                 </div>
+                 <div className="relative group/search">
+                    <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/search:text-indigo-500 transition-colors" />
+                    <input 
+                      type="text" 
+                      placeholder="SEARCH INTEL..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full bg-slate-100/50 border border-transparent focus:border-indigo-500/20 focus:bg-white rounded-xl py-2 pl-9 pr-4 text-[10px] font-black tracking-widest placeholder:text-slate-400 outline-none transition-all"
+                    />
+                 </div>
               </div>
               <div className="flex-1 overflow-y-auto custom-scrollbar">
-                 {speciesData.map(s => (
+                 {filteredSpecies.map(s => (
                   <button 
                     key={s.name}
                     onClick={() => setSelectedSpecies(s.name)}
-                    className={`w-full p-4 flex items-center gap-4 transition-all border-b border-slate-50 group hover:bg-slate-50 ${selectedSpecies === s.name ? 'bg-indigo-50' : ''}`}
+                    className={`w-full p-4 flex items-center gap-4 transition-all border-b border-slate-50 group hover:bg-slate-50 ${selectedSpecies === s.name ? 'bg-indigo-50/80 border-l-4 border-l-indigo-500' : 'border-l-4 border-l-transparent'}`}
                   >
-                    <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0 shadow-sm">
+                    <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0 shadow-sm transition-transform group-hover:scale-105">
                       <SpecimenImage speciesName={s.name} />
                     </div>
                     <div className="flex-1 text-left">
@@ -261,6 +281,14 @@ export default function IntelligenceRecon({ observations }: { observations: Obse
                     <ChevronRight size={14} className={`transition-transform ${selectedSpecies === s.name ? 'translate-x-1 text-indigo-400' : 'text-slate-200 opacity-0 group-hover:opacity-100'}`} />
                   </button>
                  ))}
+                 {filteredSpecies.length === 0 && (
+                   <div className="p-8 text-center">
+                      <div className="text-[10px] font-black text-slate-300 uppercase tracking-widest">No Matches Found</div>
+                   </div>
+                 )}
+              </div>
+              <div className="p-3 bg-slate-50/50 border-t border-slate-100 text-center">
+                 <div className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">Total Nodes: {speciesData.length}</div>
               </div>
            </div>
         </div>
