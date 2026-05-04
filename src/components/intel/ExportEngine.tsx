@@ -1,7 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Download, FileText, FileJson, ShieldCheck, FileSpreadsheet, CheckCircle2, Loader2 } from 'lucide-react';
+import { Download, FileText, FileJson, ShieldCheck, FileSpreadsheet, CheckCircle2, Loader2, FileType } from 'lucide-react';
+import nextDynamic from 'next/dynamic';
+
+const PDFDownloadLink = nextDynamic(
+  () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
+  { ssr: false }
+);
+
+const TacticalIntelReport = nextDynamic(
+  () => import('@/components/pdf/TacticalIntelReport').then((mod) => mod.TacticalIntelReport),
+  { ssr: false }
+);
 
 interface Observation {
   id: string; type: string; species: string; class: string; count: number;
@@ -124,7 +135,28 @@ export default function ExportEngine({ observations, parkName }: { observations:
       bg: 'hover:bg-violet-50 hover:border-violet-200',
       iconBg: 'text-violet-600',
     },
+    {
+      id: 'pdf',
+      label: 'Tactical Intel Report',
+      sub: 'Professional PDF Summary',
+      icon: FileType,
+      color: 'rose',
+      ext: '.PDF',
+      isPdf: true,
+      bg: 'hover:bg-rose-50 hover:border-rose-200',
+      iconBg: 'text-rose-600',
+    },
   ];
+
+  const speciesSummary = React.useMemo(() => {
+    const map: Record<string, number> = {};
+    observations.forEach(o => {
+      map[o.species] = (map[o.species] || 0) + o.count;
+    });
+    return Object.entries(map)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+  }, [observations]);
 
   const summary = {
     records: observations.length,
@@ -166,13 +198,9 @@ export default function ExportEngine({ observations, parkName }: { observations:
             const Icon = fmt.icon;
             const isLoading = loading === fmt.id;
             const isDone = exported === fmt.id;
-            return (
-              <button
-                key={fmt.id}
-                onClick={fmt.action}
-                disabled={observations.length === 0 || isLoading}
-                className={`flex flex-col items-center gap-4 p-6 bg-slate-50 border border-slate-200 rounded-3xl transition-all group disabled:opacity-40 ${fmt.bg}`}
-              >
+
+            const buttonContent = (
+              <>
                 <div className={`w-14 h-14 bg-white rounded-2xl flex items-center justify-center ${fmt.iconBg} shadow-sm group-hover:scale-110 transition-transform`}>
                   {isLoading ? <Loader2 size={28} className="animate-spin" /> :
                    isDone ? <CheckCircle2 size={28} className="text-emerald-600" /> :
@@ -186,6 +214,49 @@ export default function ExportEngine({ observations, parkName }: { observations:
                   {isDone ? <CheckCircle2 size={12} /> : <Download size={12} />}
                   {isDone ? 'DOWNLOADED!' : `EXPORT ${fmt.ext}`}
                 </div>
+              </>
+            );
+
+            if ('isPdf' in fmt && fmt.isPdf) {
+              return (
+                <div key={fmt.id} className="w-full">
+                  <PDFDownloadLink
+                    document={<TacticalIntelReport parkName={parkName} observations={observations} speciesSummary={speciesSummary} />}
+                    fileName={`WEZ_Intel_Report_${(parkName || 'export').replace(/\s+/g, '_')}.pdf`}
+                    style={{ width: '100%', textDecoration: 'none' }}
+                  >
+                    {({ loading: pdfLoading }) => (
+                      <button
+                        disabled={observations.length === 0 || pdfLoading}
+                        className={`w-full flex flex-col items-center gap-4 p-6 bg-slate-50 border border-slate-200 rounded-3xl transition-all group disabled:opacity-40 ${fmt.bg}`}
+                      >
+                        <div className={`w-14 h-14 bg-white rounded-2xl flex items-center justify-center ${fmt.iconBg} shadow-sm group-hover:scale-110 transition-transform`}>
+                          {pdfLoading ? <Loader2 size={28} className="animate-spin" /> :
+                           <Icon size={28} />}
+                        </div>
+                        <div className="text-center">
+                          <div className="text-sm font-black text-slate-900 uppercase tracking-widest font-display">{fmt.label}</div>
+                          <p className="text-[9px] text-slate-400 font-bold mt-1 font-sans">{fmt.sub}</p>
+                        </div>
+                        <div className="px-5 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                          {pdfLoading ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
+                          {pdfLoading ? 'COMPILING...' : `EXPORT ${fmt.ext}`}
+                        </div>
+                      </button>
+                    )}
+                  </PDFDownloadLink>
+                </div>
+              );
+            }
+
+            return (
+              <button
+                key={fmt.id}
+                onClick={fmt.action}
+                disabled={observations.length === 0 || isLoading}
+                className={`flex flex-col items-center gap-4 p-6 bg-slate-50 border border-slate-200 rounded-3xl transition-all group disabled:opacity-40 ${fmt.bg}`}
+              >
+                {buttonContent}
               </button>
             );
           })}

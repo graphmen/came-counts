@@ -16,8 +16,20 @@ import {
   ChevronRight,
   Info,
   TrendingUp,
-  Search
+  Search,
+  Download
 } from 'lucide-react';
+import nextDynamic from 'next/dynamic';
+
+const PDFDownloadLink = nextDynamic(
+  () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
+  { ssr: false }
+);
+
+const TacticalIntelReport = nextDynamic(
+  () => import('@/components/pdf/TacticalIntelReport').then((mod) => mod.TacticalIntelReport),
+  { ssr: false }
+);
 
 interface Observation {
   id: string;
@@ -128,7 +140,7 @@ const SpecimenImage = ({ speciesName, fieldPhotoUrl }: { speciesName: string, fi
   );
 };
 
-export default function IntelligenceRecon({ observations }: { observations: Observation[] }) {
+export default function IntelligenceRecon({ observations, parkName = 'MANA POOLS' }: { observations: Observation[], parkName?: string }) {
   const [selectedSpecies, setSelectedSpecies] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -548,9 +560,26 @@ export default function IntelligenceRecon({ observations }: { observations: Obse
                   <p className="text-xs text-white/70 mt-2 font-medium">Export reconnaissance data in standardized formats for tactical coordination.</p>
                 </div>
              </div>
-             <button className="relative z-10 px-10 py-4 bg-white text-indigo-600 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-slate-50 active:scale-95 transition-all">
-                Generate Intel Report
-             </button>
+              <div className="relative z-10">
+                <PDFDownloadLink
+                  document={<TacticalIntelReport parkName={parkName} observations={observations} speciesSummary={speciesData} />}
+                  fileName={`WEZ_Intel_Report_${parkName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`}
+                >
+                  {({ loading }: { loading: boolean }) => (
+                    <button 
+                      disabled={loading}
+                      className="px-10 py-4 bg-white text-indigo-600 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-slate-50 active:scale-95 transition-all flex items-center gap-2"
+                    >
+                      {loading ? (
+                        <div className="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Download size={14} />
+                      )}
+                      <span>{loading ? 'Compiling Intel...' : 'Generate Intel Report'}</span>
+                    </button>
+                  )}
+                </PDFDownloadLink>
+              </div>
           </div>
        </div>
 

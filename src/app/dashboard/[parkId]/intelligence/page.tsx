@@ -496,7 +496,7 @@ export default function IntelligenceHubPage() {
               )}
             </div>
           )}
-          {mode === 'analytics' && <IntelligenceRecon observations={filteredObservations} />}
+          {mode === 'analytics' && <IntelligenceRecon observations={filteredObservations} parkName={parkName} />}
           {mode === 'map'    && <SurveyMap  observations={filteredObservations} />}
           {mode === 'export' && <ExportEngine observations={filteredObservations} parkName={parkName} />}
         </motion.div>
