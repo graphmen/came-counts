@@ -3,7 +3,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { 
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, 
-  RadarChart, PolarGrid, PolarAngleAxis, Radar
+  RadarChart, PolarGrid, PolarAngleAxis, Radar, CartesianGrid
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -17,14 +17,17 @@ import {
   Info,
   TrendingUp,
   Search,
-  Download
+  Download,
+  Users,
+  Database,
+  MapPin
 } from 'lucide-react';
 import nextDynamic from 'next/dynamic';
 
 const PDFExportButton = nextDynamic(
   () => import('@/components/intel/PDFExportButton'),
   { ssr: false, loading: () => (
-    <button className="px-10 py-4 bg-white/50 text-slate-400 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl flex items-center gap-2 animate-pulse">
+    <button className="px-10 py-4 bg-white/5 text-slate-400 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl flex items-center gap-2 animate-pulse border border-white/10">
       <Download size={14} />
       <span>Initializing Engine...</span>
     </button>
@@ -50,13 +53,10 @@ interface Observation {
 
 const COLORS = {
   emerald: '#10b981',
-  indigo: '#4f46e5',
+  indigo: '#6366f1',
   amber: '#f59e0b',
   rose: '#f43f5e',
   slate: '#64748b',
-  background: '#f8fafc',
-  border: '#e2e8f0',
-  text: '#0f172a'
 };
 
 const SPECIES_PORTRAITS: Record<string, string> = {
@@ -134,8 +134,8 @@ const SpecimenImage = ({ speciesName, fieldPhotoUrl }: { speciesName: string, fi
   }
 
   return (
-    <div className="w-full h-full bg-slate-100 flex items-center justify-center relative z-20">
-      <Target size={48} className="text-slate-300" />
+    <div className="w-full h-full bg-slate-800 flex items-center justify-center relative z-20">
+      <Target size={24} className="text-slate-600" />
     </div>
   );
 };
@@ -202,381 +202,295 @@ export default function IntelligenceRecon({ observations, parkName = 'MANA POOLS
 
   if (observations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-[500px] bg-slate-50 text-slate-400 rounded-3xl border border-slate-200 shadow-sm">
-        <Activity size={48} className="mb-4 opacity-10 text-slate-900" />
+      <div className="flex flex-col items-center justify-center h-[500px] bg-slate-950 text-slate-500 rounded-3xl border border-white/10 shadow-2xl backdrop-blur-md">
+        <Activity size={48} className="mb-4 opacity-10 text-white" />
         <p className="text-[10px] font-black uppercase tracking-[0.3em]">No Active Intelligence Nodes Detected</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-50 p-6 space-y-8 text-slate-900 min-h-[700px] animate-in fade-in duration-700">
+    <div className="bg-slate-950 p-6 space-y-8 text-white min-h-[700px] animate-in fade-in duration-700 rounded-3xl border border-white/5 backdrop-blur-sm relative overflow-hidden shadow-2xl">
+      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-[100px] -mr-48 -mt-48 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-[100px] -ml-48 -mb-48 pointer-events-none" />
       
       {/* ── Top Metric Banner ────────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 group hover:shadow-md transition-all duration-300">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative z-10">
+        <div className="bg-white/5 p-6 rounded-3xl shadow-2xl border border-white/10 group hover:border-emerald-500/30 transition-all duration-300 backdrop-blur-md">
            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600">
+              <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-400 border border-emerald-500/20">
                  <Activity size={18} />
               </div>
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Operations</span>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Active Operations</span>
            </div>
-           <div className="text-3xl font-display font-black text-slate-900">14 <span className="text-sm font-bold text-slate-400">/ Sectors</span></div>
+           <div className="text-3xl font-display font-black text-white">14 <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">/ Sectors</span></div>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 group hover:shadow-md transition-all duration-300">
+        <div className="bg-white/5 p-6 rounded-3xl shadow-2xl border border-white/10 group hover:border-indigo-500/30 transition-all duration-300 backdrop-blur-md">
            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-indigo-50 rounded-xl text-indigo-600">
+              <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/20">
                  <Shield size={18} />
               </div>
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Patrol Coverage</span>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Patrol Coverage</span>
            </div>
-           <div className="text-3xl font-display font-black text-slate-900">88.4% <span className="text-sm font-bold text-slate-400">Total</span></div>
+           <div className="text-3xl font-display font-black text-white">88.4% <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Total</span></div>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 group hover:shadow-md transition-all duration-300">
+        <div className="bg-white/5 p-6 rounded-3xl shadow-2xl border border-white/10 group hover:border-amber-500/30 transition-all duration-300 backdrop-blur-md">
            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-amber-50 rounded-xl text-amber-600">
+              <div className="p-2 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
                  <Zap size={18} />
               </div>
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Hotspots Logged</span>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Hotspots Logged</span>
            </div>
-           <div className="text-3xl font-display font-black text-slate-900">24 <span className="text-sm font-bold text-slate-400">Priority</span></div>
+           <div className="text-3xl font-display font-black text-white">24 <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Priority</span></div>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 group hover:shadow-md transition-all duration-300">
+        <div className="bg-white/5 p-6 rounded-3xl shadow-2xl border border-white/10 group hover:border-rose-500/30 transition-all duration-300 backdrop-blur-md">
            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-rose-50 rounded-xl text-rose-600">
+              <div className="p-2 bg-rose-500/10 rounded-xl text-rose-400 border border-rose-500/20">
                  <Eye size={18} />
               </div>
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Detection Rate</span>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Detection Rate</span>
            </div>
-           <div className="text-3xl font-display font-black text-slate-900">+12% <span className="text-sm font-bold text-slate-400">Weekly</span></div>
+           <div className="text-3xl font-display font-black text-white">+12% <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Weekly</span></div>
         </div>
       </div>
 
-      {/* ── Top Dashboard Row ────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        {/* ── Left Sidebar: Species Density Matrix ───────────── */}
-        <div className="lg:col-span-3 flex flex-col h-[600px]">
-           <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full">
-              <div className="p-5 bg-slate-50/50 border-b border-slate-100 space-y-4">
-                 <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Species Density Matrix</span>
-                    <TrendingUp size={14} className="text-indigo-600" />
-                 </div>
-                 <div className="relative group/search">
-                    <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/search:text-indigo-500 transition-colors" />
-                    <input 
-                      type="text" 
-                      placeholder="SEARCH INTEL..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full bg-slate-100/50 border border-transparent focus:border-indigo-500/20 focus:bg-white rounded-xl py-2 pl-9 pr-4 text-[10px] font-black tracking-widest placeholder:text-slate-400 outline-none transition-all"
-                    />
-                 </div>
+      {/* ── Main Intel Hub Grid ────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+        
+        {/* Sidebar: Species Density Matrix */}
+        <div className="lg:col-span-3 flex flex-col space-y-4">
+          <div className="bg-white/5 rounded-3xl border border-white/10 overflow-hidden flex flex-col h-[600px] backdrop-blur-md shadow-2xl">
+            <div className="p-5 border-b border-white/10 space-y-4 bg-white/5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Species Density Matrix</span>
+                <TrendingUp size={14} className="text-indigo-400" />
               </div>
-              <div className="flex-1 overflow-y-auto custom-scrollbar">
-                 {filteredSpecies.map(s => (
-                  <button 
-                    key={s.name}
-                    onClick={() => setSelectedSpecies(s.name)}
-                    className={`w-full p-4 flex items-center gap-4 transition-all border-b border-slate-50 group hover:bg-slate-50 ${selectedSpecies === s.name ? 'bg-indigo-50/80 border-l-4 border-l-indigo-500' : 'border-l-4 border-l-transparent'}`}
-                  >
-                    <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0 shadow-sm transition-transform group-hover:scale-105">
-                      <SpecimenImage speciesName={s.name} />
-                    </div>
-                    <div className="flex-1 text-left">
-                       <div className={`text-[11px] font-black uppercase tracking-wider ${selectedSpecies === s.name ? 'text-indigo-600' : 'text-slate-900'}`}>{s.name}</div>
-                       <div className="text-[9px] font-bold text-slate-400 font-mono">{s.value} OBS</div>
-                    </div>
-                    <ChevronRight size={14} className={`transition-transform ${selectedSpecies === s.name ? 'translate-x-1 text-indigo-400' : 'text-slate-200 opacity-0 group-hover:opacity-100'}`} />
-                  </button>
-                 ))}
-                 {filteredSpecies.length === 0 && (
-                   <div className="p-8 text-center">
-                      <div className="text-[10px] font-black text-slate-300 uppercase tracking-widest">No Matches Found</div>
-                   </div>
-                 )}
+              <div className="relative group/search">
+                <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/search:text-emerald-400 transition-colors" />
+                <input 
+                  type="text" 
+                  placeholder="SEARCH INTEL..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-white/5 border border-white/5 focus:border-emerald-500/20 focus:bg-white/10 rounded-xl py-2.5 pl-9 pr-4 text-[10px] font-black tracking-widest placeholder:text-slate-600 outline-none transition-all text-white uppercase"
+                />
               </div>
-              <div className="p-3 bg-slate-50/50 border-t border-slate-100 text-center">
-                 <div className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">Total Nodes: {speciesData.length}</div>
-              </div>
-           </div>
-        </div>
-
-        {/* ── Center Dashboard ────────────────────────────────── */}
-        <div className="lg:col-span-9 space-y-8 flex flex-col">
-           <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 flex-1 flex flex-col">
-              <div className="flex items-center justify-between mb-8">
-                 <div className="flex items-center gap-3">
-                    <div className="w-1.5 h-8 bg-emerald-500 rounded-full" />
-                    <div>
-                       <h2 className="text-2xl font-display font-black text-slate-900 tracking-tight uppercase">Operational Recon 2.0</h2>
-                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Tactical Intelligence Dashboard</p>
-                    </div>
-                 </div>
-                 <div className="flex items-center gap-4">
-                    <div className="text-right hidden md:block">
-                       <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Network Status</div>
-                       <div className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Operational Secure</div>
-                    </div>
-                    <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                       <Activity size={20} className="text-slate-400" />
-                    </div>
-                 </div>
-              </div>
-
-              <div className="h-[300px] w-full flex-1">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={temporalData}>
-                    <defs>
-                      <linearGradient id="reconColor" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.1}/>
-                        <stop offset="95%" stopColor={COLORS.emerald} stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <XAxis dataKey="name" hide />
-                    <YAxis hide />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '11px', fontWeight: 'bold', color: '#0f172a' }}
-                    />
-                    <Area type="monotone" dataKey="count" stroke={COLORS.emerald} strokeWidth={3} fillOpacity={1} fill="url(#reconColor)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
-                 {temporalData.map(d => (
-                  <div key={d.name} className="bg-slate-50 p-4 rounded-2xl border border-slate-100 group hover:border-indigo-200 transition-colors">
-                     <div className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">{d.name}</div>
-                     <div className="text-xl font-mono font-black text-slate-900 mt-1">{d.count}</div>
-                  </div>
-                 ))}
-              </div>
-           </div>
-        </div>
-      </div>
-
-      {/* ── Full Width Species Spotlight / Live Tracker ─────────────────────────────── */}
-      <AnimatePresence mode="wait">
-        {selectedSpecies && (
-          <motion.div 
-            key="profile"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="bg-white rounded-3xl shadow-lg border border-slate-200 p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 relative overflow-hidden w-full"
-          >
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
+            </div>
             
-            {/* Visual Profile */}
-            <div className="lg:col-span-4 space-y-6">
-              <div className="aspect-[4/5] bg-slate-100 rounded-2xl overflow-hidden relative border border-slate-200 shadow-sm group/img">
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent z-10" />
-                <div className="absolute top-4 left-4 z-20 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-slate-100">
-                   <span className="text-[8px] font-black text-slate-900 uppercase tracking-widest">Identified Specimen</span>
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
+              {filteredSpecies.map(s => (
+                <button 
+                  key={s.name}
+                  onClick={() => setSelectedSpecies(s.name)}
+                  className={`w-full p-3 flex items-center gap-4 transition-all rounded-2xl group ${selectedSpecies === s.name ? 'bg-emerald-600 shadow-lg shadow-emerald-600/20' : 'hover:bg-white/5'}`}
+                >
+                  <div className={`w-10 h-10 rounded-xl overflow-hidden border flex-shrink-0 transition-transform group-hover:scale-105 ${selectedSpecies === s.name ? 'border-white/20 bg-white/20' : 'border-white/10 bg-white/5'}`}>
+                    <SpecimenImage speciesName={s.name} />
+                  </div>
+                  <div className="flex-1 text-left">
+                     <div className={`text-[10px] font-black uppercase tracking-wider ${selectedSpecies === s.name ? 'text-white' : 'text-slate-200'}`}>{s.name}</div>
+                     <div className={`text-[8px] font-black font-mono ${selectedSpecies === s.name ? 'text-emerald-100' : 'text-slate-500'}`}>{s.value} OBS</div>
+                  </div>
+                  <ChevronRight size={12} className={`transition-transform ${selectedSpecies === s.name ? 'translate-x-1 text-white' : 'text-slate-700'}`} />
+                </button>
+              ))}
+              {filteredSpecies.length === 0 && (
+                <div className="p-8 text-center">
+                   <div className="text-[10px] font-black text-slate-600 uppercase tracking-widest">No Matches Found</div>
                 </div>
-                
-                {/* Specimen Visual Hub */}
-                <SpecimenImage 
-                  speciesName={selectedSpecies} 
-                  fieldPhotoUrl={speciesProfile?.observations.find(o => o.photo_url)?.photo_url} 
-                />
-                
-                <div className="absolute bottom-6 left-6 right-6 z-20">
-                   <h2 className="text-4xl font-display font-black tracking-tighter uppercase text-white">{selectedSpecies}</h2>
-                   <div className="flex items-center gap-2 mt-2">
-                      <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="text-[10px] font-black text-slate-200 uppercase tracking-widest">Live Tracking Active</span>
-                   </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center shadow-sm">
-                    <div className="text-xl font-mono font-black text-slate-900">{speciesProfile?.m}</div>
-                    <div className="text-[8px] font-black text-slate-500 uppercase tracking-wider">Male</div>
-                 </div>
-                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center shadow-sm">
-                    <div className="text-xl font-mono font-black text-slate-900">{speciesProfile?.f}</div>
-                    <div className="text-[8px] font-black text-slate-500 uppercase tracking-wider">Female</div>
-                 </div>
-                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center shadow-sm">
-                    <div className="text-xl font-mono font-black text-slate-900">{speciesProfile?.u}</div>
-                    <div className="text-[8px] font-black text-slate-500 uppercase tracking-wider">Unk</div>
-                 </div>
-              </div>
+              )}
             </div>
-
-            {/* Intel Breakdown */}
-            <div className="lg:col-span-8 space-y-8">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Performance Radar */}
-                  <div className="bg-slate-50 rounded-2xl border border-slate-100 p-6 shadow-sm">
-                    <div className="flex items-center gap-2 mb-6">
-                      <Activity size={14} className="text-indigo-600" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Sector Affinity Radar</span>
-                    </div>
-                    <div className="h-64">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart data={speciesProfile?.radar}>
-                          <PolarGrid stroke="#e2e8f0" />
-                          <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 9, fontWeight: 900 }} />
-                          <Radar
-                            name={selectedSpecies}
-                            dataKey="A"
-                            stroke={COLORS.indigo}
-                            fill={COLORS.indigo}
-                            fillOpacity={0.4}
-                          />
-                        </RadarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-
-                  {/* Habitats & Activities */}
-                  <div className="space-y-6">
-                     <div className="bg-slate-50 rounded-2xl border border-slate-100 p-6 shadow-sm">
-                        <div className="flex items-center gap-2 mb-4">
-                          <Target size={14} className="text-amber-600" />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Habitat Intelligence</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            {speciesProfile?.habitats.map(h => (
-                              <span key={h} className="px-3 py-1.5 bg-white rounded-lg text-[9px] font-black uppercase tracking-wider border border-slate-200 text-slate-600 shadow-sm">
-                                {h}
-                              </span>
-                            ))}
-                        </div>
-                     </div>
-
-                     <div className="bg-slate-50 rounded-2xl border border-slate-100 p-6 shadow-sm">
-                        <div className="flex items-center gap-2 mb-4">
-                          <Flame size={14} className="text-rose-600" />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Observed Activities</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            {speciesProfile?.activities.map(a => (
-                              <span key={a} className="px-3 py-1.5 bg-white rounded-lg text-[9px] font-black uppercase tracking-wider border border-slate-200 text-slate-600 shadow-sm">
-                                {a}
-                              </span>
-                            ))}
-                        </div>
-                     </div>
-
-                     <div className="bg-indigo-600 rounded-2xl border border-indigo-700 p-6 flex items-center justify-between shadow-md">
-                        <div>
-                           <div className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Intelligence Confidence</div>
-                           <div className="text-2xl font-display font-black text-white">94.8%</div>
-                        </div>
-                        <Shield size={32} className="text-white/20" />
-                     </div>
-                  </div>
-               </div>
-
-               {/* Recent Sightings Table */}
-               <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Recent Operational Sightings</span>
-                    <button 
-                      onClick={() => setSelectedSpecies(null)}
-                      className="text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-colors"
-                    >
-                      Close Profile [ESC]
-                    </button>
-                  </div>
-                  <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="bg-slate-50 border-b border-slate-100">
-                          <th className="px-4 py-3 text-[8px] font-black text-slate-500 uppercase tracking-widest">Time</th>
-                          <th className="px-4 py-3 text-[8px] font-black text-slate-500 uppercase tracking-widest">Habitat</th>
-                          <th className="px-4 py-3 text-[8px] font-black text-slate-500 uppercase tracking-widest">Activity</th>
-                          <th className="px-4 py-3 text-[8px] font-black text-slate-500 uppercase tracking-widest">Team</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {speciesProfile?.observations.slice(0, 4).map((o, i) => (
-                          <tr key={o.id} className={`border-b border-slate-50 ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}>
-                            <td className="px-4 py-3 text-[10px] font-mono font-bold text-indigo-600">{o.time}</td>
-                            <td className="px-4 py-3 text-[10px] font-black text-slate-700 uppercase tracking-wider">{o.habitat}</td>
-                            <td className="px-4 py-3 text-[10px] font-black text-slate-700 uppercase tracking-wider">{o.activity}</td>
-                            <td className="px-4 py-3 text-[10px] font-bold text-slate-400">{o.observer || 'Alpha'}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-               </div>
+            
+            <div className="p-4 border-t border-white/10 text-center bg-white/5">
+              <div className="text-[8px] font-black text-slate-500 uppercase tracking-[0.3em]">Operational Nodes: {speciesData.length}</div>
             </div>
-          </motion.div>
-        )}
-       </AnimatePresence>
-
-       {/* ── Operational Grid (Summary) ────────────────── */}
-       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {speciesData.slice(0, 4).map(s => {
-             const portrait = getSpeciesPortrait(s.name);
-             return (
-               <button 
-                key={s.name}
-                onClick={() => setSelectedSpecies(s.name)}
-                className="bg-white p-4 rounded-3xl border border-slate-200 hover:border-indigo-500/30 hover:shadow-lg transition-all text-left group relative overflow-hidden h-48 flex flex-col justify-end"
-               >
-                 <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity">
-                    {portrait ? (
-                      <img src={portrait} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-110" alt="" />
-                    ) : (
-                      <div className="w-full h-full bg-slate-50 flex items-center justify-center">
-                         <Target size={48} className="text-slate-200" />
-                      </div>
-                    )}
-                 </div>
-                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
-                 
-                 <div className="relative z-10">
-                  <h3 className="text-[8px] font-black text-slate-200 uppercase tracking-widest opacity-60">Operational Species</h3>
-                  <div className="text-xl font-display font-black mt-1 uppercase text-white">{s.name}</div>
-                  <div className="flex items-center gap-2 mt-2">
-                      <div className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden">
-                         <div className="h-full bg-emerald-400" style={{ width: `${Math.min(100, (s.value / speciesData[0].value) * 100)}%` }} />
-                      </div>
-                      <span className="text-[10px] font-mono font-black text-emerald-400">{s.value}</span>
-                  </div>
-                 </div>
-               </button>
-             );
-          })}
-          
-          <div className="col-span-2 md:col-span-4 bg-indigo-600 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden shadow-lg">
-             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
-             <div className="relative z-10 flex items-center gap-6">
-                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-white backdrop-blur-md">
-                   <Zap size={32} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-display font-black leading-tight text-white uppercase">Ready for Operational Deployment?</h2>
-                  <p className="text-xs text-white/70 mt-2 font-medium">Export reconnaissance data in standardized formats for tactical coordination.</p>
-                </div>
-             </div>
-              <div className="relative z-10">
-                <PDFExportButton 
-                  parkName={parkName} 
-                  observations={observations} 
-                  speciesData={speciesData} 
-                />
-              </div>
           </div>
-       </div>
+        </div>
 
-      <div className="flex items-center gap-4 py-4 px-2 border-t border-slate-200">
-         <Info size={14} className="text-slate-400" />
-         <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">
-           Authenticated Intelligence Stream · Encryption Active · Node: WEZ-GAMECOUNT-Z01
+        {/* Profile / Details Panel */}
+        <div className="lg:col-span-9 space-y-8 h-full">
+           <AnimatePresence mode="wait">
+             {speciesProfile ? (
+               <motion.div 
+                 key={selectedSpecies}
+                 initial={{ opacity: 0, x: 20 }}
+                 animate={{ opacity: 1, x: 0 }}
+                 exit={{ opacity: 0, x: -20 }}
+                 className="space-y-8"
+               >
+                 {/* Spotlight Header */}
+                 <div className="bg-white/5 rounded-[2.5rem] border border-white/10 p-10 relative overflow-hidden backdrop-blur-md shadow-2xl">
+                    <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
+                       <Target size={160} className="text-emerald-500" />
+                    </div>
+                    
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10">
+                       <div className="flex gap-8 items-center">
+                          <div className="w-32 h-32 rounded-[2rem] overflow-hidden border-2 border-white/10 shadow-2xl bg-slate-900 group/spot">
+                             <SpecimenImage 
+                                speciesName={selectedSpecies!} 
+                                fieldPhotoUrl={speciesProfile.observations.find(o => o.photo_url)?.photo_url} 
+                             />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-3 mb-4">
+                               <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-[0.2em] rounded-full border border-emerald-500/30">Priority Asset</span>
+                               <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest font-mono">NODE-REF: {selectedSpecies?.toUpperCase().substring(0, 3)}-ALPHA</span>
+                            </div>
+                            <h2 className="text-5xl font-display font-black text-white tracking-tight uppercase leading-none">{selectedSpecies}</h2>
+                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em] mt-4 flex items-center gap-2">
+                               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                               Biometric Protocol Standardized
+                            </p>
+                          </div>
+                       </div>
+                       
+                       <div className="flex items-center gap-4 bg-white/5 p-6 rounded-[2rem] border border-white/10">
+                          <div className="text-center">
+                            <p className="text-4xl font-display font-black text-white leading-none">{speciesProfile.radar[0].A.toFixed(1)}%</p>
+                            <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-3">Relative Frequency</p>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Charts Grid */}
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="bg-white/5 rounded-[2.5rem] border border-white/10 p-8 backdrop-blur-md shadow-2xl">
+                       <div className="flex items-center gap-3 mb-8">
+                          <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/20">
+                             <Target size={16} />
+                          </div>
+                          <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Distribution Matrix</h4>
+                       </div>
+                       <div className="h-72">
+                          <ResponsiveContainer width="100%" height="100%">
+                             <RadarChart cx="50%" cy="50%" outerRadius="80%" data={speciesProfile.radar}>
+                                <PolarGrid stroke="#334155" />
+                                <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 8, fontWeight: 900 }} />
+                                <Radar
+                                  name={selectedSpecies!}
+                                  dataKey="A"
+                                  stroke={COLORS.emerald}
+                                  fill={COLORS.emerald}
+                                  fillOpacity={0.4}
+                                />
+                             </RadarChart>
+                          </ResponsiveContainer>
+                       </div>
+                    </div>
+
+                    <div className="bg-white/5 rounded-[2.5rem] border border-white/10 p-8 backdrop-blur-md shadow-2xl">
+                       <div className="flex items-center gap-3 mb-8">
+                          <div className="p-2 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
+                             <TrendingUp size={16} />
+                          </div>
+                          <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Temporal Activity Flow</h4>
+                       </div>
+                       <div className="h-72">
+                          <ResponsiveContainer width="100%" height="100%">
+                             <AreaChart data={temporalData}>
+                                <defs>
+                                  <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.3}/>
+                                    <stop offset="95%" stopColor={COLORS.emerald} stopOpacity={0}/>
+                                  </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                                <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 8, fontWeight: 900 }} axisLine={false} tickLine={false} />
+                                <YAxis tick={{ fill: '#64748b', fontSize: 8, fontWeight: 900 }} axisLine={false} tickLine={false} />
+                                <Tooltip 
+                                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', fontSize: '10px' }}
+                                  itemStyle={{ color: COLORS.emerald, fontWeight: '900' }}
+                                />
+                                <Area type="monotone" dataKey="count" stroke={COLORS.emerald} fillOpacity={1} fill="url(#colorCount)" strokeWidth={3} />
+                             </AreaChart>
+                          </ResponsiveContainer>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Detailed Metrics Table */}
+                 <div className="bg-white/5 rounded-[2.5rem] border border-white/10 p-8 backdrop-blur-md shadow-2xl overflow-hidden">
+                    <div className="flex items-center justify-between mb-8">
+                       <div className="flex items-center gap-3">
+                          <div className="p-2 bg-slate-500/10 rounded-xl text-slate-400 border border-white/10">
+                             <Database size={16} />
+                          </div>
+                          <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Raw Intelligence Log</h4>
+                       </div>
+                       <div className="flex gap-6">
+                          <div className="text-right">
+                             <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Confidence Score</p>
+                             <p className="text-sm font-black text-emerald-400">98.2%</p>
+                          </div>
+                       </div>
+                    </div>
+                    <div className="overflow-x-auto">
+                       <table className="w-full text-left">
+                          <thead>
+                             <tr className="border-b border-white/10">
+                                <th className="pb-4 px-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Temporal Node</th>
+                                <th className="pb-4 px-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Habitat / Sector</th>
+                                <th className="pb-4 px-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Behavioral State</th>
+                                <th className="pb-4 px-2 text-[9px] font-black text-slate-500 uppercase tracking-widest text-right">Team Auth</th>
+                             </tr>
+                          </thead>
+                          <tbody className="divide-y divide-white/5">
+                             {speciesProfile.observations.slice(0, 5).map(o => (
+                               <tr key={o.id} className="group hover:bg-white/5 transition-colors">
+                                  <td className="py-4 px-2 text-[10px] font-black font-mono text-emerald-400">{o.time}</td>
+                                  <td className="py-4 px-2 text-[10px] font-black uppercase tracking-widest text-slate-300">{o.habitat}</td>
+                                  <td className="py-4 px-2 text-[10px] font-black uppercase tracking-widest text-slate-300">{o.activity}</td>
+                                  <td className="py-4 px-2 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">{o.observer || 'ALPHA-01'}</td>
+                               </tr>
+                             ))}
+                          </tbody>
+                       </table>
+                    </div>
+                 </div>
+
+                 {/* Export Section */}
+                 <div className="bg-indigo-600 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-10 relative overflow-hidden shadow-2xl group/cta">
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 to-indigo-600 pointer-events-none" />
+                    <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white/5 rounded-full blur-[80px] pointer-events-none" />
+                    <div className="relative z-10 flex items-center gap-8">
+                       <div className="w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center text-white backdrop-blur-md border border-white/10 shadow-2xl">
+                          <Zap size={40} className="group-hover/cta:scale-110 transition-transform duration-500" />
+                       </div>
+                       <div>
+                          <h2 className="text-3xl font-display font-black leading-tight text-white uppercase tracking-tight">Deploy Tactical Dossier</h2>
+                          <p className="text-sm text-indigo-100/70 mt-2 font-bold uppercase tracking-widest">Standardized Intel Export for Operational Oversight</p>
+                       </div>
+                    </div>
+                    <div className="relative z-10">
+                       <PDFExportButton 
+                          parkName={parkName} 
+                          observations={observations} 
+                          speciesData={speciesData} 
+                       />
+                    </div>
+                 </div>
+               </motion.div>
+             ) : (
+               <div className="flex flex-col items-center justify-center h-full bg-white/5 border border-white/5 border-dashed rounded-[3rem] p-20 text-center backdrop-blur-md">
+                 <Activity size={64} className="text-slate-800 mb-6 animate-pulse" />
+                 <p className="text-[12px] font-black text-slate-600 uppercase tracking-[0.5em]">System Ready · Waiting for Asset Selection</p>
+               </div>
+             )}
+           </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4 py-6 px-4 border-t border-white/5 relative z-10">
+         <Info size={14} className="text-slate-600" />
+         <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em]">
+           Authenticated Intelligence Stream · Encryption Protocol Active · Terminal: WEZ-GAMECOUNT-Z01
          </p>
       </div>
-
     </div>
   );
 }

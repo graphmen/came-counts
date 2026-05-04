@@ -81,26 +81,29 @@ export default function SpeciesAnalysisPage({ params }: { params: Promise<{ park
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
-      {/* ── Header ────────────────────────────────────────── */}
-      <header className="relative p-6 rounded-3xl bg-white border border-slate-200 shadow-sm overflow-hidden group">
+      {/* ── Page Header ────────────────────────────────────────── */}
+      <header className="relative p-6 md:p-8 rounded-3xl bg-slate-950 text-white border border-slate-800 shadow-2xl overflow-hidden group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl -ml-24 -mb-24" />
         
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-md border border-emerald-100">
-                <Globe size={14} className="text-emerald-600" />
-                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Biological Inventory</span>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                <Globe size={10} className="text-emerald-400" />
+                <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">Biological Inventory</span>
               </div>
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cycle: {selectedYear} Verification</span>
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/10">
+                <ShieldCheck size={10} className="text-slate-400" />
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Cycle: {selectedYear} Verification</span>
+              </div>
             </div>
             
-            <div className="flex items-center gap-4">
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight font-display">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <h1 className="text-3xl md:text-5xl font-display font-black text-white tracking-tight leading-none">
                 Species Analysis
               </h1>
-              <div className="h-8 w-px bg-slate-200 hidden sm:block" />
-              <div className="bg-slate-50 p-1 rounded-xl border border-slate-100 hidden sm:block">
+              <div className="bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-md shadow-xl hidden sm:block">
                 <YearSelector parkId={parkId} selectedYear={selectedYear} onYearChange={(y) => {
                   const params = new URLSearchParams(searchParams);
                   params.set('year', y.toString());
@@ -109,57 +112,64 @@ export default function SpeciesAnalysisPage({ params }: { params: Promise<{ park
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-slate-500 font-semibold text-sm">
-               <Info size={16} className="text-emerald-600" />
-               Primary population distribution and census audit for operational planning.
+            <div className="flex items-center gap-3">
+               <div className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
+                 <Info size={10} className="text-emerald-400" />
+               </div>
+               <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest leading-relaxed max-w-xl">
+                 Primary population distribution and census audit for operational planning.
+               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-xl border border-slate-200 shadow-inner">
+          <div className="flex items-center gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/10 backdrop-blur-md shadow-xl">
             <button 
               onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-emerald-700 shadow-sm border border-emerald-100' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
             >
-              <LayoutGrid size={16} />
-              <span className="text-xs font-bold uppercase tracking-wider">Grid View</span>
+              <LayoutGrid size={14} />
+              <span className="text-[10px] font-black uppercase tracking-wider">Grid View</span>
             </button>
             <button 
               onClick={() => setViewMode('table')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${viewMode === 'table' ? 'bg-white text-emerald-700 shadow-sm border border-emerald-100' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all ${viewMode === 'table' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
             >
-              <TableIcon size={16} />
-              <span className="text-xs font-bold uppercase tracking-wider">Table View</span>
+              <TableIcon size={14} />
+              <span className="text-[10px] font-black uppercase tracking-wider">Table View</span>
             </button>
           </div>
         </div>
       </header>
 
       {/* ── Filters ─────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-        <div className="flex items-center gap-3 flex-1 min-w-[300px]">
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-950 p-4 rounded-2xl border border-slate-800 shadow-xl">
+        <div className="flex items-center gap-4 flex-1 min-w-[300px]">
           <div className="relative flex-1 max-w-xs">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
             <input 
               type="text"
               placeholder="Search species..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-1.5 bg-slate-50 border-none rounded-lg text-xs font-bold text-slate-700 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[11px] font-black text-white placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/50 outline-none transition-all uppercase tracking-widest"
             />
           </div>
-          <select 
-            value={filterClass}
-            onChange={(e) => setFilterClass(e.target.value)}
-            className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 outline-none cursor-pointer"
-          >
-            <option value="all">All Classes</option>
-            <option value="mammal">Mammals</option>
-            <option value="bird">Birds</option>
-            <option value="reptile">Reptiles</option>
-          </select>
+          <div className="relative">
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={14} />
+            <select 
+              value={filterClass}
+              onChange={(e) => setFilterClass(e.target.value)}
+              className="pl-10 pr-8 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[11px] font-black text-white outline-none cursor-pointer appearance-none hover:bg-white/10 transition-all uppercase tracking-widest"
+            >
+              <option value="all" className="bg-slate-900">All Classes</option>
+              <option value="mammal" className="bg-slate-900">Mammals</option>
+              <option value="bird" className="bg-slate-900">Birds</option>
+              <option value="reptile" className="bg-slate-900">Reptiles</option>
+            </select>
+          </div>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-bold text-xs uppercase tracking-wider hover:bg-slate-100 hover:text-emerald-700 transition-colors">
-          <Download size={16} /> Export CSV
+        <button className="flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
+          <Download size={14} /> Export Dataset
         </button>
       </div>
 

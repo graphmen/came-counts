@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Download, FileText, FileJson, ShieldCheck, FileSpreadsheet, CheckCircle2, Loader2, FileType } from 'lucide-react';
+import { Download, FileText, FileJson, ShieldCheck, FileSpreadsheet, CheckCircle2, Loader2, FileType, Database, Globe, Info } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import nextDynamic from 'next/dynamic';
 
 const PDFExportButton = nextDynamic(
@@ -102,44 +103,40 @@ export default function ExportEngine({ observations, parkName }: { observations:
       label: 'CSV Data Stream',
       sub: 'Excel & Spreadsheet Compatible',
       icon: FileText,
-      color: 'emerald',
       ext: '.CSV',
       action: downloadCSV,
-      bg: 'hover:bg-emerald-50 hover:border-emerald-200',
-      iconBg: 'text-emerald-600',
+      bg: 'hover:bg-emerald-500/10 hover:border-emerald-500/50',
+      iconBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
     },
     {
       id: 'json',
       label: 'JSON Intelligence',
       sub: 'API & Developer Ready',
       icon: FileJson,
-      color: 'sky',
       ext: '.JSON',
       action: downloadJSON,
-      bg: 'hover:bg-sky-50 hover:border-sky-200',
-      iconBg: 'text-sky-600',
+      bg: 'hover:bg-indigo-500/10 hover:border-indigo-500/50',
+      iconBg: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
     },
     {
       id: 'geojson',
       label: 'GeoJSON Spatial',
       sub: 'QGIS · ArcGIS · GIS Ready',
       icon: FileSpreadsheet,
-      color: 'violet',
       ext: '.GEOJSON',
       action: downloadGeoJSON,
-      bg: 'hover:bg-violet-50 hover:border-violet-200',
-      iconBg: 'text-violet-600',
+      bg: 'hover:bg-blue-500/10 hover:border-blue-500/50',
+      iconBg: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
     },
     {
       id: 'pdf',
       label: 'Tactical Intel Report',
       sub: 'Professional PDF Summary',
       icon: FileType,
-      color: 'rose',
       ext: '.PDF',
       isPdf: true,
-      bg: 'hover:bg-rose-50 hover:border-rose-200',
-      iconBg: 'text-rose-600',
+      bg: 'hover:bg-rose-500/10 hover:border-rose-500/50',
+      iconBg: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
     },
   ];
 
@@ -162,54 +159,61 @@ export default function ExportEngine({ observations, parkName }: { observations:
   };
 
   return (
-    <div className="p-8 space-y-8">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="p-10 space-y-12">
+      <div className="max-w-4xl mx-auto space-y-10">
 
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h2 className="text-xl font-display font-black text-slate-900 tracking-tight">Intelligence Export Engine</h2>
-          <p className="text-xs text-slate-500 font-bold uppercase tracking-widest font-display">Generate secure archives for external analysis & GIS integration</p>
+        <div className="text-center space-y-4">
+           <div className="flex items-center justify-center gap-3">
+              <div className="h-px w-12 bg-white/10" />
+              <Download size={16} className="text-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              <div className="h-px w-12 bg-white/10" />
+           </div>
+          <h2 className="text-3xl font-display font-black text-white tracking-tight uppercase">Intelligence Export Engine</h2>
+          <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em]">Generate secure archives for external analysis & GIS integration</p>
         </div>
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-5 gap-3 bg-slate-50 rounded-2xl p-4 border border-slate-100">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-black/40 rounded-[2.5rem] p-8 border border-white/5 backdrop-blur-xl shadow-2xl">
           {[
-            { label: 'Records', val: summary.records },
-            { label: 'Species', val: summary.species },
-            { label: 'Animals', val: summary.total },
-            { label: 'With GPS', val: summary.withGps },
-            { label: 'With Photo', val: summary.withPhoto },
+            { label: 'Records', val: summary.records, icon: Database, color: 'text-emerald-400' },
+            { label: 'Species', val: summary.species, icon: Globe, color: 'text-indigo-400' },
+            { label: 'Animals', val: summary.total, icon: Activity, color: 'text-blue-400' },
+            { label: 'With GPS', val: summary.withGps, icon: ShieldCheck, color: 'text-amber-400' },
+            { label: 'With Photo', val: summary.withPhoto, icon: FileText, color: 'text-rose-400' },
           ].map(s => (
-            <div key={s.label} className="text-center">
-              <div className="text-lg font-black text-slate-900 leading-none font-mono">{s.val}</div>
-              <div className="text-[8px] font-black text-slate-400 uppercase tracking-wider mt-1 font-display">{s.label}</div>
+            <div key={s.label} className="text-center space-y-2">
+              <div className="text-2xl font-black text-white leading-none font-mono tracking-tighter">{s.val}</div>
+              <div className="text-[9px] font-black text-slate-600 uppercase tracking-widest flex items-center justify-center gap-1.5">
+                 <s.icon size={10} className={s.color} /> {s.label}
+              </div>
             </div>
           ))}
         </div>
 
         {/* Export Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {formats.map(fmt => {
             const Icon = fmt.icon;
             const isLoading = loading === fmt.id;
             const isDone = exported === fmt.id;
 
             const buttonContent = (
-              <>
-                <div className={`w-14 h-14 bg-white rounded-2xl flex items-center justify-center ${fmt.iconBg} shadow-sm group-hover:scale-110 transition-transform`}>
-                  {isLoading ? <Loader2 size={28} className="animate-spin" /> :
-                   isDone ? <CheckCircle2 size={28} className="text-emerald-600" /> :
-                   <Icon size={28} />}
+              <div className="flex flex-col items-center gap-6">
+                <div className={`w-16 h-16 ${fmt.iconBg} rounded-[1.5rem] flex items-center justify-center border shadow-2xl group-hover:scale-110 transition-all duration-500`}>
+                  {isLoading ? <Loader2 size={32} className="animate-spin" /> :
+                   isDone ? <CheckCircle2 size={32} className="text-emerald-400 animate-bounce" /> :
+                   <Icon size={32} />}
                 </div>
-                <div className="text-center">
-                  <div className="text-sm font-black text-slate-900 uppercase tracking-widest font-display">{fmt.label}</div>
-                  <p className="text-[9px] text-slate-400 font-bold mt-1 font-sans">{fmt.sub}</p>
+                <div className="text-center space-y-1">
+                  <div className="text-[11px] font-black text-white uppercase tracking-[0.1em]">{fmt.label}</div>
+                  <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest">{fmt.sub}</p>
                 </div>
-                <div className="px-5 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                <div className={`w-full py-3 ${isDone ? 'bg-emerald-600 shadow-emerald-600/30' : 'bg-slate-900 border border-white/5'} text-white rounded-xl text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all shadow-xl`}>
                   {isDone ? <CheckCircle2 size={12} /> : <Download size={12} />}
-                  {isDone ? 'DOWNLOADED!' : `EXPORT ${fmt.ext}`}
+                  {isDone ? 'COMPLETED' : `EXPORT ${fmt.ext}`}
                 </div>
-              </>
+              </div>
             );
 
             if ('isPdf' in fmt && fmt.isPdf) {
@@ -226,34 +230,38 @@ export default function ExportEngine({ observations, parkName }: { observations:
             }
 
             return (
-              <button
+              <motion.button
+                whileHover={{ y: -5 }}
+                whileTap={{ scale: 0.98 }}
                 key={fmt.id}
                 onClick={fmt.action}
                 disabled={observations.length === 0 || isLoading}
-                className={`flex flex-col items-center gap-4 p-6 bg-slate-50 border border-slate-200 rounded-3xl transition-all group disabled:opacity-40 ${fmt.bg}`}
+                className={`p-8 bg-slate-900/40 border border-white/10 rounded-[2rem] transition-all group disabled:opacity-40 backdrop-blur-md shadow-2xl ${fmt.bg}`}
               >
                 {buttonContent}
-              </button>
+              </motion.button>
             );
           })}
         </div>
 
         {observations.length === 0 && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center">
-            <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest">⚠️ No Intelligence Records in Current Buffer — Adjust filters or sync from the field first.</p>
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 text-center backdrop-blur-md">
+            <p className="text-[11px] font-black text-amber-500 uppercase tracking-[0.3em] flex items-center justify-center gap-3">
+               <Info size={16} /> NO INTELLIGENCE RECORDS IN CURRENT BUFFER — ADJUST FILTERS OR SYNC NODES.
+            </p>
           </div>
         )}
 
         {/* Security Notice */}
-        <div className="bg-slate-900 text-white rounded-3xl p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10"><ShieldCheck size={60} /></div>
-          <div className="relative z-10 space-y-3">
-            <div className="flex items-center gap-2 text-emerald-400 font-display">
-              <ShieldCheck size={14} />
-              <span className="text-[10px] font-black uppercase tracking-widest">Secure Export Protocol</span>
+        <div className="bg-slate-900/60 text-white rounded-[2.5rem] p-10 relative overflow-hidden border border-white/5 shadow-2xl group">
+          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity"><ShieldCheck size={120} /></div>
+          <div className="relative z-10 space-y-6">
+            <div className="flex items-center gap-3 text-emerald-400">
+              <ShieldCheck size={18} className="shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+              <span className="text-[12px] font-black uppercase tracking-[0.4em]">Secure Export Protocol</span>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed italic font-sans">
-              "Archives generated through this engine are linked to the WEZ National Registry. All records include observer attribution and timestamp metadata for chain-of-custody compliance."
+            <p className="text-xs text-slate-500 leading-relaxed font-black uppercase tracking-[0.1em] border-l-2 border-emerald-500/30 pl-6">
+              Archives generated through this engine are linked to the WEZ National Registry. All records include observer attribution and timestamp metadata for chain-of-custody compliance and multi-node verification.
             </p>
           </div>
         </div>

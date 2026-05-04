@@ -5,7 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, Legend
 } from 'recharts';
-import { BarChart3, PieChart as PieChartIcon, TrendingUp, Activity } from 'lucide-react';
+import { BarChart3, PieChart as PieChartIcon, TrendingUp, Activity, MapPin, Database } from 'lucide-react';
 
 interface Observation {
   species: string;
@@ -18,6 +18,16 @@ interface Observation {
   habitat: string;
   activity: string;
 }
+
+const COLORS = {
+  emerald: '#10b981',
+  indigo: '#6366f1',
+  amber: '#f59e0b',
+  rose: '#f43f5e',
+  pink: '#ec4899',
+  blue: '#3b82f6',
+  slate: '#64748b',
+};
 
 export default function IntelligenceAnalytics({ observations }: { observations: Observation[] }) {
   
@@ -57,9 +67,9 @@ export default function IntelligenceAnalytics({ observations }: { observations: 
       u += o.unknown_count || 0;
     });
     return [
-      { name: 'Male', value: m, color: '#3b82f6' },
-      { name: 'Female', value: f, color: '#ec4899' },
-      { name: 'Unknown', value: u, color: '#94a3b8' }
+      { name: 'Male', value: m, color: COLORS.blue },
+      { name: 'Female', value: f, color: COLORS.pink },
+      { name: 'Unknown', value: u, color: COLORS.slate }
     ].filter(g => g.value > 0);
   }, [observations]);
 
@@ -74,26 +84,28 @@ export default function IntelligenceAnalytics({ observations }: { observations: 
 
   if (observations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-[500px] text-slate-400">
+      <div className="flex flex-col items-center justify-center h-[500px] text-slate-600 bg-slate-950/50 rounded-3xl border border-white/5 backdrop-blur-sm">
         <Activity size={48} className="mb-4 opacity-20" />
-        <p className="text-[10px] font-black uppercase tracking-widest">Insufficient Intelligence for Analytics</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.3em]">Insufficient Intelligence for Analytics</p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/30">
+    <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-950/30 rounded-3xl border border-white/5 backdrop-blur-md shadow-2xl">
       
       {/* Species Distribution */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-        <div className="flex items-center gap-2 mb-6">
-          <BarChart3 size={14} className="text-emerald-600" />
-          <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest font-display">Species Density Matrix</h3>
+      <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-md group hover:border-emerald-500/20 transition-all">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-400 border border-emerald-500/20">
+            <BarChart3 size={16} />
+          </div>
+          <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] font-display">Species Density Matrix</h3>
         </div>
-        <div className="h-64">
+        <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={speciesData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#1e293b" />
               <XAxis type="number" hide />
               <YAxis 
                 dataKey="name" 
@@ -101,82 +113,89 @@ export default function IntelligenceAnalytics({ observations }: { observations: 
                 width={80} 
                 fontSize={9} 
                 fontWeight={900} 
-                tick={{ fill: '#64748b', fontFamily: 'var(--font-mono)' }}
+                tick={{ fill: '#94a3b8', fontFamily: 'var(--font-mono)' }}
                 axisLine={false}
                 tickLine={false}
               />
               <Tooltip 
-                cursor={{ fill: '#f8fafc' }}
-                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px', fontWeight: 'bold' }}
+                cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', fontSize: '10px', fontWeight: 'bold' }}
+                itemStyle={{ color: COLORS.emerald }}
               />
-              <Bar dataKey="value" fill="#10b981" radius={[0, 4, 4, 0]} barSize={20} />
+              <Bar dataKey="value" fill={COLORS.emerald} radius={[0, 6, 6, 0]} barSize={24} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* Temporal Trends */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-        <div className="flex items-center gap-2 mb-6">
-          <TrendingUp size={14} className="text-indigo-600" />
-          <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest font-display">Survey Temporal Flow</h3>
+      <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-md group hover:border-indigo-500/20 transition-all">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/20">
+            <TrendingUp size={16} />
+          </div>
+          <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] font-display">Survey Temporal Flow</h3>
         </div>
-        <div className="h-64">
+        <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={temporalData}>
               <defs>
-                <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                <linearGradient id="colorCountAnalytic" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={COLORS.indigo} stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor={COLORS.indigo} stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
               <XAxis 
                 dataKey="name" 
                 fontSize={8} 
                 fontWeight={900} 
-                tick={{ fill: '#64748b', fontFamily: 'var(--font-mono)' }}
+                tick={{ fill: '#94a3b8', fontFamily: 'var(--font-mono)' }}
                 axisLine={false}
                 tickLine={false}
               />
-              <YAxis fontSize={8} fontWeight={900} tick={{ fill: '#64748b', fontFamily: 'var(--font-mono)' }} axisLine={false} tickLine={false} />
+              <YAxis fontSize={8} fontWeight={900} tick={{ fill: '#94a3b8', fontFamily: 'var(--font-mono)' }} axisLine={false} tickLine={false} />
               <Tooltip 
-                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px', fontWeight: 'bold' }}
+                contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', fontSize: '10px', fontWeight: 'bold' }}
+                itemStyle={{ color: COLORS.indigo }}
               />
-              <Area type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorCount)" />
+              <Area type="monotone" dataKey="count" stroke={COLORS.indigo} strokeWidth={4} fillOpacity={1} fill="url(#colorCountAnalytic)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* Gender Balance */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-        <div className="flex items-center gap-2 mb-6">
-          <PieChartIcon size={14} className="text-pink-600" />
-          <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest font-display">Population Gender Split</h3>
+      <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-md group hover:border-pink-500/20 transition-all">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="p-2 bg-pink-500/10 rounded-xl text-pink-400 border border-pink-500/20">
+            <PieChartIcon size={16} />
+          </div>
+          <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] font-display">Population Gender Split</h3>
         </div>
-        <div className="h-64 flex items-center">
+        <div className="h-72 flex items-center">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={genderData}
-                innerRadius={60}
-                outerRadius={80}
-                paddingAngle={5}
+                innerRadius={70}
+                outerRadius={90}
+                paddingAngle={8}
                 dataKey="value"
+                stroke="none"
               >
                 {genderData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
               <Tooltip 
-                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px', fontWeight: 'bold' }}
+                 contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', fontSize: '10px', fontWeight: 'bold' }}
               />
               <Legend 
                 verticalAlign="middle" 
                 align="right" 
                 layout="vertical"
-                formatter={(value) => <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider font-display">{value}</span>}
+                formatter={(value) => <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest font-display">{value}</span>}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -184,28 +203,31 @@ export default function IntelligenceAnalytics({ observations }: { observations: 
       </div>
 
       {/* Habitat Usage */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-        <div className="flex items-center gap-2 mb-6">
-          <Activity size={14} className="text-amber-600" />
-          <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest font-display">Habitat Preference Intelligence</h3>
+      <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-md group hover:border-amber-500/20 transition-all">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="p-2 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
+            <MapPin size={16} />
+          </div>
+          <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] font-display">Habitat Preference Intelligence</h3>
         </div>
-        <div className="h-64">
+        <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={habitatData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
               <XAxis 
                 dataKey="name" 
-                fontSize={7} 
+                fontSize={8} 
                 fontWeight={900} 
-                tick={{ fill: '#64748b', fontFamily: 'var(--font-mono)' }}
+                tick={{ fill: '#94a3b8', fontFamily: 'var(--font-mono)' }}
                 axisLine={false}
                 tickLine={false}
               />
-              <YAxis fontSize={8} fontWeight={900} tick={{ fill: '#64748b', fontFamily: 'var(--font-mono)' }} axisLine={false} tickLine={false} />
+              <YAxis fontSize={8} fontWeight={900} tick={{ fill: '#94a3b8', fontFamily: 'var(--font-mono)' }} axisLine={false} tickLine={false} />
               <Tooltip 
-                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px', fontWeight: 'bold' }}
+                contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', fontSize: '10px', fontWeight: 'bold' }}
+                itemStyle={{ color: COLORS.amber }}
               />
-              <Bar dataKey="value" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={30} />
+              <Bar dataKey="value" fill={COLORS.amber} radius={[6, 6, 0, 0]} barSize={40} />
             </BarChart>
           </ResponsiveContainer>
         </div>

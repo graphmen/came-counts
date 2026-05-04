@@ -93,25 +93,25 @@ export default function PremiumTrendChart({ data, selectedSpecies, speciesList =
                 grid: { display: false },
                 border: { display: false },
                 ticks: {
-                    font: { family: 'Inter, sans-serif', size: 11, weight: 700 },
-                    color: '#94a3b8',
+                    font: { family: 'Inter, sans-serif', size: 10, weight: 800 },
+                    color: '#64748b',
                     padding: 14,
                     // Show every 5 years so it doesn't crowd
                     callback: (_, i, ticks) => {
                         const year = Number(labels[i]);
-                        return year % 5 === 0 ? year : '';
+                        return year % 5 === 0 || i === labels.length - 1 ? year : '';
                     }
                 }
             },
             y: {
                 beginAtZero: false,
                 border: { display: false },
-                grid: { color: '#f1f5f9', lineWidth: 1 },
+                grid: { color: 'rgba(255, 255, 255, 0.04)', lineWidth: 1 },
                 ticks: {
-                    font: { family: 'Inter, sans-serif', size: 11, weight: 700 },
-                    color: '#94a3b8',
+                    font: { family: 'Inter, sans-serif', size: 10, weight: 800 },
+                    color: '#64748b',
                     padding: 14,
-                    callback: (v: any) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v,
+                    callback: (v: any) => v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v,
                 }
             }
         },

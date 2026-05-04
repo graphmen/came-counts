@@ -102,43 +102,50 @@ export default function ReportsPage({ params }: { params: Promise<{ parkId: stri
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
       {/* ── Page Header ────────────────────────────────────────── */}
-      <header className="relative p-6 rounded-3xl bg-white border border-slate-100 shadow-sm overflow-hidden group">
-        {/* Decorative Background Accent */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50/50 rounded-full blur-3xl -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 rounded-md border border-emerald-100/50">
-                <FileText size={10} className="text-emerald-600" />
-                <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Publication Intelligence</span>
+      {/* ── Page Header ────────────────────────────────────────── */}
+      <header className="relative p-6 md:p-8 rounded-3xl bg-slate-950 text-white border border-slate-800 shadow-2xl overflow-hidden group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl -ml-24 -mb-24" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                <FileText size={10} className="text-emerald-400" />
+                <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">Publication Intelligence</span>
               </div>
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Compiler Engine: Active</span>
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/10">
+                <ShieldCheck size={10} className="text-slate-400" />
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Compiler Engine: Active</span>
+              </div>
             </div>
             
-            <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-black text-slate-900 tracking-tight font-outfit">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <h1 className="text-3xl md:text-5xl font-display font-black text-white tracking-tight leading-none">
                 Report Generator
               </h1>
               {park && (
-                <div className="bg-slate-50 p-1 rounded-xl border border-slate-100 hidden sm:block">
+                <div className="bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-md shadow-xl hidden sm:block">
                   <YearSelector parkId={park.id} selectedYear={selectedYear} onYearChange={handleYearChange} />
                 </div>
               )}
             </div>
 
-            <div className="flex items-center gap-2 text-slate-400 font-bold text-[11px]">
-               <Zap size={14} className="text-emerald-500" />
-               Automated synthesis of ecological census data for official {park?.name} documentation.
+            <div className="flex items-center gap-3">
+               <div className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
+                 <Zap size={10} className="text-emerald-400" />
+               </div>
+               <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest leading-relaxed max-w-xl">
+                 Automated synthesis of ecological census data for official {park?.name} documentation.
+               </p>
             </div>
           </div>
 
           <div className="hidden lg:flex items-center gap-4">
-              <div className="text-right">
-                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Doc Integrity</div>
-                <div className="flex items-center gap-1 text-emerald-600 font-black text-xs">
-                   <ShieldCheck size={14} /> 100% SECURE
+              <div className="bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-sm text-right">
+                <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Doc Integrity</div>
+                <div className="flex items-center gap-2 text-emerald-400 font-black text-xs">
+                   <ShieldCheck size={14} className="animate-pulse" /> 100% SECURE
                 </div>
               </div>
           </div>
