@@ -21,14 +21,14 @@ import {
 } from 'lucide-react';
 import nextDynamic from 'next/dynamic';
 
-const PDFDownloadLink = nextDynamic(
-  () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
-  { ssr: false }
-);
-
-const TacticalIntelReport = nextDynamic(
-  () => import('@/components/pdf/TacticalIntelReport').then((mod) => mod.TacticalIntelReport),
-  { ssr: false }
+const PDFExportButton = nextDynamic(
+  () => import('@/components/intel/PDFExportButton'),
+  { ssr: false, loading: () => (
+    <button className="px-10 py-4 bg-white/50 text-slate-400 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl flex items-center gap-2 animate-pulse">
+      <Download size={14} />
+      <span>Initializing Engine...</span>
+    </button>
+  )}
 );
 
 interface Observation {
@@ -561,24 +561,11 @@ export default function IntelligenceRecon({ observations, parkName = 'MANA POOLS
                 </div>
              </div>
               <div className="relative z-10">
-                <PDFDownloadLink
-                  document={<TacticalIntelReport parkName={parkName} observations={observations} speciesSummary={speciesData} />}
-                  fileName={`WEZ_Intel_Report_${parkName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`}
-                >
-                  {({ loading }: { loading: boolean }) => (
-                    <button 
-                      disabled={loading}
-                      className="px-10 py-4 bg-white text-indigo-600 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-slate-50 active:scale-95 transition-all flex items-center gap-2"
-                    >
-                      {loading ? (
-                        <div className="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <Download size={14} />
-                      )}
-                      <span>{loading ? 'Compiling Intel...' : 'Generate Intel Report'}</span>
-                    </button>
-                  )}
-                </PDFDownloadLink>
+                <PDFExportButton 
+                  parkName={parkName} 
+                  observations={observations} 
+                  speciesData={speciesData} 
+                />
               </div>
           </div>
        </div>

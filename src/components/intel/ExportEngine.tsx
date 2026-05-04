@@ -4,13 +4,8 @@ import React, { useState } from 'react';
 import { Download, FileText, FileJson, ShieldCheck, FileSpreadsheet, CheckCircle2, Loader2, FileType } from 'lucide-react';
 import nextDynamic from 'next/dynamic';
 
-const PDFDownloadLink = nextDynamic(
-  () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
-  { ssr: false }
-);
-
-const TacticalIntelReport = nextDynamic(
-  () => import('@/components/pdf/TacticalIntelReport').then((mod) => mod.TacticalIntelReport),
+const PDFExportButton = nextDynamic(
+  () => import('@/components/intel/PDFExportButton'),
   { ssr: false }
 );
 
@@ -220,31 +215,12 @@ export default function ExportEngine({ observations, parkName }: { observations:
             if ('isPdf' in fmt && fmt.isPdf) {
               return (
                 <div key={fmt.id} className="w-full">
-                  <PDFDownloadLink
-                    document={<TacticalIntelReport parkName={parkName} observations={observations} speciesSummary={speciesSummary} />}
-                    fileName={`WEZ_Intel_Report_${(parkName || 'export').replace(/\s+/g, '_')}.pdf`}
-                    style={{ width: '100%', textDecoration: 'none' }}
-                  >
-                    {({ loading: pdfLoading }) => (
-                      <button
-                        disabled={observations.length === 0 || pdfLoading}
-                        className={`w-full flex flex-col items-center gap-4 p-6 bg-slate-50 border border-slate-200 rounded-3xl transition-all group disabled:opacity-40 ${fmt.bg}`}
-                      >
-                        <div className={`w-14 h-14 bg-white rounded-2xl flex items-center justify-center ${fmt.iconBg} shadow-sm group-hover:scale-110 transition-transform`}>
-                          {pdfLoading ? <Loader2 size={28} className="animate-spin" /> :
-                           <Icon size={28} />}
-                        </div>
-                        <div className="text-center">
-                          <div className="text-sm font-black text-slate-900 uppercase tracking-widest font-display">{fmt.label}</div>
-                          <p className="text-[9px] text-slate-400 font-bold mt-1 font-sans">{fmt.sub}</p>
-                        </div>
-                        <div className="px-5 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                          {pdfLoading ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
-                          {pdfLoading ? 'COMPILING...' : `EXPORT ${fmt.ext}`}
-                        </div>
-                      </button>
-                    )}
-                  </PDFDownloadLink>
+                  <PDFExportButton 
+                    parkName={parkName} 
+                    observations={observations} 
+                    speciesData={speciesSummary}
+                    isFullWidth={true}
+                  />
                 </div>
               );
             }
