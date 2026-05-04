@@ -1,4 +1,4 @@
-# WEZ Command & Control Platform
+# WEZ Game Counts Platform
 
 A high-performance, professional wildlife management and survey platform built for **Wildlife & Environment Zimbabwe (WEZ)**.
 

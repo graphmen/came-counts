@@ -61,7 +61,7 @@ export default function HomePage() {
           </div>
 
           <h1 className="text-4xl md:text-6xl font-display font-black tracking-tight leading-[0.9] text-white">
-            Command & Control <br/>
+            Game Counts <br/>
             <span className="text-emerald-500 text-3xl md:text-5xl">Conservation.</span>
           </h1>
 

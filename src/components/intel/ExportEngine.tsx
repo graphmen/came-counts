@@ -70,7 +70,7 @@ export default function ExportEngine({ observations, parkName }: { observations:
         generated_at: new Date().toISOString(),
         park: parkName,
         record_count: observations.length,
-        platform: 'WEZ Command & Control v2',
+        platform: 'WEZ Game Counts v2',
       },
       observations
     };

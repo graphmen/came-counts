@@ -220,7 +220,7 @@ export const TacticalIntelReport = ({ parkName, observations, speciesSummary }: 
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Text style={styles.title}>Tactical Intel Report</Text>
-            <Text style={styles.subtitle}>Wildlife & Environment Zimbabwe · Operations Command</Text>
+            <Text style={styles.subtitle}>Wildlife & Environment Zimbabwe · Game Counts</Text>
           </View>
           <View style={styles.headerRight}>
             <Text style={styles.statusBadge}>OPERATIONAL_SECURE</Text>
@@ -313,7 +313,7 @@ export const TacticalIntelReport = ({ parkName, observations, speciesSummary }: 
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Authenticated Intelligence Stream · Encryption Active · Node: WEZ-COMMAND-Z01</Text>
+          <Text style={styles.footerText}>Authenticated Intelligence Stream · Encryption Active · Node: WEZ-GAMECOUNT-Z01</Text>
           <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Page ${pageNumber} / ${totalPages}`} />
         </View>
       </Page>

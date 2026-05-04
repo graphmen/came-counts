@@ -94,7 +94,7 @@ export default function Sidebar() {
                     </div>
                     <div>
                         <div style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 20, color: '#fff', lineHeight: 1, letterSpacing: '-0.02em' }}>WEZ</div>
-                        <div style={{ fontSize: 9, color: 'var(--wez-green)', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 800, marginTop: 4 }}>Command & Control</div>
+                        <div style={{ fontSize: 9, color: 'var(--wez-green)', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 800, marginTop: 4 }}>Game Counts</div>
                     </div>
                 </div>
             </div>

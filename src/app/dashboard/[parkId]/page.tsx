@@ -71,7 +71,7 @@ export default function ParkDashboard({ params }: { params: Promise<{ parkId: st
   if (loading) return (
     <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
       <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-      <p className="text-slate-500 font-bold text-sm tracking-wide">Syncing Command Center...</p>
+      <p className="text-slate-500 font-bold text-sm tracking-wide">Syncing Game Counts Hub...</p>
     </div>
   );
 
@@ -175,7 +175,7 @@ export default function ParkDashboard({ params }: { params: Promise<{ parkId: st
 
       {/* ── Footer / Status ─────────────────────────────────────── */}
       <footer className="pt-8 pb-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-6 text-slate-500">
-        <p className="text-xs font-bold uppercase tracking-wider">© 2026 Wildlife & Environment Zimbabwe · Command Platform v15.0.4</p>
+        <p className="text-xs font-bold uppercase tracking-wider">© 2026 Wildlife & Environment Zimbabwe · Game Counts Platform v15.0.4</p>
         <div className="flex gap-6">
           <div className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />

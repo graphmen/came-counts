@@ -586,7 +586,7 @@ export default function IntelligenceRecon({ observations, parkName = 'MANA POOLS
       <div className="flex items-center gap-4 py-4 px-2 border-t border-slate-200">
          <Info size={14} className="text-slate-400" />
          <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">
-           Authenticated Intelligence Stream · Encryption Active · Node: WEZ-COMMAND-Z01
+           Authenticated Intelligence Stream · Encryption Active · Node: WEZ-GAMECOUNT-Z01
          </p>
       </div>
 

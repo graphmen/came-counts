@@ -24,13 +24,13 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: {
     template: '%s | WEZ Wildlife Platform',
-    default: 'WEZ Command & Control | Wildlife Game Count Zimbabwe',
+    default: 'WEZ Game Counts | Wildlife Game Count Zimbabwe',
   },
   description: 'The official multi-park wildlife monitoring and reporting platform for Wildlife & Environment Zimbabwe (WEZ). Real-time digital dashboards, rigorous trend analysis, and automated professional reports.',
   keywords: ['WEZ', 'Wildlife', 'Zimbabwe', 'Game Count', 'Conservation', 'Mana Pools', 'Hwange'],
   authors: [{ name: 'WEZ Conservation Tech Team' }],
   openGraph: {
-    title: 'WEZ Command & Control | Wildlife Game Count',
+    title: 'WEZ Game Counts | Wildlife Game Count',
     description: 'Modernizing Zimbabwe\'s wildlife monitoring with elite digital intelligence.',
     url: 'https://wez-platform.vercel.app',
     siteName: 'WEZ Wildlife Platform',
