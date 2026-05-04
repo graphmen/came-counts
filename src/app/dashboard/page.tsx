@@ -12,7 +12,10 @@ import {
   Users, 
   Database,
   ArrowUpRight,
-  ChevronRight
+  ChevronRight,
+  Activity,
+  Zap,
+  Lock
 } from 'lucide-react';
 import Link from 'next/link';
 import EliteAnalytics from '@/components/charts/EliteAnalytics';
@@ -26,11 +29,9 @@ export default function NationalDashboard() {
     async function fetchNationalData() {
       setLoading(true);
       try {
-        // Fetch all parks
         const { data: pData } = await supabase.from('parks').select('*').order('name');
         setParks(pData || []);
 
-        // Fetch national survey totals with park_id for individual card aggregation
         const { data: sData } = await supabase
           .from('v_survey_species_totals')
           .select('year, total_count, species, park_id');
@@ -57,7 +58,6 @@ export default function NationalDashboard() {
     };
   }, [allSightings, parks]);
 
-  // Map data for the dynamic chart in EliteAnalytics
   const speciesDistribution = useMemo(() => {
     const map: Record<string, number> = {};
     allSightings.forEach(s => {
@@ -82,45 +82,67 @@ export default function NationalDashboard() {
       transition={{ duration: 0.8 }}
       className="max-w-6xl mx-auto px-4 py-4 space-y-6"
     >
-      {/* ── National Header ───────────────────────────────────── */}
-      <header className="relative p-6 rounded-3xl bg-slate-900 text-white shadow-xl overflow-hidden group">
-        <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl -mr-24 -mt-24" />
+      {/* -- National Header -- */}
+      <header className="relative rounded-[2rem] bg-slate-950 text-white border border-slate-800 shadow-2xl overflow-hidden group">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-[100px] -mr-40 -mt-40" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-[100px] -ml-32 -mb-32" />
         
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-2">
+        <div className="relative z-10 p-8 md:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 px-2 py-0.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
                 <ShieldCheck size={10} className="text-emerald-400" />
-                <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">Sector Active</span>
+                <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">National Grid Active</span>
               </div>
-              <div className="flex items-center gap-2 px-2 py-0.5 bg-white/5 rounded-full border border-white/10">
-                <span className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">UNIT_ZIM_01</span>
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/10">
+                <span className="text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.2em]">HUB_ZIM_CENTRAL</span>
               </div>
             </div>
             
-            <h1 className="text-2xl md:text-3xl font-display font-black tracking-tight leading-none text-white">
-              Zimbabwe <span className="text-emerald-500">National Nodes.</span>
+            <h1 className="text-4xl md:text-6xl font-display font-black tracking-tight leading-none text-white">
+              Zimbabwe <span className="text-emerald-500">Game Counts.</span>
             </h1>
 
-            <p className="text-slate-400 font-medium max-w-lg text-[10px] leading-relaxed">
-              Aggregated longitudinal wildlife intelligence across all WEZ operational sectors.
+            <p className="text-slate-400 font-bold max-w-lg text-[10px] uppercase tracking-widest leading-relaxed opacity-70">
+              Aggregated longitudinal wildlife intelligence across all operational sectors.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <div className="bg-white/5 p-3 rounded-2xl border border-white/10 backdrop-blur-sm">
-              <div className="text-xl font-display font-black text-emerald-400">{nationalStats.totalSightings.toLocaleString()}</div>
-              <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-0.5">Sightings</div>
+          <div className="flex items-center gap-4">
+            <div className="bg-white/5 p-5 rounded-3xl border border-white/10 backdrop-blur-xl shadow-2xl min-w-[140px]">
+              <div className="text-3xl font-display font-black text-emerald-400">{nationalStats.totalSightings.toLocaleString()}</div>
+              <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Verified Sightings</div>
             </div>
-            <div className="bg-white/5 p-3 rounded-2xl border border-white/10 backdrop-blur-sm">
-              <div className="text-xl font-display font-black text-white">{(nationalStats.totalArea / 1000).toFixed(0)}k</div>
-              <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-0.5">Hectares</div>
+            <div className="bg-white/5 p-5 rounded-3xl border border-white/10 backdrop-blur-xl shadow-2xl min-w-[140px]">
+              <div className="text-3xl font-display font-black text-white">{(nationalStats.totalArea / 1000).toFixed(0)}k</div>
+              <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Hectares Managed</div>
             </div>
+          </div>
+        </div>
+
+        {/* -- Status Bar -- */}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 px-10 py-4 border-t border-white/5 bg-white/[0.02]">
+          <div className="flex items-center gap-2">
+            <Activity size={10} className="text-emerald-500" />
+            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Global Status</span>
+            <span className="text-[9px] font-mono font-bold text-emerald-400">OPERATIONAL</span>
+          </div>
+          <div className="w-1 h-1 rounded-full bg-slate-800" />
+          <div className="flex items-center gap-2">
+            <Zap size={10} className="text-amber-400" />
+            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Nodes Sync</span>
+            <span className="text-[9px] font-mono font-bold text-amber-400">{nationalStats.activeNodes} Sectors</span>
+          </div>
+          <div className="w-1 h-1 rounded-full bg-slate-800" />
+          <div className="flex items-center gap-2">
+            <Lock size={10} className="text-blue-400" />
+            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Protocol</span>
+            <span className="text-[9px] font-mono font-bold text-blue-400">WEZ-SECURE</span>
           </div>
         </div>
       </header>
 
-      {/* ── Global Analytics ──────────────────────────────────── */}
+      {/* -- Global Analytics -- */}
       <section className="bg-white rounded-3xl border border-slate-100 p-1">
         <EliteAnalytics stats={{
           parkName: 'National Overview',
@@ -132,7 +154,7 @@ export default function NationalDashboard() {
         }} />
       </section>
 
-      {/* ── Jurisdictions Grid ────────────────────────────────── */}
+      {/* -- Jurisdictions Grid -- */}
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 pb-2">
           <div>
@@ -155,7 +177,7 @@ export default function NationalDashboard() {
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-xl group-hover:bg-emerald-50 transition-colors">
-                      {park.name.includes('Elephant') ? '🐘' : park.name.includes('Pools') ? '🏕️' : '🌳'}
+                      {park.name.includes('Elephant') ? '??' : park.name.includes('Pools') ? '???' : '??'}
                     </div>
                     <ArrowUpRight size={14} className="text-slate-300 group-hover:text-emerald-500 transition-colors" />
                   </div>
@@ -187,7 +209,7 @@ export default function NationalDashboard() {
 
       <footer className="pt-6 pb-4 border-t border-slate-100 text-center">
         <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.3em]">
-          National Wildlife Intelligence Grid · Zimbabwe Authority
+          National Wildlife Intelligence Grid - Zimbabwe Authority
         </p>
       </footer>
     </motion.div>
