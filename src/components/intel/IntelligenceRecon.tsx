@@ -46,10 +46,23 @@ const COLORS = {
 };
 
 const SPECIES_PORTRAITS: Record<string, string> = {
-  'Elephant': '/images/species/elephant.png',
-  'Lion': '/images/species/lion.png',
-  'Hippo': '/images/species/hippo.png',
-  'Buffalo': '/images/species/elephant.png', // Fallback to similar
+  'elephant': '/images/species/elephant.png',
+  'african elephant': '/images/species/elephant.png',
+  'lion': '/images/species/lion.png',
+  'hippo': '/images/species/hippo.png',
+  'hippopotamus': '/images/species/hippo.png',
+  'buffalo': '/images/species/elephant.png', // Fallback to similar large herbivore
+  'cape buffalo': '/images/species/elephant.png',
+};
+
+const getSpeciesPortrait = (speciesName: string | null) => {
+  if (!speciesName) return null;
+  const normalized = speciesName.toLowerCase().trim();
+  // Check exact matches or partial matches
+  for (const [key, value] of Object.entries(SPECIES_PORTRAITS)) {
+    if (normalized.includes(key)) return value;
+  }
+  return null;
 };
 
 export default function IntelligenceRecon({ observations }: { observations: Observation[] }) {
@@ -257,9 +270,9 @@ export default function IntelligenceRecon({ observations }: { observations: Obse
                     className="w-full h-full object-cover transition-transform group-hover/img:scale-110" 
                     alt={selectedSpecies}
                   />
-                ) : SPECIES_PORTRAITS[selectedSpecies] ? (
+                ) : getSpeciesPortrait(selectedSpecies) ? (
                   <img 
-                    src={SPECIES_PORTRAITS[selectedSpecies]} 
+                    src={getSpeciesPortrait(selectedSpecies)!} 
                     className="w-full h-full object-cover transition-transform group-hover/img:scale-110" 
                     alt={selectedSpecies}
                   />
