@@ -23,14 +23,14 @@ export default function LiveTicker({ observations }: { observations: Observation
     <div className="bg-slate-900 border-y border-white/5 py-2 overflow-hidden relative">
       <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-slate-900 to-transparent z-10" />
       <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-900 to-transparent z-10" />
-      
-      <motion.div 
+
+      <motion.div
         className="flex gap-12 whitespace-nowrap px-4"
         animate={{ x: [0, -1000] }}
-        transition={{ 
-          duration: 40, 
-          repeat: Infinity, 
-          ease: "linear" 
+        transition={{
+          duration: 40,
+          repeat: Infinity,
+          ease: "linear"
         }}
       >
         {[...tickerItems, ...tickerItems].map((item, idx) => (
