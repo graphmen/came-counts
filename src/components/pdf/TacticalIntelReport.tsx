@@ -314,9 +314,15 @@ export const TacticalIntelReport = ({ parkName = 'Unknown Park', observations = 
         ) : null}
 
         {/* Footer */}
-        <View style={styles.footer}>
+        <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Authenticated Intelligence Stream · Encryption Active · Node: WEZ-GAMECOUNT-Z01</Text>
-          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Page ${pageNumber} / ${totalPages}`} />
+          <Text 
+            style={styles.footerText} 
+            render={({ pageNumber, totalPages }) => {
+              if (!pageNumber || !totalPages) return '';
+              return `Page ${pageNumber} / ${totalPages}`;
+            }} 
+          />
         </View>
       </Page>
     </Document>
