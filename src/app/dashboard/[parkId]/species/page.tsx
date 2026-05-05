@@ -15,9 +15,7 @@ import {
   TrendingUp,
   Users,
   Globe,
-  MapPin as MapIcon,
-  ShieldCheck,
-  Activity
+  MapPin as MapIcon
 } from 'lucide-react';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import YearSelector from '@/components/YearSelector';
@@ -73,40 +71,36 @@ export default function SpeciesAnalysisPage({ params }: { params: Promise<{ park
   }), [data, search, filterClass]);
 
   if (loading) return (
-    <div className="flex items-center justify-center h-[60vh] bg-slate-950">
+    <div className="flex items-center justify-center h-[60vh]">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-10 h-10 rounded-full border-[3px] border-emerald-500 border-t-transparent animate-spin shadow-[0_0_15px_rgba(16,185,129,0.3)]" />
-        <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.4em] animate-pulse">Synchronizing Species Matrix…</p>
+        <div className="w-10 h-10 rounded-full border-[3px] border-[#1a7a4a] border-t-transparent animate-spin" />
+        <p className="text-slate-500 font-bold text-sm tracking-wide">Loading Species Data…</p>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* ── Page Header ────────────────────────────────────────── */}
-      <header className="relative p-10 rounded-[2.5rem] bg-slate-900/50 text-white border border-white/5 shadow-2xl overflow-hidden group backdrop-blur-md">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-[100px] -mr-48 -mt-48 transition-transform group-hover:scale-110 duration-700 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-[100px] -ml-48 -mb-48 pointer-events-none" />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+      {/* ── Header ────────────────────────────────────────── */}
+      <header className="relative p-6 rounded-3xl bg-white border border-slate-200 shadow-sm overflow-hidden group">
         
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-                <Globe size={12} className="text-emerald-400 animate-pulse" />
-                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">Biological Inventory</span>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-md border border-emerald-100">
+                <Globe size={14} className="text-emerald-600" />
+                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Biological Inventory</span>
               </div>
-              <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10 backdrop-blur-md">
-                <ShieldCheck size={12} className="text-slate-400" />
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Cycle: {selectedYear} Verification</span>
-              </div>
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cycle: {selectedYear} Verification</span>
             </div>
             
-            <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-              <h1 className="text-5xl md:text-7xl font-display font-black text-white tracking-tighter leading-none uppercase">
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight font-display">
                 Species Analysis
               </h1>
-              <div className="h-16 w-px bg-white/10 hidden md:block" />
-              <div className="bg-white/5 p-2 rounded-[1.5rem] border border-white/10 backdrop-blur-md shadow-2xl">
+              <div className="h-8 w-px bg-slate-200 hidden sm:block" />
+              <div className="bg-slate-50 p-1 rounded-xl border border-slate-100 hidden sm:block">
                 <YearSelector parkId={parkId} selectedYear={selectedYear} onYearChange={(y) => {
                   const params = new URLSearchParams(searchParams);
                   params.set('year', y.toString());
@@ -115,64 +109,57 @@ export default function SpeciesAnalysisPage({ params }: { params: Promise<{ park
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-               <div className="w-8 h-8 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-                 <Info size={14} className="text-emerald-400" />
-               </div>
-               <p className="text-slate-400 font-black text-[10px] uppercase tracking-[0.3em] leading-relaxed max-w-xl">
-                 Primary population distribution and census audit for operational planning.
-               </p>
+            <div className="flex items-center gap-2 text-slate-500 font-semibold text-sm">
+               <Info size={16} className="text-emerald-600" />
+               Primary population distribution and census audit for operational planning.
             </div>
           </div>
 
-          <div className="flex items-center gap-3 bg-white/5 p-2 rounded-[1.5rem] border border-white/10 backdrop-blur-md shadow-2xl">
+          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-xl border border-slate-200 shadow-inner">
             <button 
               onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-600/30' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-emerald-700 shadow-sm border border-emerald-100' : 'text-slate-500 hover:text-slate-700'}`}
             >
               <LayoutGrid size={16} />
-              <span className="text-[10px] font-black uppercase tracking-widest">Grid</span>
+              <span className="text-xs font-bold uppercase tracking-wider">Grid View</span>
             </button>
             <button 
               onClick={() => setViewMode('table')}
-              className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all ${viewMode === 'table' ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-600/30' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${viewMode === 'table' ? 'bg-white text-emerald-700 shadow-sm border border-emerald-100' : 'text-slate-500 hover:text-slate-700'}`}
             >
               <TableIcon size={16} />
-              <span className="text-[10px] font-black uppercase tracking-widest">Table</span>
+              <span className="text-xs font-bold uppercase tracking-wider">Table View</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* ── Search & Filters ─────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-6 bg-slate-900/50 p-6 rounded-[2rem] border border-white/5 shadow-2xl backdrop-blur-md">
-        <div className="flex items-center gap-6 flex-1 min-w-[300px]">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+      {/* ── Filters ─────────────────────────────────────── */}
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+        <div className="flex items-center gap-3 flex-1 min-w-[300px]">
+          <div className="relative flex-1 max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
             <input 
               type="text"
-              placeholder="Filter by species identification..."
+              placeholder="Search species..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-[11px] font-black text-white placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/50 outline-none transition-all uppercase tracking-[0.2em]"
+              className="w-full pl-9 pr-4 py-1.5 bg-slate-50 border-none rounded-lg text-xs font-bold text-slate-700 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
             />
           </div>
-          <div className="relative">
-            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
-            <select 
-              value={filterClass}
-              onChange={(e) => setFilterClass(e.target.value)}
-              className="pl-12 pr-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-[11px] font-black text-white outline-none cursor-pointer appearance-none hover:bg-white/10 transition-all uppercase tracking-[0.2em]"
-            >
-              <option value="all" className="bg-slate-900">Taxonomic Range: ALL</option>
-              <option value="mammal" className="bg-slate-900">Class: MAMMALS</option>
-              <option value="bird" className="bg-slate-900">Class: BIRDS</option>
-              <option value="reptile" className="bg-slate-900">Class: REPTILES</option>
-            </select>
-          </div>
+          <select 
+            value={filterClass}
+            onChange={(e) => setFilterClass(e.target.value)}
+            className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 outline-none cursor-pointer"
+          >
+            <option value="all">All Classes</option>
+            <option value="mammal">Mammals</option>
+            <option value="bird">Birds</option>
+            <option value="reptile">Reptiles</option>
+          </select>
         </div>
-        <button className="flex items-center gap-3 px-8 py-4 bg-emerald-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-emerald-600/20 hover:bg-emerald-500 active:scale-95 transition-all border border-emerald-400/20">
-          <Download size={16} /> Export Intelligence
+        <button className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-bold text-xs uppercase tracking-wider hover:bg-slate-100 hover:text-emerald-700 transition-colors">
+          <Download size={16} /> Export CSV
         </button>
       </div>
 
@@ -183,56 +170,55 @@ export default function SpeciesAnalysisPage({ params }: { params: Promise<{ park
             key="grid" 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
           >
             {filteredData.map((row) => {
               const meta = getWildlifeMetadata(row.species);
               return (
                 <motion.div 
                   key={row.species}
-                  className="group bg-white/5 p-6 rounded-[2rem] border border-white/5 shadow-2xl hover:border-emerald-500/30 transition-all relative overflow-hidden backdrop-blur-md"
+                  className="group bg-white p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all relative overflow-hidden"
                 >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/[0.03] rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-emerald-500/[0.07] transition-colors" />
-                  
-                  <div className="flex items-center gap-4 mb-6 relative z-10">
+                  <div className="flex items-center gap-3 mb-4">
                     <div 
-                      className={`w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-3xl border border-white/10 shadow-2xl transition-transform group-hover:scale-110 duration-500`}
+                      className={`w-12 h-12 rounded-lg ${meta.bgLight} flex items-center justify-center text-2xl border shadow-sm`}
+                      style={{ borderColor: `${meta.color}30` }}
                     >
                       {meta.emoji}
                     </div>
                     <div>
-                      <h3 className="text-xl font-display font-black text-white leading-none uppercase tracking-tight">{row.species}</h3>
-                      <p className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.2em] mt-2">{row.class}</p>
+                      <h3 className="text-base font-bold text-slate-900 leading-tight">{row.species}</h3>
+                      <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mt-0.5">{row.class}</p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 mb-6 relative z-10">
-                    <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                      <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Census Total</p>
-                      <p className="text-2xl font-mono font-black text-white tracking-tighter">{row.total_count.toLocaleString()}</p>
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Census Total</p>
+                      <p className="text-lg font-bold text-slate-900">{row.total_count.toLocaleString()}</p>
                     </div>
-                    <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                      <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Sex Ratio</p>
-                      <p className="text-2xl font-mono font-black text-white tracking-tighter">
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Sex Ratio</p>
+                      <p className="text-lg font-bold text-slate-900">
                         {row.male_count > 0 ? (row.female_count / row.male_count).toFixed(1) : '—'} 
-                        <span className="text-[8px] font-black ml-1 text-slate-600">F/M</span>
+                        <span className="text-xs font-semibold ml-1 text-slate-500">F/M</span>
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-[10px] font-black mb-4 relative z-10 uppercase tracking-widest">
+                  <div className="flex items-center justify-between text-xs font-bold mb-2">
                     <div className="flex gap-4">
-                      <span className="text-blue-400">♂ {row.male_count}</span>
-                      <span className="text-rose-400">♀ {row.female_count}</span>
+                      <span className="text-blue-700">♂ {row.male_count}</span>
+                      <span className="text-rose-700">♀ {row.female_count}</span>
                     </div>
-                    <span className="text-slate-600">UNK: {row.unknown_sex_count}</span>
+                    <span className="text-slate-500">#{row.unknown_sex_count}</span>
                   </div>
 
                   <button 
                     onClick={() => router.push(`/dashboard/${routeParkId}/trends`)}
-                    className="w-full mt-4 pt-5 border-t border-white/5 flex items-center justify-between text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] hover:text-emerald-400 transition-colors relative z-10"
+                    className="w-full mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider hover:text-emerald-700 transition-colors"
                   >
-                    Temporal Analysis <TrendingUp size={16} />
+                    Analysis <TrendingUp size={16} />
                   </button>
                 </motion.div>
               );
@@ -243,35 +229,26 @@ export default function SpeciesAnalysisPage({ params }: { params: Promise<{ park
             key="table" 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }}
-            className="bg-slate-900/50 rounded-[2.5rem] border border-white/5 shadow-2xl overflow-hidden backdrop-blur-md"
+            className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden"
           >
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-white/5 border-b border-white/10">
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Species Identification</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Taxonomic Class</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Census Aggregation</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] text-right">Context</th>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="px-4 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Species</th>
+                  <th className="px-4 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Class</th>
+                  <th className="px-4 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Total</th>
+                  <th className="px-4 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.02]">
+              <tbody>
                 {filteredData.map((row) => (
-                  <tr key={row.species} className="hover:bg-white/[0.03] transition-all group">
-                    <td className="px-8 py-6">
-                       <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-lg border border-white/10 shadow-xl group-hover:scale-110 transition-transform">
-                             {getWildlifeMetadata(row.species).emoji}
-                          </div>
-                          <span className="text-sm font-black text-white uppercase tracking-tight">{row.species}</span>
-                       </div>
-                    </td>
-                    <td className="px-8 py-6 text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em]">{row.class}</td>
-                    <td className="px-8 py-6">
-                       <span className="text-lg font-mono font-black text-white tracking-tighter">{row.total_count.toLocaleString()}</span>
-                    </td>
-                    <td className="px-8 py-6 text-right">
-                      <button onClick={() => router.push(`/dashboard/${routeParkId}/trends`)} className="text-slate-500 hover:text-emerald-400 transition-all p-3 hover:bg-white/5 rounded-2xl border border-transparent hover:border-white/10">
-                        <TrendingUp size={20} />
+                  <tr key={row.species} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                    <td className="px-4 py-4 font-bold text-slate-900 text-sm">{row.species}</td>
+                    <td className="px-4 py-4 text-xs font-bold text-emerald-700 uppercase tracking-wider">{row.class}</td>
+                    <td className="px-4 py-4 font-bold text-slate-900 text-sm">{row.total_count.toLocaleString()}</td>
+                    <td className="px-4 py-4 text-right">
+                      <button onClick={() => router.push(`/dashboard/${routeParkId}/trends`)} className="text-slate-500 hover:text-emerald-700 transition-colors p-2 hover:bg-emerald-50 rounded-lg">
+                        <TrendingUp size={18} />
                       </button>
                     </td>
                   </tr>
@@ -283,17 +260,14 @@ export default function SpeciesAnalysisPage({ params }: { params: Promise<{ park
       </AnimatePresence>
 
       {/* ── Footer Info ───────────────────────────────────── */}
-      <footer className="pt-12 pb-8 border-t border-white/5 flex flex-col lg:flex-row justify-between items-center gap-8 relative z-10">
-        <div className="flex items-center gap-4">
-           <div className="p-3 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md">
-              <Info size={20} className="text-slate-500" />
-           </div>
-           <div>
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Wildlife & Environment Zimbabwe</p>
-              <p className="text-[11px] font-black text-white uppercase tracking-[0.1em] mt-1">Operational Node ACTIVE • Secure biological registry</p>
-           </div>
+      <footer className="mt-12 pt-6 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3 text-slate-600">
+          <Info size={16} className="text-emerald-600" />
+          <p className="text-xs font-bold uppercase tracking-wider max-w-md">
+            All data points reflect field-verified sightings from the {selectedYear} census cycle.
+          </p>
         </div>
-        <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.5em]">© 2026 DIGITAL_PERIMETER_ACTIVE</p>
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">© 2026 Wildlife Zim · Secure Registry</p>
       </footer>
     </div>
   );
