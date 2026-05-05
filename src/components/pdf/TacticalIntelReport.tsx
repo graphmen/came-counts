@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
     marginBottom: 15,
   },
   kpiBox: {
@@ -147,9 +146,9 @@ const styles = StyleSheet.create({
   },
   watermark: {
     position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%) rotate(-45deg)',
+    top: '40%',
+    left: '20%',
+    transform: 'rotate(-45deg)',
     fontSize: 60,
     color: '#f1f5f9',
     opacity: 0.3,
@@ -158,21 +157,21 @@ const styles = StyleSheet.create({
   gallery: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
     marginTop: 10,
   },
   evidenceCard: {
-    width: '48%',
+    width: '96%',
+    margin: '2%',
     backgroundColor: '#f8fafc',
-    borderRadius: 6,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: '#e2e8f0',
     overflow: 'hidden',
-    marginBottom: 10,
+    marginBottom: 15,
   },
   evidenceImage: {
     width: '100%',
-    height: 120,
+    height: 280,
     objectFit: 'cover',
   },
   evidenceMeta: {
@@ -207,8 +206,11 @@ interface Props {
   speciesSummary: { name: string; value: number }[];
 }
 
-export const TacticalIntelReport = ({ parkName, observations, speciesSummary }: Props) => {
-  const totalCount = observations.reduce((acc, curr) => acc + (curr.count || 0), 0);
+export const TacticalIntelReport = ({ parkName = 'Unknown Park', observations = [], speciesSummary = [] }: Props) => {
+  const safeObs = Array.isArray(observations) ? observations : [];
+  const safeSpecies = Array.isArray(speciesSummary) ? speciesSummary : [];
+  
+  const totalCount = safeObs.reduce((acc, curr) => acc + (Number(curr?.count) || 0), 0);
   const timestamp = new Date().toLocaleString();
 
   return (
@@ -238,7 +240,7 @@ export const TacticalIntelReport = ({ parkName, observations, speciesSummary }: 
             </View>
             <View style={styles.kpiBox}>
               <Text style={styles.kpiLabel}>Total Sightings</Text>
-              <Text style={styles.kpiValue}>{observations.length}</Text>
+              <Text style={styles.kpiValue}>{safeObs.length}</Text>
             </View>
             <View style={styles.kpiBox}>
               <Text style={styles.kpiLabel}>Specimen Count</Text>
@@ -246,7 +248,7 @@ export const TacticalIntelReport = ({ parkName, observations, speciesSummary }: 
             </View>
             <View style={styles.kpiBox}>
               <Text style={styles.kpiLabel}>Species Diversity</Text>
-              <Text style={styles.kpiValue}>{speciesSummary.length}</Text>
+              <Text style={styles.kpiValue}>{safeSpecies.length}</Text>
             </View>
           </View>
         </View>
@@ -261,11 +263,11 @@ export const TacticalIntelReport = ({ parkName, observations, speciesSummary }: 
               <Text style={styles.countCell}>Count</Text>
               <Text style={styles.tableHeaderCell}>Confidence</Text>
             </View>
-            {speciesSummary.slice(0, 12).map((s, i) => (
+            {safeSpecies.slice(0, 12).map((s, i) => (
               <View key={i} style={styles.tableRow}>
-                <Text style={styles.speciesCell}>{s.name.toUpperCase()}</Text>
+                <Text style={styles.speciesCell}>{(s.name || 'Unknown').toUpperCase()}</Text>
                 <Text style={styles.tableCell}>WEZ-Mobile Sighting</Text>
-                <Text style={styles.countCell}>{s.value}</Text>
+                <Text style={styles.countCell}>{s.value || 0}</Text>
                 <Text style={styles.tableCell}>HIGH</Text>
               </View>
             ))}
@@ -282,34 +284,34 @@ export const TacticalIntelReport = ({ parkName, observations, speciesSummary }: 
               <Text style={styles.tableHeaderCell}>Observer Node</Text>
               <Text style={styles.tableHeaderCell}>Activity</Text>
             </View>
-            {observations.slice(0, 10).map((o, i) => (
+            {safeObs.slice(0, 10).map((o, i) => (
               <View key={i} style={styles.tableRow}>
-                <Text style={styles.tableCell}>{o.time}</Text>
-                <Text style={styles.speciesCell}>{o.species.toUpperCase()}</Text>
+                <Text style={styles.tableCell}>{o.time || 'N/A'}</Text>
+                <Text style={styles.speciesCell}>{(o.species || 'Unknown').toUpperCase()}</Text>
                 <Text style={styles.tableCell}>{o.observer || 'MOBILE-NODE'}</Text>
-                <Text style={styles.tableCell}>{o.activity}</Text>
+                <Text style={styles.tableCell}>{o.activity || 'IDLE'}</Text>
               </View>
             ))}
           </View>
         </View>
 
         {/* Field Evidence */}
-        {observations.filter(o => o.photo_url).length > 0 && (
+        {safeObs.filter(o => o.photo_url && o.photo_url.startsWith('http')).length > 0 ? (
           <View style={styles.section} break>
             <Text style={styles.sectionTitle}>Field Intelligence Evidence (Authenticated)</Text>
             <View style={styles.gallery}>
-              {observations.filter(o => o.photo_url).slice(0, 4).map((o, i) => (
+              {safeObs.filter(o => o.photo_url && o.photo_url.startsWith('http')).slice(0, 8).map((o, i) => (
                 <View key={i} style={styles.evidenceCard}>
                   <Image src={o.photo_url!} style={styles.evidenceImage} />
                   <View style={styles.evidenceMeta}>
-                    <Text style={styles.evidenceText}>{o.species.toUpperCase()} · {o.date}</Text>
-                    <Text style={[styles.evidenceText, { color: '#64748b', marginTop: 2 }]}>Loc: {o.habitat} · Node: {o.observer}</Text>
+                    <Text style={[styles.evidenceText, { fontSize: 9 }]}>{(o.species || 'UNK').toUpperCase()} · {o.date || 'N/A'}</Text>
+                    <Text style={[styles.evidenceText, { color: '#64748b', marginTop: 4, fontSize: 8 }]}>Loc: {o.habitat || 'Sector Alpha'} · Node: {o.observer || 'NODE'}</Text>
                   </View>
                 </View>
               ))}
             </View>
           </View>
-        )}
+        ) : null}
 
         {/* Footer */}
         <View style={styles.footer}>

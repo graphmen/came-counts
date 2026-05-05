@@ -134,8 +134,8 @@ const SpecimenImage = ({ speciesName, fieldPhotoUrl }: { speciesName: string, fi
   }
 
   return (
-    <div className="w-full h-full bg-slate-800 flex items-center justify-center relative z-20">
-      <Target size={24} className="text-slate-600" />
+    <div className="w-full h-full bg-slate-100 flex items-center justify-center relative z-20">
+      <Target size={24} className="text-slate-400" />
     </div>
   );
 };
@@ -164,20 +164,24 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
   }, [speciesData, searchTerm]);
 
   const temporalData = useMemo(() => {
-    const slots = ['Sat Morning', 'Sat Afternoon', 'Sun Morning', 'Sun Afternoon'];
-    const map: Record<string, number> = {
-      'Sat Morning': 0, 'Sat Afternoon': 0, 'Sun Morning': 0, 'Sun Afternoon': 0
-    };
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const periods = ['Morning', 'Midday', 'Afternoon', 'Evening'];
     
-    if (Array.isArray(observations)) {
-      observations.forEach(o => {
-        if (!o) return;
-        const key = `${(o.day_of_week || '').substring(0, 3)} ${o.period_of_day || ''}`;
-        if (map[key] !== undefined) map[key] += (o.count || 0);
+    const grid: any[] = [];
+    days.forEach(day => {
+      const entry: any = { name: day, day };
+      let dayTotal = 0;
+      periods.forEach(period => {
+        const pCount = observations.filter(o => 
+          o && o.day_of_week?.startsWith(day) && o.period_of_day === period
+        ).length;
+        entry[period] = pCount;
+        dayTotal += pCount;
       });
-    }
-
-    return slots.map(slot => ({ name: slot, count: map[slot] || 0 }));
+      entry.count = dayTotal;
+      grid.push(entry);
+    });
+    return grid;
   }, [observations]);
 
   const speciesProfile = useMemo(() => {
@@ -211,58 +215,56 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
 
   if (!observations || observations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-[500px] bg-slate-950 text-slate-500 rounded-3xl border border-white/10 shadow-2xl backdrop-blur-md">
-        <Activity size={48} className="mb-4 opacity-10 text-white" />
+      <div className="flex flex-col items-center justify-center h-[500px] bg-slate-50 text-slate-500 rounded-3xl border border-slate-200 shadow-sm">
+        <Activity size={48} className="mb-4 opacity-10 text-slate-900" />
         <p className="text-[10px] font-black uppercase tracking-[0.3em]">No Active Intelligence Nodes Detected</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-950 p-6 space-y-8 text-white min-h-[700px] animate-in fade-in duration-700 rounded-3xl border border-white/5 backdrop-blur-sm relative overflow-hidden shadow-2xl">
-      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-[100px] -mr-48 -mt-48 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-[100px] -ml-48 -mb-48 pointer-events-none" />
+    <div className="bg-white p-6 space-y-8 text-slate-900 min-h-[700px] animate-in fade-in duration-700 rounded-3xl border border-slate-200 shadow-sm">
       
       {/* ── Top Metric Banner ────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative z-10">
-        <div className="bg-white/5 p-6 rounded-3xl shadow-2xl border border-white/10 group hover:border-emerald-500/30 transition-all duration-300 backdrop-blur-md">
+        <div className="bg-slate-50 p-6 rounded-3xl shadow-sm border border-slate-200 group hover:border-emerald-500/30 transition-all duration-300">
            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-400 border border-emerald-500/20">
+              <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600 border border-emerald-200">
                  <Activity size={18} />
               </div>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Active Operations</span>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Active Operations</span>
            </div>
-           <div className="text-3xl font-display font-black text-white">14 <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">/ Sectors</span></div>
+           <div className="text-3xl font-display font-black text-slate-900">14 <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">/ Sectors</span></div>
         </div>
 
-        <div className="bg-white/5 p-6 rounded-3xl shadow-2xl border border-white/10 group hover:border-indigo-500/30 transition-all duration-300 backdrop-blur-md">
+        <div className="bg-slate-50 p-6 rounded-3xl shadow-sm border border-slate-200 group hover:border-indigo-500/30 transition-all duration-300">
            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/20">
+              <div className="p-2 bg-indigo-100 rounded-xl text-indigo-600 border border-indigo-200">
                  <Shield size={18} />
               </div>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Patrol Coverage</span>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Patrol Coverage</span>
            </div>
-           <div className="text-3xl font-display font-black text-white">88.4% <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Total</span></div>
+           <div className="text-3xl font-display font-black text-slate-900">88.4% <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Total</span></div>
         </div>
 
-        <div className="bg-white/5 p-6 rounded-3xl shadow-2xl border border-white/10 group hover:border-amber-500/30 transition-all duration-300 backdrop-blur-md">
+        <div className="bg-slate-50 p-6 rounded-3xl shadow-sm border border-slate-200 group hover:border-amber-500/30 transition-all duration-300">
            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
+              <div className="p-2 bg-amber-100 rounded-xl text-amber-600 border border-amber-200">
                  <Zap size={18} />
               </div>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Hotspots Logged</span>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Hotspots Logged</span>
            </div>
-           <div className="text-3xl font-display font-black text-white">24 <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Priority</span></div>
+           <div className="text-3xl font-display font-black text-slate-900">24 <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Priority</span></div>
         </div>
 
-        <div className="bg-white/5 p-6 rounded-3xl shadow-2xl border border-white/10 group hover:border-rose-500/30 transition-all duration-300 backdrop-blur-md">
+        <div className="bg-slate-50 p-6 rounded-3xl shadow-sm border border-slate-200 group hover:border-rose-500/30 transition-all duration-300">
            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-rose-500/10 rounded-xl text-rose-400 border border-rose-500/20">
+              <div className="p-2 bg-rose-100 rounded-xl text-rose-600 border border-rose-200">
                  <Eye size={18} />
               </div>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Detection Rate</span>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Detection Rate</span>
            </div>
-           <div className="text-3xl font-display font-black text-white">+12% <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Weekly</span></div>
+           <div className="text-3xl font-display font-black text-slate-900">+12% <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Weekly</span></div>
         </div>
       </div>
 
@@ -271,20 +273,23 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
         
         {/* Sidebar: Species Density Matrix */}
         <div className="lg:col-span-3 flex flex-col space-y-4">
-          <div className="bg-white/5 rounded-3xl border border-white/10 overflow-hidden flex flex-col h-[600px] backdrop-blur-md shadow-2xl">
-            <div className="p-5 border-b border-white/10 space-y-4 bg-white/5">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Species Density Matrix</span>
-                <TrendingUp size={14} className="text-indigo-400" />
-              </div>
-              <div className="relative group/search">
-                <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/search:text-emerald-400 transition-colors" />
+          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm h-[600px] flex flex-col">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+               <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Species Intelligence Index</h3>
+               <div className="px-2 py-1 bg-emerald-100 text-emerald-700 text-[8px] font-black rounded-md border border-emerald-200">
+                  {speciesData.length} NODES
+               </div>
+            </div>
+            
+            <div className="p-4 bg-white border-b border-slate-100">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={12} />
                 <input 
                   type="text" 
-                  placeholder="SEARCH INTEL..."
+                  placeholder="FILTER NODES..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-white/5 border border-white/5 focus:border-emerald-500/20 focus:bg-white/10 rounded-xl py-2.5 pl-9 pr-4 text-[10px] font-black tracking-widest placeholder:text-slate-600 outline-none transition-all text-white uppercase"
+                  className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[9px] font-black uppercase tracking-widest focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
                 />
               </div>
             </div>
@@ -294,26 +299,26 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                 <button 
                   key={s.name}
                   onClick={() => setSelectedSpecies(s.name)}
-                  className={`w-full p-3 flex items-center gap-4 transition-all rounded-2xl group ${selectedSpecies === s.name ? 'bg-emerald-600 shadow-lg shadow-emerald-600/20' : 'hover:bg-white/5'}`}
+                  className={`w-full p-3 flex items-center gap-4 transition-all rounded-2xl group ${selectedSpecies === s.name ? 'bg-emerald-600 shadow-lg shadow-emerald-600/20' : 'hover:bg-slate-50'}`}
                 >
-                  <div className={`w-10 h-10 rounded-xl overflow-hidden border flex-shrink-0 transition-transform group-hover:scale-105 ${selectedSpecies === s.name ? 'border-white/20 bg-white/20' : 'border-white/10 bg-white/5'}`}>
+                  <div className={`w-10 h-10 rounded-xl overflow-hidden border flex-shrink-0 transition-transform group-hover:scale-105 ${selectedSpecies === s.name ? 'border-white/20 bg-emerald-500' : 'border-slate-200 bg-slate-100'}`}>
                     <SpecimenImage speciesName={s.name} />
                   </div>
                   <div className="flex-1 text-left">
-                     <div className={`text-[10px] font-black uppercase tracking-wider ${selectedSpecies === s.name ? 'text-white' : 'text-slate-200'}`}>{s.name}</div>
+                     <div className={`text-[10px] font-black uppercase tracking-wider ${selectedSpecies === s.name ? 'text-white' : 'text-slate-900'}`}>{s.name}</div>
                      <div className={`text-[8px] font-black font-mono ${selectedSpecies === s.name ? 'text-emerald-100' : 'text-slate-500'}`}>{s.value} OBS</div>
                   </div>
-                  <ChevronRight size={12} className={`transition-transform ${selectedSpecies === s.name ? 'translate-x-1 text-white' : 'text-slate-700'}`} />
+                  <ChevronRight size={12} className={`transition-transform ${selectedSpecies === s.name ? 'translate-x-1 text-white' : 'text-slate-400'}`} />
                 </button>
               ))}
               {filteredSpecies.length === 0 && (
                 <div className="p-8 text-center">
-                   <div className="text-[10px] font-black text-slate-600 uppercase tracking-widest">No Matches Found</div>
+                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No Matches Found</div>
                 </div>
               )}
             </div>
             
-            <div className="p-4 border-t border-white/10 text-center bg-white/5">
+            <div className="p-4 border-t border-slate-100 text-center bg-slate-50">
               <div className="text-[8px] font-black text-slate-500 uppercase tracking-[0.3em]">Operational Nodes: {speciesData.length}</div>
             </div>
           </div>
@@ -331,14 +336,10 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                  className="space-y-8"
                >
                  {/* Spotlight Header */}
-                 <div className="bg-white/5 rounded-[2.5rem] border border-white/10 p-10 relative overflow-hidden backdrop-blur-md shadow-2xl">
-                    <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
-                       <Target size={160} className="text-emerald-500" />
-                    </div>
-                    
+                 <div className="bg-slate-50 rounded-[2.5rem] border border-slate-200 p-10 relative overflow-hidden shadow-sm">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10">
                        <div className="flex gap-8 items-center">
-                          <div className="w-32 h-32 rounded-[2rem] overflow-hidden border-2 border-white/10 shadow-2xl bg-slate-900 group/spot">
+                          <div className="w-32 h-32 rounded-[2rem] overflow-hidden border-2 border-slate-200 shadow-sm bg-white group/spot">
                              <SpecimenImage 
                                 speciesName={selectedSpecies || 'Unknown'} 
                                 fieldPhotoUrl={speciesProfile.observations.find(o => o.photo_url)?.photo_url} 
@@ -346,20 +347,20 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                           </div>
                           <div>
                             <div className="flex items-center gap-3 mb-4">
-                               <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-[0.2em] rounded-full border border-emerald-500/30">Priority Asset</span>
+                               <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[8px] font-black uppercase tracking-[0.2em] rounded-full border border-emerald-200">Priority Asset</span>
                                <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest font-mono">NODE-REF: {(selectedSpecies || 'UNK').toUpperCase().substring(0, 3)}-ALPHA</span>
                             </div>
-                            <h2 className="text-5xl font-display font-black text-white tracking-tight uppercase leading-none">{selectedSpecies}</h2>
-                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em] mt-4 flex items-center gap-2">
+                            <h2 className="text-5xl font-display font-black text-slate-900 tracking-tight uppercase leading-none">{selectedSpecies}</h2>
+                            <div className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em] mt-4 flex items-center gap-2">
                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                Biometric Protocol Standardized
-                            </p>
+                            </div>
                           </div>
                        </div>
                        
-                       <div className="flex items-center gap-4 bg-white/5 p-6 rounded-[2rem] border border-white/10">
+                       <div className="flex items-center gap-4 bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
                           <div className="text-center">
-                            <p className="text-4xl font-display font-black text-white leading-none">{speciesProfile.radar?.[0]?.A?.toFixed(1) || '0.0'}%</p>
+                            <p className="text-4xl font-display font-black text-slate-900 leading-none">{speciesProfile.radar?.[0]?.A?.toFixed(1) || '0.0'}%</p>
                             <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-3">Relative Frequency</p>
                           </div>
                        </div>
@@ -368,19 +369,19 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
 
                  {/* Charts Grid */}
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="bg-white/5 rounded-[2.5rem] border border-white/10 p-8 backdrop-blur-md shadow-2xl">
+                    <div className="bg-slate-50 rounded-[2.5rem] border border-slate-200 p-8 shadow-sm">
                        <div className="flex items-center gap-3 mb-8">
-                          <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/20">
+                          <div className="p-2 bg-indigo-100 rounded-xl text-indigo-600 border border-indigo-200">
                              <Target size={16} />
                           </div>
-                          <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Distribution Matrix</h4>
+                          <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Distribution Matrix</h4>
                        </div>
                        <div className="h-72 flex items-center justify-center">
                           {speciesProfile?.radar ? (
                             <ResponsiveContainer width="100%" height="100%">
                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={speciesProfile.radar}>
-                                  <PolarGrid stroke="#334155" />
-                                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 8, fontWeight: 900 }} />
+                                  <PolarGrid stroke="#e2e8f0" />
+                                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 8, fontWeight: 900 }} />
                                   <Radar
                                     name={selectedSpecies || 'SPECIMEN'}
                                     dataKey="A"
@@ -391,96 +392,95 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                                </RadarChart>
                             </ResponsiveContainer>
                           ) : (
-                            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Matrix Unavailable</span>
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Matrix Unavailable</span>
                           )}
                        </div>
                     </div>
 
-                    <div className="bg-white/5 rounded-[2.5rem] border border-white/10 p-8 backdrop-blur-md shadow-2xl">
+                    <div className="bg-slate-50 rounded-[2.5rem] border border-slate-200 p-8 shadow-sm">
                        <div className="flex items-center gap-3 mb-8">
-                          <div className="p-2 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
+                          <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-600 border border-emerald-500/20">
                              <TrendingUp size={16} />
                           </div>
-                          <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Temporal Activity Flow</h4>
+                          <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Temporal Activity Flow</h4>
                        </div>
-                       <div className="h-72 flex items-center justify-center">
-                          {temporalData && temporalData.length > 0 ? (
-                            <ResponsiveContainer width="100%" height="100%">
-                               <AreaChart data={temporalData}>
-                                  <defs>
-                                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                                      <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.3}/>
-                                      <stop offset="95%" stopColor={COLORS.emerald} stopOpacity={0}/>
-                                    </linearGradient>
-                                  </defs>
-                                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
-                                  <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 8, fontWeight: 900 }} axisLine={false} tickLine={false} />
-                                  <YAxis tick={{ fill: '#64748b', fontSize: 8, fontWeight: 900 }} axisLine={false} tickLine={false} />
-                                  <Tooltip 
-                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', fontSize: '10px' }}
-                                    itemStyle={{ color: COLORS.emerald, fontWeight: '900' }}
-                                  />
-                                  <Area type="monotone" dataKey="count" stroke={COLORS.emerald} fillOpacity={1} fill="url(#colorCount)" strokeWidth={3} />
-                               </AreaChart>
-                            </ResponsiveContainer>
-                          ) : (
-                            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Flow Data Syncing...</span>
-                          )}
+                       <div className="h-64">
+                          <ResponsiveContainer width="100%" height="100%">
+                             <AreaChart data={temporalData}>
+                                <defs>
+                                  <linearGradient id="colorMorning" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.1}/>
+                                    <stop offset="95%" stopColor={COLORS.emerald} stopOpacity={0}/>
+                                  </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 8, fontWeight: 900 }} axisLine={false} tickLine={false} />
+                                <YAxis tick={{ fill: '#64748b', fontSize: 8, fontWeight: 900 }} axisLine={false} tickLine={false} />
+                                <Tooltip 
+                                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', fontSize: '10px', color: '#0f172a' }}
+                                  itemStyle={{ fontWeight: '900' }}
+                                />
+                                <Area type="monotone" dataKey="Morning" stackId="1" stroke={COLORS.emerald} fillOpacity={1} fill="url(#colorMorning)" strokeWidth={3} />
+                                <Area type="monotone" dataKey="Midday" stackId="1" stroke={COLORS.amber} fillOpacity={0.1} fill={COLORS.amber} strokeWidth={2} />
+                                <Area type="monotone" dataKey="Afternoon" stackId="1" stroke={COLORS.indigo} fillOpacity={0.1} fill={COLORS.indigo} strokeWidth={2} />
+                                <Area type="monotone" dataKey="Evening" stackId="1" stroke={COLORS.rose} fillOpacity={0.1} fill={COLORS.rose} strokeWidth={2} />
+                             </AreaChart>
+                          </ResponsiveContainer>
                        </div>
                     </div>
                  </div>
 
                  {/* Detailed Metrics Table */}
-                 <div className="bg-white/5 rounded-[2.5rem] border border-white/10 p-8 backdrop-blur-md shadow-2xl overflow-hidden">
-                    <div className="flex items-center justify-between mb-8">
-                       <div className="flex items-center gap-3">
-                          <div className="p-2 bg-slate-500/10 rounded-xl text-slate-400 border border-white/10">
-                             <Database size={16} />
-                          </div>
-                          <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Raw Intelligence Log</h4>
-                       </div>
-                       <div className="flex gap-6">
-                          <div className="text-right">
-                             <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Confidence Score</p>
-                             <p className="text-sm font-black text-emerald-400">98.2%</p>
-                          </div>
-                       </div>
-                    </div>
-                    <div className="overflow-x-auto">
-                       <table className="w-full text-left">
-                          <thead>
-                             <tr className="border-b border-white/10">
-                                <th className="pb-4 px-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Temporal Node</th>
-                                <th className="pb-4 px-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Habitat / Sector</th>
-                                <th className="pb-4 px-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Behavioral State</th>
-                                <th className="pb-4 px-2 text-[9px] font-black text-slate-500 uppercase tracking-widest text-right">Team Auth</th>
-                             </tr>
-                          </thead>
-                          <tbody className="divide-y divide-white/5">
-                             {speciesProfile.observations.slice(0, 5).map(o => (
-                               <tr key={o.id} className="group hover:bg-white/5 transition-colors">
-                                  <td className="py-4 px-2 text-[10px] font-black font-mono text-emerald-400">{o.time}</td>
-                                  <td className="py-4 px-2 text-[10px] font-black uppercase tracking-widest text-slate-300">{o.habitat}</td>
-                                  <td className="py-4 px-2 text-[10px] font-black uppercase tracking-widest text-slate-300">{o.activity}</td>
-                                  <td className="py-4 px-2 text-[10px] font-black uppercase tracking-widest text-slate-500 text-right">{o.observer || 'ALPHA-01'}</td>
-                               </tr>
-                             ))}
-                          </tbody>
-                       </table>
-                    </div>
-                 </div>
+                  <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm overflow-hidden">
+                     <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-3">
+                           <div className="p-2 bg-slate-100 rounded-xl text-slate-600 border border-slate-200">
+                              <Database size={16} />
+                           </div>
+                           <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Raw Intelligence Log</h4>
+                        </div>
+                        <div className="flex gap-6">
+                           <div className="text-right">
+                              <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Confidence Score</p>
+                              <p className="text-sm font-black text-emerald-600">98.2%</p>
+                           </div>
+                        </div>
+                     </div>
+                     <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                           <thead>
+                              <tr className="border-b border-slate-100">
+                                 <th className="pb-4 px-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Temporal Node</th>
+                                 <th className="pb-4 px-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Habitat / Sector</th>
+                                 <th className="pb-4 px-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">Behavioral State</th>
+                                 <th className="pb-4 px-2 text-[9px] font-black text-slate-500 uppercase tracking-widest text-right">Team Auth</th>
+                              </tr>
+                           </thead>
+                           <tbody className="divide-y divide-slate-50">
+                              {speciesProfile.observations.slice(0, 5).map(o => (
+                                <tr key={o.id} className="group hover:bg-slate-50 transition-colors">
+                                   <td className="py-4 px-2 text-[10px] font-black font-mono text-emerald-600">{o.time}</td>
+                                   <td className="py-4 px-2 text-[10px] font-black uppercase tracking-widest text-slate-700">{o.habitat}</td>
+                                   <td className="py-4 px-2 text-[10px] font-black uppercase tracking-widest text-slate-700">{o.activity}</td>
+                                   <td className="py-4 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">{o.observer || 'ALPHA-01'}</td>
+                                </tr>
+                              ))}
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
 
                  {/* Export Section */}
-                 <div className="bg-indigo-600 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-10 relative overflow-hidden shadow-2xl group/cta">
-                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 to-indigo-600 pointer-events-none" />
-                    <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white/5 rounded-full blur-[80px] pointer-events-none" />
+                 <div className="bg-emerald-600 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-10 relative overflow-hidden shadow-xl shadow-emerald-600/20 group/cta">
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-500 pointer-events-none" />
+                    <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white/10 rounded-full blur-[80px] pointer-events-none" />
                     <div className="relative z-10 flex items-center gap-8">
-                       <div className="w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center text-white backdrop-blur-md border border-white/10 shadow-2xl">
+                       <div className="w-20 h-20 bg-white/20 rounded-[2rem] flex items-center justify-center text-white backdrop-blur-md border border-white/20 shadow-2xl">
                           <Zap size={40} className="group-hover/cta:scale-110 transition-transform duration-500" />
                        </div>
                        <div>
                           <h2 className="text-3xl font-display font-black leading-tight text-white uppercase tracking-tight">Deploy Tactical Dossier</h2>
-                          <p className="text-sm text-indigo-100/70 mt-2 font-bold uppercase tracking-widest">Standardized Intel Export for Operational Oversight</p>
+                          <p className="text-sm text-emerald-50/70 mt-2 font-bold uppercase tracking-widest">Standardized Intel Export for Operational Oversight</p>
                        </div>
                     </div>
                     <div className="relative z-10">
@@ -493,16 +493,15 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                  </div>
                </motion.div>
              ) : (
-               <div className="flex flex-col items-center justify-center h-full bg-white/5 border border-white/5 border-dashed rounded-[3rem] p-20 text-center backdrop-blur-md">
-                 <Activity size={64} className="text-slate-800 mb-6 animate-pulse" />
-                 <p className="text-[12px] font-black text-slate-600 uppercase tracking-[0.5em]">System Ready · Waiting for Asset Selection</p>
-               </div>
+                <div className="flex flex-col items-center justify-center h-full bg-slate-50 border border-slate-200 border-dashed rounded-[3rem] p-20 text-center shadow-inner">
+                  <Activity size={64} className="text-slate-200 mb-6 animate-pulse" />
+                  <p className="text-[12px] font-black text-slate-400 uppercase tracking-[0.5em]">System Ready · Waiting for Asset Selection</p>
+                </div>
              )}
            </AnimatePresence>
         </div>
       </div>
-
-      <div className="flex items-center gap-4 py-6 px-4 border-t border-white/5 relative z-10">
+      <div className="flex items-center gap-4 mt-8 pt-8 border-t border-slate-100">
          <Info size={14} className="text-slate-600" />
          <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em]">
            Authenticated Intelligence Stream · Encryption Protocol Active · Terminal: WEZ-GAMECOUNT-Z01

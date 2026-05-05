@@ -137,20 +137,10 @@ export default function ParkDashboard({ params }: { params: Promise<{ parkId: st
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <button
               onClick={() => router.push(`/dashboard/${parkId}/intelligence`)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20"
+              className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-600/20"
             >
-              <Radar size={16} className="animate-pulse" />
-              <span>Operational Intel</span>
-            </button>
-            <button className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition-colors shadow-sm">
-              <span>Export Reports</span>
-              <FileText size={16} className="text-emerald-400" />
-            </button>
-            <button
-              onClick={() => router.push(`/dashboard/${parkId}/surveys/new`)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 border border-slate-300 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-slate-50 transition-colors shadow-sm"
-            >
-              <span>Transmit Data</span> <ChevronRight size={16} className="text-slate-500" />
+              <Radar size={18} className="animate-pulse" />
+              <span>Operational Intelligence Hub</span>
             </button>
           </div>
         </div>

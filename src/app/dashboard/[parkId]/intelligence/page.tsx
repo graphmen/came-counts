@@ -141,6 +141,7 @@ export default function IntelligenceHubPage() {
   const [parkName, setParkName] = useState('');
   const [observations, setObservations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncError, setSyncError] = useState(false);
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState({
     species: 'All',
@@ -156,34 +157,55 @@ export default function IntelligenceHubPage() {
 
   useEffect(() => {
     async function fetchIntel() {
+      if (!mobileParkId) return;
+      
       setLoading(true);
+      setSyncError(false);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        console.warn('[Intel] Sync timeout - resolving with cached/empty state');
+        setLoading(false);
+      }, 10000);
+
       try {
-        // Query field_observations directly by park_id slug — no UUID needed
         const { data: fieldObs, error } = await gc
           .from('field_observations')
           .select('*')
           .eq('park_id', mobileParkId)
           .order('created_at', { ascending: false });
 
-        console.log(`[Intel] Fetched ${fieldObs?.length || 0} observations for ${mobileParkId}`);
-        if (fieldObs && fieldObs.length > 0) {
-          console.log('[Intel] Sample observation:', fieldObs[0]);
-        }
-        
         if (error) throw error;
 
-        const normalized = (fieldObs || []).map(normalizeObservation);
+        const normalized = (fieldObs || [])
+          .filter(Boolean)
+          .map(o => {
+            try {
+              return normalizeObservation(o);
+            } catch (e) {
+              console.error('[Intel] Normalization failed for record:', o.id, e);
+              return null;
+            }
+          })
+          .filter(Boolean) as any[];
+
         setObservations(normalized);
 
-        // Set park display name from first record
-        if (fieldObs && fieldObs.length > 0) {
-          setParkName(fieldObs[0].park_name || mobileParkId);
+        if (normalized.length > 0) {
+          setParkName(normalized[0].park_name || mobileParkId);
         }
-
       } catch (err) {
-        console.error('Intel fetch error:', err);
+        if (err instanceof Error && err.name === 'AbortError') {
+          console.warn('[Intel] Fetch aborted');
+        } else {
+          console.error('[Intel] Fetch error:', err);
+          setSyncError(true);
+        }
+      } finally {
+        clearTimeout(timeoutId);
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchIntel();
   }, [mobileParkId]);
@@ -253,51 +275,70 @@ export default function IntelligenceHubPage() {
     </div>
   );
 
+  if (syncError && observations.length === 0) return (
+    <div className="flex flex-col items-center justify-center h-[60vh] gap-6 text-center px-4">
+      <div className="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 border border-rose-100 shadow-sm">
+        <Wifi size={32} className="opacity-50" />
+      </div>
+      <div className="space-y-2">
+        <h3 className="text-xl font-display font-black text-slate-900 uppercase">Synchronisation Interrupted</h3>
+        <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest max-w-xs mx-auto">
+          Connection to the field node timed out. Registry verification may be incomplete.
+        </p>
+      </div>
+      <button 
+        onClick={() => window.location.reload()}
+        className="px-8 py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-slate-800 transition-all"
+      >
+        Retry Registry Sync
+      </button>
+    </div>
+  );
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
       {/* ── Header ───────────────────────────────────────────── */}
-      <header className="bg-slate-950 p-6 rounded-3xl text-white relative overflow-hidden shadow-xl border border-slate-800">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-32 -mt-32" />
+      <header className="bg-white p-6 rounded-3xl text-slate-900 relative overflow-hidden shadow-sm border border-slate-200">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -mr-32 -mt-32" />
         
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                <Radar size={10} className="text-emerald-400 animate-pulse" />
-                <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">Field Intelligence Hub</span>
+              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 rounded-full border border-emerald-100">
+                <Radar size={10} className="text-emerald-600 animate-pulse" />
+                <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest">Field Intelligence Hub</span>
               </div>
-              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/5 rounded-full border border-white/10">
+              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-50 rounded-full border border-slate-100">
                 <Globe size={10} className="text-slate-400" />
                 <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{parkName || mobileParkId}</span>
               </div>
               {liveCount > 0 && (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/20 rounded-full border border-emerald-500/40 animate-pulse">
-                  <Wifi size={10} className="text-emerald-300" />
-                  <span className="text-[8px] font-black text-emerald-300 uppercase tracking-widest">+{liveCount} Live</span>
+                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 rounded-full border border-emerald-200 animate-pulse">
+                  <Wifi size={10} className="text-emerald-500" />
+                  <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest">+{liveCount} Live</span>
                 </div>
               )}
             </div>
             
-            <h1 className="text-3xl font-display font-black tracking-tight leading-none">
-              Raw Intelligence <span className="text-emerald-500 underline decoration-emerald-500/30 decoration-4 underline-offset-8">Reception.</span>
+            <h1 className="text-3xl font-display font-black tracking-tight leading-none text-slate-900">
+              Raw Intelligence <span className="text-emerald-600 underline decoration-emerald-600/30 decoration-4 underline-offset-8">Reception.</span>
             </h1>
-            <p className="text-[11px] text-slate-400 font-medium max-w-lg leading-relaxed font-sans">
+            <p className="text-[11px] text-slate-500 font-medium max-w-lg leading-relaxed font-sans">
               Field-verified sightings from WEZ-Mobile survey nodes. Live longitudinal audit of jurisdictional sectors.
             </p>
           </div>
 
-            <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-sm shadow-inner">
+            <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-2xl border border-slate-200 shadow-inner">
             {[
               { id: 'table', label: 'Data Ledger', icon: TableIcon },
               { id: 'gallery', label: 'Evidence Gallery', icon: ImageIcon },
               { id: 'analytics', label: 'Tactical Recon', icon: Activity },
               { id: 'map',   label: 'Geospatial',  icon: MapIcon },
-              { id: 'export', label: 'Export Hub', icon: Download },
             ].map((btn) => (
               <button
                 key={btn.id}
                 onClick={() => setMode(btn.id as any)}
-                className={"flex items-center gap-2 px-4 py-2 rounded-xl transition-all " + (mode === btn.id ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "text-slate-400 hover:text-white hover:bg-white/5")}
+                className={"flex items-center gap-2 px-4 py-2 rounded-xl transition-all " + (mode === btn.id ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50")}
               >
                 <btn.icon size={14} />
                 <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap font-display">{btn.label}</span>

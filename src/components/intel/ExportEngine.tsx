@@ -105,8 +105,8 @@ export default function ExportEngine({ observations, parkName }: { observations:
       icon: FileText,
       ext: '.CSV',
       action: downloadCSV,
-      bg: 'hover:bg-emerald-500/10 hover:border-emerald-500/50',
-      iconBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+      bg: 'hover:bg-emerald-50 hover:border-emerald-200',
+      iconBg: 'bg-emerald-50 text-emerald-600 border-emerald-100',
     },
     {
       id: 'json',
@@ -115,8 +115,8 @@ export default function ExportEngine({ observations, parkName }: { observations:
       icon: FileJson,
       ext: '.JSON',
       action: downloadJSON,
-      bg: 'hover:bg-indigo-500/10 hover:border-indigo-500/50',
-      iconBg: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+      bg: 'hover:bg-indigo-50 hover:border-indigo-200',
+      iconBg: 'bg-indigo-50 text-indigo-600 border-indigo-100',
     },
     {
       id: 'geojson',
@@ -125,8 +125,8 @@ export default function ExportEngine({ observations, parkName }: { observations:
       icon: FileSpreadsheet,
       ext: '.GEOJSON',
       action: downloadGeoJSON,
-      bg: 'hover:bg-blue-500/10 hover:border-blue-500/50',
-      iconBg: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+      bg: 'hover:bg-blue-50 hover:border-blue-200',
+      iconBg: 'bg-blue-50 text-blue-600 border-blue-100',
     },
     {
       id: 'pdf',
@@ -135,8 +135,8 @@ export default function ExportEngine({ observations, parkName }: { observations:
       icon: FileType,
       ext: '.PDF',
       isPdf: true,
-      bg: 'hover:bg-rose-500/10 hover:border-rose-500/50',
-      iconBg: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+      bg: 'hover:bg-rose-50 hover:border-rose-200',
+      iconBg: 'bg-rose-50 text-rose-600 border-rose-100',
     },
   ];
 
@@ -165,26 +165,26 @@ export default function ExportEngine({ observations, parkName }: { observations:
         {/* Header */}
         <div className="text-center space-y-4">
            <div className="flex items-center justify-center gap-3">
-              <div className="h-px w-12 bg-white/10" />
-              <Download size={16} className="text-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-              <div className="h-px w-12 bg-white/10" />
+              <div className="h-px w-12 bg-slate-200" />
+              <Download size={16} className="text-emerald-600" />
+              <div className="h-px w-12 bg-slate-200" />
            </div>
-          <h2 className="text-3xl font-display font-black text-white tracking-tight uppercase">Intelligence Export Engine</h2>
+          <h2 className="text-3xl font-display font-black text-slate-900 tracking-tight uppercase">Intelligence Export Engine</h2>
           <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em]">Generate secure archives for external analysis & GIS integration</p>
         </div>
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-black/40 rounded-[2.5rem] p-8 border border-white/5 backdrop-blur-xl shadow-2xl">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-slate-50 rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
           {[
-            { label: 'Records', val: summary.records, icon: Database, color: 'text-emerald-400' },
-            { label: 'Species', val: summary.species, icon: Globe, color: 'text-indigo-400' },
-            { label: 'Animals', val: summary.total, icon: Activity, color: 'text-blue-400' },
-            { label: 'With GPS', val: summary.withGps, icon: ShieldCheck, color: 'text-amber-400' },
-            { label: 'With Photo', val: summary.withPhoto, icon: FileText, color: 'text-rose-400' },
+            { label: 'Records', val: summary.records, icon: Database, color: 'text-emerald-600' },
+            { label: 'Species', val: summary.species, icon: Globe, color: 'text-indigo-600' },
+            { label: 'Animals', val: summary.total, icon: Activity, color: 'text-blue-600' },
+            { label: 'With GPS', val: summary.withGps, icon: ShieldCheck, color: 'text-amber-600' },
+            { label: 'With Photo', val: summary.withPhoto, icon: FileText, color: 'text-rose-600' },
           ].map(s => (
             <div key={s.label} className="text-center space-y-2">
-              <div className="text-2xl font-black text-white leading-none font-mono tracking-tighter">{s.val}</div>
-              <div className="text-[9px] font-black text-slate-600 uppercase tracking-widest flex items-center justify-center gap-1.5">
+              <div className="text-2xl font-black text-slate-900 leading-none font-mono tracking-tighter">{s.val}</div>
+              <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1.5">
                  <s.icon size={10} className={s.color} /> {s.label}
               </div>
             </div>
@@ -200,17 +200,17 @@ export default function ExportEngine({ observations, parkName }: { observations:
 
             const buttonContent = (
               <div className="flex flex-col items-center gap-6">
-                <div className={`w-16 h-16 ${fmt.iconBg} rounded-[1.5rem] flex items-center justify-center border shadow-2xl group-hover:scale-110 transition-all duration-500`}>
+                <div className={`w-16 h-16 ${fmt.iconBg} rounded-[1.5rem] flex items-center justify-center border shadow-sm group-hover:scale-110 transition-all duration-500`}>
                   {isLoading ? <Loader2 size={32} className="animate-spin" /> :
-                   isDone ? <CheckCircle2 size={32} className="text-emerald-400 animate-bounce" /> :
+                   isDone ? <CheckCircle2 size={32} className="text-emerald-600 animate-bounce" /> :
                    <Icon size={32} />}
                 </div>
                 <div className="text-center space-y-1">
-                  <div className="text-[11px] font-black text-white uppercase tracking-[0.1em]">{fmt.label}</div>
+                  <div className="text-[11px] font-black text-slate-900 uppercase tracking-[0.1em]">{fmt.label}</div>
                   <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest">{fmt.sub}</p>
                 </div>
-                <div className={`w-full py-3 ${isDone ? 'bg-emerald-600 shadow-emerald-600/30' : 'bg-slate-900 border border-white/5'} text-white rounded-xl text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all shadow-xl`}>
-                  {isDone ? <CheckCircle2 size={12} /> : <Download size={12} />}
+                <div className={`w-full py-3 ${isDone ? 'bg-emerald-600 shadow-emerald-600/20' : 'bg-slate-50 border border-slate-200'} ${isDone ? 'text-white' : 'text-slate-900'} rounded-xl text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all`}>
+                  {isDone ? <CheckCircle2 size={12} /> : <Download size={12} className="text-emerald-600" />}
                   {isDone ? 'COMPLETED' : `EXPORT ${fmt.ext}`}
                 </div>
               </div>
@@ -236,7 +236,7 @@ export default function ExportEngine({ observations, parkName }: { observations:
                 key={fmt.id}
                 onClick={fmt.action}
                 disabled={observations.length === 0 || isLoading}
-                className={`p-8 bg-slate-900/40 border border-white/10 rounded-[2rem] transition-all group disabled:opacity-40 backdrop-blur-md shadow-2xl ${fmt.bg}`}
+                className={`p-8 bg-white border border-slate-200 rounded-[2rem] transition-all group disabled:opacity-40 shadow-sm ${fmt.bg}`}
               >
                 {buttonContent}
               </motion.button>
@@ -253,11 +253,11 @@ export default function ExportEngine({ observations, parkName }: { observations:
         )}
 
         {/* Security Notice */}
-        <div className="bg-slate-900/60 text-white rounded-[2.5rem] p-10 relative overflow-hidden border border-white/5 shadow-2xl group">
-          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity"><ShieldCheck size={120} /></div>
+        <div className="bg-slate-50 text-slate-900 rounded-[2.5rem] p-10 relative overflow-hidden border border-slate-100 shadow-sm group">
+          <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity"><ShieldCheck size={120} /></div>
           <div className="relative z-10 space-y-6">
-            <div className="flex items-center gap-3 text-emerald-400">
-              <ShieldCheck size={18} className="shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+            <div className="flex items-center gap-3 text-emerald-600">
+              <ShieldCheck size={18} />
               <span className="text-[12px] font-black uppercase tracking-[0.4em]">Secure Export Protocol</span>
             </div>
             <p className="text-xs text-slate-500 leading-relaxed font-black uppercase tracking-[0.1em] border-l-2 border-emerald-500/30 pl-6">

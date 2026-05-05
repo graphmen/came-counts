@@ -44,15 +44,15 @@ export default function HomePage() {
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-12">
       
       {/* ── Hero Section ──────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-slate-950 rounded-[2rem] p-8 md:p-12 text-white shadow-xl shadow-emerald-950/20">
+      <section className="relative overflow-hidden bg-white rounded-[2rem] p-8 md:p-12 text-slate-900 border border-slate-200 shadow-sm group">
         {/* Dynamic Background */}
-        <div className="absolute top-0 right-0 w-2/3 h-full opacity-10 pointer-events-none">
+        <div className="absolute top-0 right-0 w-2/3 h-full opacity-5 pointer-events-none">
           <Globe className="w-full h-full transform translate-x-1/4 -translate-y-1/4 text-emerald-500" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900/90 to-emerald-900/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50/50 to-emerald-50/20" />
         
         <div className="relative z-10 max-w-3xl space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-black text-[9px] uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 font-black text-[9px] uppercase tracking-widest">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -60,12 +60,12 @@ export default function HomePage() {
             Operational Intelligence Grid
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-display font-black tracking-tight leading-[0.9] text-white">
+          <h1 className="text-4xl md:text-6xl font-display font-black tracking-tight leading-[0.9] text-slate-900">
             Game Counts <br/>
-            <span className="text-emerald-500 text-3xl md:text-5xl">Conservation.</span>
+            <span className="text-emerald-600 text-3xl md:text-5xl">Conservation.</span>
           </h1>
 
-          <p className="text-sm md:text-base text-slate-400 font-medium leading-relaxed max-w-xl">
+          <p className="text-sm md:text-base text-slate-500 font-medium leading-relaxed max-w-xl">
             Modernizing Zimbabwe's game count ecosystem with elite digital intelligence, AI-validated census data, and production-grade reporting for WEZ.
           </p>
 
@@ -74,7 +74,7 @@ export default function HomePage() {
               href="/dashboard"
               className={cn(
                 buttonVariants({ size: "sm" }),
-                "bg-emerald-600 hover:bg-emerald-700 h-10 px-6 rounded-xl font-black uppercase tracking-widest text-[10px] gap-2 text-white shadow-md shadow-emerald-600/20"
+                "bg-emerald-600 hover:bg-emerald-700 h-10 px-6 rounded-xl font-black uppercase tracking-widest text-[10px] gap-2 text-white shadow-xl shadow-emerald-600/20"
               )}
             >
               National Dashboard <ChevronRight size={14} />
@@ -205,22 +205,22 @@ export default function HomePage() {
           </div>
 
           {/* National Directive Card */}
-          <Card className="p-6 bg-slate-900 text-white rounded-2xl border-none shadow-lg relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <ShieldCheck size={60} />
+          <Card className="p-6 bg-slate-50 text-slate-900 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <ShieldCheck size={60} className="text-emerald-600" />
             </div>
             <div className="relative z-10 space-y-4">
-              <div className="flex items-center gap-2 text-emerald-400">
+              <div className="flex items-center gap-2 text-emerald-600">
                 <Info size={14} />
                 <span className="text-[9px] font-black uppercase tracking-[0.2em]">National Directive</span>
               </div>
-              <p className="text-sm font-display italic leading-relaxed text-slate-200">
+              <p className="text-sm font-display italic leading-relaxed text-slate-600">
                 "{WEZ_DIRECTIVES.mission}"
               </p>
-              <div className="pt-3 border-t border-white/10 flex justify-between items-end">
+              <div className="pt-3 border-t border-slate-200 flex justify-between items-end">
                 <div className="space-y-0.5">
-                  <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Official Registration</p>
-                  <p className="text-[10px] font-mono font-bold text-emerald-500">{WEZ_DIRECTIVES.registration}</p>
+                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Official Registration</p>
+                  <p className="text-[10px] font-mono font-bold text-emerald-600">{WEZ_DIRECTIVES.registration}</p>
                 </div>
               </div>
             </div>

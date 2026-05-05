@@ -24,10 +24,10 @@
   --wez-border: rgba(15, 23, 42, 0.06);
   --wez-border-glass: rgba(255, 255, 255, 0.4);
   
-  --sidebar-bg: #0f172a;
-  --sidebar-item-active: rgba(16, 185, 129, 0.1);
-  --sidebar-text: #94a3b8;
-  --sidebar-text-active: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-item-active: rgba(16, 185, 129, 0.05);
+  --sidebar-text: #64748b;
+  --sidebar-text-active: #0f172a;
   
   --font-sans: var(--font-inter), ui-sans-serif, system-ui;
   --font-display: var(--font-outfit), sans-serif;
@@ -122,7 +122,7 @@ h1, h2, h3, h4, h5 {
 /* Sidebar (Elite Dark Theme) */
 .sidebar {
   background: var(--sidebar-bg);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid var(--wez-slate-200);
   width: 260px;
   min-height: 100vh;
   display: flex;
@@ -160,15 +160,16 @@ h1, h2, h3, h4, h5 {
 }
 
 .sidebar-item:hover {
-  background: rgba(255, 255, 255, 0.03);
-  color: #fff;
+  background: rgba(15, 23, 42, 0.02);
+  color: var(--sidebar-text-active);
   transform: translateX(4px);
 }
 
 .sidebar-item.active {
-  background: linear-gradient(135deg, var(--wez-green) 0%, #059669 100%);
-  color: #fff;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+  background: var(--wez-green-soft);
+  color: var(--wez-green);
+  border: 1px solid var(--wez-green-glow);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.05);
 }
 
 .sidebar-item.active svg {
@@ -282,13 +283,15 @@ h1, h2, h3, h4, h5 {
 }
 
 .sighting-summary-box {
-  background: #0f172a;
-  color: white;
+  background: #ffffff;
+  color: #0f172a;
   padding: 2.5rem;
   border-radius: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  border: 1px solid var(--wez-slate-200);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
 .float-action-bar {

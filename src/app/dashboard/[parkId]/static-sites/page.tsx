@@ -122,37 +122,36 @@ export default function StaticSitesPage({ params }: { params: Promise<{ parkId: 
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 p-4 sm:p-6 lg:p-8 space-y-8 animate-in fade-in duration-700">
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8 space-y-8 animate-in fade-in duration-700">
       
       {/* ── Page Header ────────────────────────────────────────── */}
-      <header className="relative p-10 rounded-[2.5rem] bg-slate-900/50 border border-white/5 shadow-2xl overflow-hidden group backdrop-blur-md">
+      <header className="relative p-10 rounded-[2.5rem] bg-white border border-slate-200 shadow-sm overflow-hidden group">
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-[100px] -mr-48 -mt-48 transition-transform group-hover:scale-110 duration-700" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-[100px] -ml-48 -mb-48 pointer-events-none" />
         
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                <Droplets size={12} className="text-emerald-400" />
-                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">Hydrological Network</span>
+              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 rounded-full border border-emerald-100">
+                <Droplets size={12} className="text-emerald-600" />
+                <span className="text-[10px] font-black text-emerald-700 uppercase tracking-[0.2em]">Hydrological Network</span>
               </div>
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Status: Active Monitor</span>
             </div>
             
             <div className="flex items-center gap-6">
-              <h1 className="text-5xl font-black text-white tracking-tighter uppercase font-display">
+              <h1 className="text-5xl font-black text-slate-900 tracking-tighter uppercase font-display">
                 Waterhole Analysis
               </h1>
               {parkId && (
-                <div className="bg-white/5 px-4 py-2 rounded-2xl border border-white/10 hidden sm:block backdrop-blur-md">
+                <div className="bg-slate-50 px-4 py-2 rounded-2xl border border-slate-200 hidden sm:block shadow-sm">
                   <YearSelector parkId={parkId} selectedYear={selectedYear} onYearChange={handleYearChange} />
                 </div>
               )}
             </div>
 
-            <div className="flex items-center gap-3 text-slate-400 font-bold text-xs uppercase tracking-widest">
-               <MapPin size={16} className="text-emerald-500" />
+            <div className="flex items-center gap-3 text-slate-500 font-bold text-xs uppercase tracking-widest">
+               <MapPin size={16} className="text-emerald-600" />
                Spatial distribution across {sites.length} tactical static nodes.
             </div>
           </div>
@@ -161,11 +160,11 @@ export default function StaticSitesPage({ params }: { params: Promise<{ parkId: 
               <div className="text-right hidden md:block">
                 <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Network Saturation</div>
                 <div className="flex items-center gap-1.5">
-                   {[1,2,3,4,5,6,7,8].map(i => <div key={i} className={`w-4 h-2 rounded-full transition-all duration-500 ${i <= (sites.length % 9) ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-slate-800'}`} />)}
+                   {[1,2,3,4,5,6,7,8].map(i => <div key={i} className={`w-4 h-2 rounded-full transition-all duration-500 ${i <= (sites.length % 9) ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]' : 'bg-slate-100'}`} />)}
                 </div>
               </div>
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md">
-                 <Activity size={24} className="text-emerald-400" />
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                 <Activity size={24} className="text-emerald-600" />
               </div>
           </div>
         </div>
@@ -185,14 +184,14 @@ export default function StaticSitesPage({ params }: { params: Promise<{ parkId: 
                 <button
                   key={site.id}
                   onClick={() => setSelectedSite(site.name)}
-                  className={`flex items-center gap-4 px-5 py-4 rounded-[1.5rem] border transition-all text-left group/site ${isActive ? 'bg-emerald-600 border-emerald-500 shadow-xl shadow-emerald-600/20' : 'bg-white/5 border-white/10 hover:border-emerald-500/30 hover:bg-white/10 backdrop-blur-md'}`}
+                  className={`flex items-center gap-4 px-5 py-4 rounded-[1.5rem] border transition-all text-left group/site ${isActive ? 'bg-emerald-600 border-emerald-500 shadow-lg shadow-emerald-600/20' : 'bg-white border-slate-200 hover:border-emerald-500/30 hover:bg-slate-50 shadow-sm'}`}
                 >
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isActive ? 'bg-white/20 text-white' : 'bg-white/5 text-emerald-400 group-hover/site:bg-emerald-500/20'}`}>
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isActive ? 'bg-white/20 text-white' : 'bg-slate-50 text-emerald-600 group-hover/site:bg-emerald-50'}`}>
                     <MapPin size={20} />
                   </div>
                   <div className="flex-1">
-                    <p className={`text-sm font-black uppercase tracking-wider ${isActive ? 'text-white' : 'text-slate-200'}`}>{site.name}</p>
-                    <p className={`text-[9px] font-black uppercase tracking-widest mt-1.5 ${isActive ? 'text-emerald-100' : 'text-slate-500'}`}>
+                    <p className={`text-sm font-black uppercase tracking-wider ${isActive ? 'text-white' : 'text-slate-900'}`}>{site.name}</p>
+                    <p className={`text-[9px] font-black uppercase tracking-widest mt-1.5 ${isActive ? 'text-emerald-50' : 'text-slate-500'}`}>
                       {site.site_type} protocol
                     </p>
                   </div>
@@ -242,16 +241,16 @@ export default function StaticSitesPage({ params }: { params: Promise<{ parkId: 
         <motion.div 
           initial={{ opacity: 0, scale: 0.98 }} 
           animate={{ opacity: 1, scale: 1 }}
-          className="xl:col-span-2 bg-white/5 rounded-[2.5rem] border border-white/10 shadow-2xl p-10 flex flex-col min-h-[500px] backdrop-blur-md"
+          className="xl:col-span-2 bg-white rounded-[2.5rem] border border-slate-200 shadow-sm p-10 flex flex-col min-h-[500px]"
         >
           <div className="mb-10 flex justify-between items-start">
             <div>
-              <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] flex items-center gap-3">
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-[0.3em] flex items-center gap-3">
                 <div className="w-2 h-2 bg-emerald-500 rounded-full" /> {selectedSite} Biodiversity
               </h3>
               <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em] mt-3">Distribution of documented taxa at this node</p>
             </div>
-            <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
                <Database size={18} className="text-slate-400" />
             </div>
           </div>
@@ -265,7 +264,7 @@ export default function StaticSitesPage({ params }: { params: Promise<{ parkId: 
         <div className="space-y-8">
           
           {/* Taxonomic Breakdown */}
-          <div className="bg-white/5 rounded-[2.5rem] border border-white/10 shadow-2xl p-10 min-h-[350px] flex flex-col backdrop-blur-md">
+          <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm p-10 min-h-[350px] flex flex-col">
             <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-10">Classification Breakdown</h3>
             <div className="flex-1">
               <PremiumDoughnutChart data={categoryBreakdown} />
@@ -273,14 +272,14 @@ export default function StaticSitesPage({ params }: { params: Promise<{ parkId: 
           </div>
 
           {/* Strategic Context */}
-          <div className="bg-white/5 rounded-[2.5rem] border border-white/10 p-8 flex items-start gap-6 backdrop-blur-md shadow-2xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl -mr-16 -mt-16" />
-            <div className="p-4 bg-indigo-500/10 rounded-2xl border border-indigo-500/20 text-indigo-400 relative z-10">
+          <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 flex items-start gap-6 shadow-sm relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 rounded-full blur-2xl -mr-16 -mt-16" />
+            <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100 text-indigo-600 relative z-10">
               <Info size={24} />
             </div>
             <div className="relative z-10">
-              <h4 className="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-3">Ecological Significance</h4>
-              <p className="text-[12px] text-slate-400 font-bold leading-relaxed uppercase tracking-wider">
+              <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.3em] mb-3">Ecological Significance</h4>
+              <p className="text-[12px] text-slate-500 font-bold leading-relaxed uppercase tracking-wider">
                 Static sites serve as critical indicator zones. Clustering patterns during peak thermal hours provide 
                 insights into water accessibility and species competition hierarchies.
               </p>
@@ -290,15 +289,15 @@ export default function StaticSitesPage({ params }: { params: Promise<{ parkId: 
       </div>
 
       {/* ── Additional Info ───────────────────────────────────── */}
-      <footer className="relative bg-slate-900 rounded-[2.5rem] p-12 overflow-hidden shadow-2xl border border-white/5">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] -mr-64 -mt-64" />
+      <footer className="relative bg-white rounded-[2.5rem] p-12 overflow-hidden shadow-sm border border-slate-200">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-50/50 rounded-full blur-[120px] -mr-64 -mt-64" />
         <div className="relative flex flex-col md:flex-row items-center gap-10">
-          <div className="p-5 bg-white/5 rounded-[2rem] backdrop-blur-md border border-white/10 shadow-2xl">
-            <Shield size={40} className="text-emerald-400" />
+          <div className="p-5 bg-slate-50 rounded-[2rem] border border-slate-100 shadow-sm">
+            <Shield size={40} className="text-emerald-600" />
           </div>
           <div className="space-y-4">
-            <h4 className="text-2xl font-display font-black text-white tracking-tight uppercase">Management Protocol Insight</h4>
-            <p className="text-sm text-slate-400 font-bold leading-relaxed max-w-4xl uppercase tracking-[0.05em]">
+            <h4 className="text-2xl font-display font-black text-slate-900 tracking-tight uppercase">Management Protocol Insight</h4>
+            <p className="text-sm text-slate-500 font-bold leading-relaxed max-w-4xl uppercase tracking-[0.05em]">
               Observation data for static sites is collected via 24-hour vigilant monitoring cycles. 
               The results shown here are aggregated based on peak waterhole occupancy across all surveyed transects. 
               Terminal auth verified. Secure data stream active.

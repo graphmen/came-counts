@@ -83,61 +83,60 @@ export default function NationalDashboard() {
       className="max-w-6xl mx-auto px-4 py-4 space-y-6"
     >
       {/* -- National Header -- */}
-      <header className="relative rounded-[2rem] bg-slate-950 text-white border border-slate-800 shadow-2xl overflow-hidden group">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-[100px] -mr-40 -mt-40" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-[100px] -ml-32 -mb-32" />
+      <header className="relative rounded-[2rem] bg-white text-slate-900 border border-slate-200 shadow-sm overflow-hidden group">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px] -mr-40 -mt-40" />
         
         <div className="relative z-10 p-8 md:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                <ShieldCheck size={10} className="text-emerald-400" />
-                <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">National Grid Active</span>
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-full border border-emerald-100">
+                <ShieldCheck size={10} className="text-emerald-600" />
+                <span className="text-[9px] font-black text-emerald-700 uppercase tracking-[0.2em]">National Grid Active</span>
               </div>
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/10">
-                <span className="text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.2em]">HUB_ZIM_CENTRAL</span>
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-full border border-slate-200">
+                <span className="text-[9px] font-mono font-black text-slate-500 uppercase tracking-[0.2em]">HUB_ZIM_CENTRAL</span>
               </div>
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-display font-black tracking-tight leading-none text-white">
-              Zimbabwe <span className="text-emerald-500">Game Counts.</span>
+            <h1 className="text-4xl md:text-6xl font-display font-black tracking-tight leading-none text-slate-900">
+              Zimbabwe <span className="text-emerald-600">Game Counts.</span>
             </h1>
 
-            <p className="text-slate-400 font-bold max-w-lg text-[10px] uppercase tracking-widest leading-relaxed opacity-70">
+            <p className="text-slate-500 font-bold max-w-lg text-[10px] uppercase tracking-widest leading-relaxed opacity-70">
               Aggregated longitudinal wildlife intelligence across all operational sectors.
             </p>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="bg-white/5 p-5 rounded-3xl border border-white/10 backdrop-blur-xl shadow-2xl min-w-[140px]">
-              <div className="text-3xl font-display font-black text-emerald-400">{nationalStats.totalSightings.toLocaleString()}</div>
+          <div className="bg-slate-50 p-5 rounded-3xl border border-slate-100 shadow-sm min-w-[140px]">
+              <div className="text-3xl font-display font-black text-emerald-600">{nationalStats.totalSightings.toLocaleString()}</div>
               <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Verified Sightings</div>
             </div>
-            <div className="bg-white/5 p-5 rounded-3xl border border-white/10 backdrop-blur-xl shadow-2xl min-w-[140px]">
-              <div className="text-3xl font-display font-black text-white">{(nationalStats.totalArea / 1000).toFixed(0)}k</div>
+            <div className="bg-slate-50 p-5 rounded-3xl border border-slate-100 shadow-sm min-w-[140px]">
+              <div className="text-3xl font-display font-black text-slate-900">{(nationalStats.totalArea / 1000).toFixed(0)}k</div>
               <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Hectares Managed</div>
             </div>
           </div>
         </div>
 
         {/* -- Status Bar -- */}
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 px-10 py-4 border-t border-white/5 bg-white/[0.02]">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 px-10 py-4 border-t border-slate-100 bg-slate-50/50">
           <div className="flex items-center gap-2">
-            <Activity size={10} className="text-emerald-500" />
+            <Activity size={10} className="text-emerald-600" />
             <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Global Status</span>
-            <span className="text-[9px] font-mono font-bold text-emerald-400">OPERATIONAL</span>
+            <span className="text-[9px] font-mono font-bold text-emerald-600">OPERATIONAL</span>
           </div>
-          <div className="w-1 h-1 rounded-full bg-slate-800" />
+          <div className="w-1 h-1 rounded-full bg-slate-200" />
           <div className="flex items-center gap-2">
-            <Zap size={10} className="text-amber-400" />
+            <Zap size={10} className="text-amber-600" />
             <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Nodes Sync</span>
-            <span className="text-[9px] font-mono font-bold text-amber-400">{nationalStats.activeNodes} Sectors</span>
+            <span className="text-[9px] font-mono font-bold text-amber-600">{nationalStats.activeNodes} Sectors</span>
           </div>
-          <div className="w-1 h-1 rounded-full bg-slate-800" />
+          <div className="w-1 h-1 rounded-full bg-slate-200" />
           <div className="flex items-center gap-2">
-            <Lock size={10} className="text-blue-400" />
+            <Lock size={10} className="text-blue-600" />
             <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Protocol</span>
-            <span className="text-[9px] font-mono font-bold text-blue-400">WEZ-SECURE</span>
+            <span className="text-[9px] font-mono font-bold text-blue-600">WEZ-SECURE</span>
           </div>
         </div>
       </header>
@@ -176,8 +175,8 @@ export default function NationalDashboard() {
                   className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-emerald-500/20 transition-all group"
                 >
                   <div className="flex justify-between items-start mb-4">
-                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-xl group-hover:bg-emerald-50 transition-colors">
-                      {park.name.includes('Elephant') ? '??' : park.name.includes('Pools') ? '???' : '??'}
+                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xl border border-slate-100 group-hover:border-emerald-200 group-hover:bg-emerald-50 transition-all shadow-sm">
+                      {park.name.includes('Pools') ? '🐘' : park.name.includes('Hwange') ? '🦁' : '🌳'}
                     </div>
                     <ArrowUpRight size={14} className="text-slate-300 group-hover:text-emerald-500 transition-colors" />
                   </div>

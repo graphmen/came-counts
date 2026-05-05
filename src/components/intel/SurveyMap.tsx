@@ -301,13 +301,13 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
         <div className="bg-white p-1 rounded-xl shadow-xl border border-slate-200 flex gap-1">
           <button 
             onClick={() => setStyleType('vector')}
-            className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all font-display ${styleType === 'vector' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-400 hover:bg-slate-50'}`}
+            className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all font-display ${styleType === 'vector' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-50'}`}
           >
             Vector
           </button>
           <button 
             onClick={() => setStyleType('hybrid')}
-            className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all font-display ${styleType === 'hybrid' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-400 hover:bg-slate-50'}`}
+            className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all font-display ${styleType === 'hybrid' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-50'}`}
           >
             Hybrid
           </button>
@@ -360,19 +360,19 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
 
       {/* Top-left Info Panel */}
       <div className="absolute top-4 left-4 z-10">
-        <div className="bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-2xl">
+        <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 shadow-xl">
           <div className="flex items-center gap-2 mb-3">
-            <Compass size={14} className="text-emerald-400 animate-pulse" />
-            <span className="text-[10px] font-black text-white uppercase tracking-widest font-display">Geospatial Intelligence</span>
+            <Compass size={14} className="text-emerald-600 animate-pulse" />
+            <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest font-display">Geospatial Intelligence</span>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-xl font-black text-white font-mono leading-none">{geoObservations.length}</div>
-              <div className="text-[8px] text-slate-400 font-black uppercase tracking-wider font-display">Live Nodes</div>
+              <div className="text-xl font-black text-slate-900 font-mono leading-none">{geoObservations.length}</div>
+              <div className="text-[8px] text-slate-500 font-black uppercase tracking-wider font-display">Live Nodes</div>
             </div>
             <div>
-              <div className="text-xl font-black text-emerald-400 font-display leading-none">{styleType === 'hybrid' ? 'Satellite' : 'Topo'}</div>
-              <div className="text-[8px] text-slate-400 font-black uppercase tracking-wider font-display">Context</div>
+              <div className="text-xl font-black text-emerald-600 font-display leading-none">{styleType === 'hybrid' ? 'Satellite' : 'Topo'}</div>
+              <div className="text-[8px] text-slate-500 font-black uppercase tracking-wider font-display">Context</div>
             </div>
           </div>
         </div>
