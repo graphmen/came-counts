@@ -15,7 +15,8 @@ import {
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import YearSelector from '@/components/YearSelector';
-import EliteAnalytics from '@/components/charts/EliteAnalytics';
+import dynamic from 'next/dynamic';
+const EliteAnalytics = dynamic(() => import('@/components/charts/EliteAnalytics'), { ssr: false });
 import { FileText } from 'lucide-react';
 
 export default function ParkDashboard({ params }: { params: Promise<{ parkId: string }> }) {

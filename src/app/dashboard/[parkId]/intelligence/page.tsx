@@ -27,11 +27,12 @@ import KPICard from '@/components/KPICard';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import DataLedger from '@/components/intel/DataLedger';
 import ExportEngine from '@/components/intel/ExportEngine';
-import IntelligenceRecon from '@/components/intel/IntelligenceRecon';
+import dynamic from 'next/dynamic';
 import LiveTicker from '@/components/intel/LiveTicker';
-import nextDynamic from 'next/dynamic';
 
-const SurveyMap = nextDynamic(() => import('@/components/intel/SurveyMap'), { 
+const IntelligenceRecon = dynamic(() => import('@/components/intel/IntelligenceRecon'), { ssr: false });
+
+const SurveyMap = dynamic(() => import('@/components/intel/SurveyMap'), { 
   ssr: false,
   loading: () => <div className="h-[500px] bg-slate-50 rounded-2xl flex items-center justify-center animate-pulse text-slate-400 font-bold uppercase tracking-widest text-xs">Initializing Map Node...</div>
 });
