@@ -17,7 +17,8 @@ import {
     Zap,
     ChevronLeft,
     Database,
-    Info
+    Info,
+    LineChart
 } from 'lucide-react';
 import PremiumTrendChart from '@/components/charts/PremiumTrendChart';
 import { useRouter, useParams } from 'next/navigation';
@@ -242,7 +243,7 @@ export default function TrendAnalysisPage({ params }: { params: Promise<{ parkId
                 </Card>
 
                 {/* Species Selector */}
-                <Card className="w-full xl:w-80 bg-white/5 border-white/5 p-8 rounded-[3rem] backdrop-blur-xl shadow-2xl">
+                <Card className="w-full xl:w-80 bg-slate-900/40 border-white/5 p-8 rounded-[3rem] backdrop-blur-xl shadow-2xl">
                     <div className="flex items-center gap-3 mb-8 px-2">
                         <Target size={16} className="text-slate-500" />
                         <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">Taxa Control</h3>

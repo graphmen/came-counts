@@ -57,13 +57,6 @@ export default function Sidebar() {
         { label: 'Generate Report', href: `/dashboard/${parkId}/reports`, icon: <FileText size={18} /> },
     ] : [];
 
-    const dataNav = [
-        {
-            label: 'New Survey',
-            href: parkId ? `/dashboard/${parkId}/surveys/new` : '/dashboard/mana-pools-national-park/surveys/new',
-            icon: <PlusCircle size={18} />
-        },
-    ];
 
     return (
         <aside className="sidebar">
@@ -140,16 +133,6 @@ export default function Sidebar() {
                     })}
                 </div>
 
-                {/* Data Management */}
-                <div style={{ marginBottom: 28 }}>
-                    <div className="sidebar-group-label">Intelligence</div>
-                    {dataNav.map(item => (
-                        <Link key={item.href} href={item.href} className={`sidebar-item ${pathname === item.href ? 'active' : ''}`}>
-                            <span style={{ opacity: pathname === item.href ? 1 : 0.7 }}>{item.icon}</span>
-                            <span>{item.label}</span>
-                        </Link>
-                    ))}
-                </div>
             </nav>
 
             {/* Footer */}

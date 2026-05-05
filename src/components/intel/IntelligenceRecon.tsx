@@ -140,14 +140,16 @@ const SpecimenImage = ({ speciesName, fieldPhotoUrl }: { speciesName: string, fi
   );
 };
 
-export default function IntelligenceRecon({ observations, parkName = 'MANA POOLS' }: { observations: Observation[], parkName?: string }) {
+export default function IntelligenceRecon({ observations = [], parkName = 'MANA POOLS' }: { observations: Observation[], parkName?: string }) {
   const [selectedSpecies, setSelectedSpecies] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const speciesData = useMemo(() => {
+    if (!Array.isArray(observations)) return [];
     const map: Record<string, number> = {};
     observations.forEach(o => {
-      map[o.species] = (map[o.species] || 0) + o.count;
+      if (!o || !o.species) return;
+      map[o.species] = (map[o.species] || 0) + (o.count || 0);
     });
     return Object.entries(map)
       .map(([name, value]) => ({ name, value }))
@@ -155,8 +157,9 @@ export default function IntelligenceRecon({ observations, parkName = 'MANA POOLS
   }, [observations]);
 
   const filteredSpecies = useMemo(() => {
+    if (!speciesData) return [];
     return speciesData.filter(s => 
-      s.name.toLowerCase().includes(searchTerm.toLowerCase())
+      s && s.name && s.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [speciesData, searchTerm]);
 
@@ -166,25 +169,31 @@ export default function IntelligenceRecon({ observations, parkName = 'MANA POOLS
       'Sat Morning': 0, 'Sat Afternoon': 0, 'Sun Morning': 0, 'Sun Afternoon': 0
     };
     
-    observations.forEach(o => {
-      const key = `${o.day_of_week?.substring(0, 3)} ${o.period_of_day}`;
-      if (map[key] !== undefined) map[key] += o.count;
-    });
+    if (Array.isArray(observations)) {
+      observations.forEach(o => {
+        if (!o) return;
+        const key = `${(o.day_of_week || '').substring(0, 3)} ${o.period_of_day || ''}`;
+        if (map[key] !== undefined) map[key] += (o.count || 0);
+      });
+    }
 
-    return slots.map(slot => ({ name: slot, count: map[slot] }));
+    return slots.map(slot => ({ name: slot, count: map[slot] || 0 }));
   }, [observations]);
 
   const speciesProfile = useMemo(() => {
-    if (!selectedSpecies) return null;
-    const filtered = observations.filter(o => o.species === selectedSpecies);
+    if (!selectedSpecies || !Array.isArray(observations)) return null;
+    const filtered = observations.filter(o => o && o.species === selectedSpecies);
+    if (filtered.length === 0) return null;
+
     const m = filtered.reduce((s, o) => s + (o.male_count || 0), 0);
     const f = filtered.reduce((s, o) => s + (o.female_count || 0), 0);
     const u = filtered.reduce((s, o) => s + (o.unknown_count || 0), 0);
     const habitats = Array.from(new Set(filtered.map(o => o.habitat))).filter(Boolean);
     const activities = Array.from(new Set(filtered.map(o => o.activity))).filter(Boolean);
 
+    const totalObs = observations.length || 1;
     const radar = [
-      { subject: 'Abundance', A: (filtered.length / observations.length) * 100, fullMark: 100 },
+      { subject: 'Abundance', A: (filtered.length / totalObs) * 100, fullMark: 100 },
       { subject: 'Dispersion', A: 70, fullMark: 100 },
       { subject: 'Activity', A: Math.min(100, activities.length * 20), fullMark: 100 },
       { subject: 'Gender Bal', A: Math.abs(m - f) < 5 ? 90 : 40, fullMark: 100 },
@@ -195,12 +204,12 @@ export default function IntelligenceRecon({ observations, parkName = 'MANA POOLS
   }, [selectedSpecies, observations]);
 
   useEffect(() => {
-    if (speciesData.length > 0 && !selectedSpecies) {
+    if (speciesData && speciesData.length > 0 && !selectedSpecies) {
       setSelectedSpecies(speciesData[0].name);
     }
   }, [speciesData, selectedSpecies]);
 
-  if (observations.length === 0) {
+  if (!observations || observations.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-[500px] bg-slate-950 text-slate-500 rounded-3xl border border-white/10 shadow-2xl backdrop-blur-md">
         <Activity size={48} className="mb-4 opacity-10 text-white" />
@@ -331,14 +340,14 @@ export default function IntelligenceRecon({ observations, parkName = 'MANA POOLS
                        <div className="flex gap-8 items-center">
                           <div className="w-32 h-32 rounded-[2rem] overflow-hidden border-2 border-white/10 shadow-2xl bg-slate-900 group/spot">
                              <SpecimenImage 
-                                speciesName={selectedSpecies!} 
+                                speciesName={selectedSpecies || 'Unknown'} 
                                 fieldPhotoUrl={speciesProfile.observations.find(o => o.photo_url)?.photo_url} 
                              />
                           </div>
                           <div>
                             <div className="flex items-center gap-3 mb-4">
                                <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-[0.2em] rounded-full border border-emerald-500/30">Priority Asset</span>
-                               <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest font-mono">NODE-REF: {selectedSpecies?.toUpperCase().substring(0, 3)}-ALPHA</span>
+                               <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest font-mono">NODE-REF: {(selectedSpecies || 'UNK').toUpperCase().substring(0, 3)}-ALPHA</span>
                             </div>
                             <h2 className="text-5xl font-display font-black text-white tracking-tight uppercase leading-none">{selectedSpecies}</h2>
                             <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em] mt-4 flex items-center gap-2">
@@ -350,7 +359,7 @@ export default function IntelligenceRecon({ observations, parkName = 'MANA POOLS
                        
                        <div className="flex items-center gap-4 bg-white/5 p-6 rounded-[2rem] border border-white/10">
                           <div className="text-center">
-                            <p className="text-4xl font-display font-black text-white leading-none">{speciesProfile.radar[0].A.toFixed(1)}%</p>
+                            <p className="text-4xl font-display font-black text-white leading-none">{speciesProfile.radar?.[0]?.A?.toFixed(1) || '0.0'}%</p>
                             <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-3">Relative Frequency</p>
                           </div>
                        </div>
@@ -366,20 +375,24 @@ export default function IntelligenceRecon({ observations, parkName = 'MANA POOLS
                           </div>
                           <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Distribution Matrix</h4>
                        </div>
-                       <div className="h-72">
-                          <ResponsiveContainer width="100%" height="100%">
-                             <RadarChart cx="50%" cy="50%" outerRadius="80%" data={speciesProfile.radar}>
-                                <PolarGrid stroke="#334155" />
-                                <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 8, fontWeight: 900 }} />
-                                <Radar
-                                  name={selectedSpecies!}
-                                  dataKey="A"
-                                  stroke={COLORS.emerald}
-                                  fill={COLORS.emerald}
-                                  fillOpacity={0.4}
-                                />
-                             </RadarChart>
-                          </ResponsiveContainer>
+                       <div className="h-72 flex items-center justify-center">
+                          {speciesProfile?.radar ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={speciesProfile.radar}>
+                                  <PolarGrid stroke="#334155" />
+                                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 8, fontWeight: 900 }} />
+                                  <Radar
+                                    name={selectedSpecies || 'SPECIMEN'}
+                                    dataKey="A"
+                                    stroke={COLORS.emerald}
+                                    fill={COLORS.emerald}
+                                    fillOpacity={0.4}
+                                  />
+                               </RadarChart>
+                            </ResponsiveContainer>
+                          ) : (
+                            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Matrix Unavailable</span>
+                          )}
                        </div>
                     </div>
 
@@ -390,25 +403,29 @@ export default function IntelligenceRecon({ observations, parkName = 'MANA POOLS
                           </div>
                           <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Temporal Activity Flow</h4>
                        </div>
-                       <div className="h-72">
-                          <ResponsiveContainer width="100%" height="100%">
-                             <AreaChart data={temporalData}>
-                                <defs>
-                                  <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.3}/>
-                                    <stop offset="95%" stopColor={COLORS.emerald} stopOpacity={0}/>
-                                  </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
-                                <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 8, fontWeight: 900 }} axisLine={false} tickLine={false} />
-                                <YAxis tick={{ fill: '#64748b', fontSize: 8, fontWeight: 900 }} axisLine={false} tickLine={false} />
-                                <Tooltip 
-                                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', fontSize: '10px' }}
-                                  itemStyle={{ color: COLORS.emerald, fontWeight: '900' }}
-                                />
-                                <Area type="monotone" dataKey="count" stroke={COLORS.emerald} fillOpacity={1} fill="url(#colorCount)" strokeWidth={3} />
-                             </AreaChart>
-                          </ResponsiveContainer>
+                       <div className="h-72 flex items-center justify-center">
+                          {temporalData && temporalData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                               <AreaChart data={temporalData}>
+                                  <defs>
+                                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                                      <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.3}/>
+                                      <stop offset="95%" stopColor={COLORS.emerald} stopOpacity={0}/>
+                                    </linearGradient>
+                                  </defs>
+                                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                                  <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 8, fontWeight: 900 }} axisLine={false} tickLine={false} />
+                                  <YAxis tick={{ fill: '#64748b', fontSize: 8, fontWeight: 900 }} axisLine={false} tickLine={false} />
+                                  <Tooltip 
+                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', fontSize: '10px' }}
+                                    itemStyle={{ color: COLORS.emerald, fontWeight: '900' }}
+                                  />
+                                  <Area type="monotone" dataKey="count" stroke={COLORS.emerald} fillOpacity={1} fill="url(#colorCount)" strokeWidth={3} />
+                               </AreaChart>
+                            </ResponsiveContainer>
+                          ) : (
+                            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Flow Data Syncing...</span>
+                          )}
                        </div>
                     </div>
                  </div>

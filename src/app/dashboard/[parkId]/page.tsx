@@ -156,12 +156,6 @@ export default function ParkDashboard({ params }: { params: Promise<{ parkId: st
               <span>Export Hub</span>
               <FileText size={18} className="text-emerald-400" />
             </button>
-            <button
-              onClick={() => router.push(`/dashboard/${parkId}/surveys/new`)}
-              className="flex items-center gap-4 px-8 py-4 bg-white text-slate-950 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] hover:bg-slate-100 transition-all shadow-2xl active:scale-95 shadow-white/10"
-            >
-              <span>Transmit Data</span> <ChevronRight size={18} className="text-emerald-600" />
-            </button>
           </div>
         </div>
 

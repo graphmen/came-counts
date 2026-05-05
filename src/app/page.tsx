@@ -79,15 +79,6 @@ export default function HomePage() {
             >
               National Dashboard <ChevronRight size={14} />
             </Link>
-            <Link 
-              href="/dashboard/mana-pools-national-park/surveys/new"
-              className={cn(
-                buttonVariants({ size: "sm", variant: "outline" }),
-                "h-10 px-6 rounded-xl border-slate-700 text-white hover:bg-white/5 font-black uppercase tracking-widest text-[10px] gap-2 flex items-center justify-center transition-all border backdrop-blur-sm"
-              )}
-            >
-              Field Entry Unit <Database size={14} />
-            </Link>
           </div>
         </div>
       </section>

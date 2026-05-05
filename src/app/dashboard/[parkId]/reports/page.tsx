@@ -100,104 +100,104 @@ export default function ReportsPage({ params }: { params: Promise<{ parkId: stri
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+    <div className="min-h-screen bg-slate-950 px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* ── Page Header ────────────────────────────────────────── */}
-      {/* ── Page Header ────────────────────────────────────────── */}
-      <header className="relative p-6 md:p-8 rounded-3xl bg-slate-950 text-white border border-slate-800 shadow-2xl overflow-hidden group">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl -ml-24 -mb-24" />
+      <header className="relative p-10 rounded-[2.5rem] bg-slate-900/50 text-white border border-white/5 shadow-2xl overflow-hidden group backdrop-blur-md">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-[100px] -mr-48 -mt-48 transition-transform group-hover:scale-110 duration-700 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px] -ml-48 -mb-48 pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                <FileText size={10} className="text-emerald-400" />
-                <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">Publication Intelligence</span>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                <FileText size={12} className="text-emerald-400" />
+                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">Publication Intelligence</span>
               </div>
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/10">
-                <ShieldCheck size={10} className="text-slate-400" />
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Compiler Engine: Active</span>
+              <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10 backdrop-blur-md">
+                <ShieldCheck size={12} className="text-slate-400" />
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Compiler Engine: Active</span>
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <h1 className="text-3xl md:text-5xl font-display font-black text-white tracking-tight leading-none">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+              <h1 className="text-5xl md:text-7xl font-display font-black text-white tracking-tighter leading-none uppercase">
                 Report Generator
               </h1>
+              <div className="h-16 w-px bg-white/10 hidden md:block" />
               {park && (
-                <div className="bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-md shadow-xl hidden sm:block">
+                <div className="bg-white/5 p-2 rounded-[1.5rem] border border-white/10 backdrop-blur-md shadow-2xl">
                   <YearSelector parkId={park.id} selectedYear={selectedYear} onYearChange={handleYearChange} />
                 </div>
               )}
             </div>
 
-            <div className="flex items-center gap-3">
-               <div className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
-                 <Zap size={10} className="text-emerald-400" />
+            <div className="flex items-center gap-4">
+               <div className="w-8 h-8 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+                 <Zap size={14} className="text-emerald-400" />
                </div>
-               <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest leading-relaxed max-w-xl">
+               <p className="text-slate-400 font-black text-[10px] uppercase tracking-[0.3em] leading-relaxed max-w-xl">
                  Automated synthesis of ecological census data for official {park?.name} documentation.
                </p>
             </div>
           </div>
 
           <div className="hidden lg:flex items-center gap-4">
-              <div className="bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-sm text-right">
-                <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Doc Integrity</div>
-                <div className="flex items-center gap-2 text-emerald-400 font-black text-xs">
-                   <ShieldCheck size={14} className="animate-pulse" /> 100% SECURE
+              <div className="bg-white/5 p-6 rounded-[2rem] border border-white/10 backdrop-blur-md text-right shadow-2xl">
+                <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2">Doc Integrity</div>
+                <div className="flex items-center gap-3 text-emerald-400 font-black text-sm">
+                   <ShieldCheck size={18} className="animate-pulse" /> 100% SECURE
                 </div>
               </div>
           </div>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         {/* Main Document Preview Card */}
         <motion.div 
-          initial={{ opacity: 0, y: 10 }} 
+          initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }}
-          className="xl:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden"
+          className="xl:col-span-2 bg-slate-900/50 rounded-[2.5rem] border border-white/5 shadow-2xl overflow-hidden backdrop-blur-md"
         >
           {/* Decorative Header Area */}
-          <div className="px-6 py-6 bg-slate-50 border-b border-slate-100 flex items-center gap-4">
-            <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center text-2xl">
+          <div className="px-8 py-8 bg-white/5 border-b border-white/10 flex items-center gap-6">
+            <div className="w-16 h-16 bg-white/5 rounded-2xl shadow-2xl border border-white/10 flex items-center justify-center text-3xl">
               📄
             </div>
             <div>
-              <h3 className="text-lg font-black text-slate-900 tracking-tight">
+              <h3 className="text-2xl font-display font-black text-white tracking-tight uppercase">
                 {survey?.year || selectedYear} Annual Game Count
               </h3>
-              <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mt-0.5">
+              <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] mt-2">
                 Official Ecological Report · {park?.name}
               </p>
             </div>
           </div>
 
-          <div className="p-6">
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-4">
-                <CheckCircle size={14} className="text-emerald-600" />
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Document Components</span>
+          <div className="p-8">
+            <div className="mb-10">
+              <div className="flex items-center gap-3 mb-6">
+                <CheckCircle size={16} className="text-emerald-500" />
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Document Components</span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {[
                   'Executive Summary', 'Transect Methodology', 'Species Disaggregation', 
                   'Sex & Age Analysis', 'Static Site Summary', 'Historical Trends', 
                   'Volunteer Log', 'Spatial Analytics'
                 ].map(item => (
-                  <div key={item} className="flex items-center gap-2 px-3 py-2 bg-slate-50/50 rounded-lg border border-slate-100 text-[11px] font-bold text-slate-600">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+                  <div key={item} className="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-xl border border-white/5 text-[11px] font-black text-slate-300 uppercase tracking-widest group hover:bg-white/10 transition-all">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] group-hover:scale-125 transition-transform" />
                     {item}
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="pt-6 border-t border-slate-50">
-              <div className="flex items-start gap-3 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
-                <ShieldCheck size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
-                <p className="text-[10px] text-slate-500 font-bold leading-relaxed">
+            <div className="pt-8 border-t border-white/5">
+              <div className="flex items-start gap-4 bg-indigo-500/5 p-6 rounded-2xl border border-indigo-500/10 backdrop-blur-md">
+                <ShieldCheck size={20} className="text-indigo-400 flex-shrink-0 mt-1" />
+                <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] leading-relaxed">
                   This engine synthesizes observational matrices directly from the Supabase ecosystem. 
                   Reports are digitally signed and optimized for professional stakeholder presentations.
                 </p>
@@ -207,15 +207,15 @@ export default function ReportsPage({ params }: { params: Promise<{ parkId: stri
         </motion.div>
 
         {/* Sidebar Actions */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           <motion.div 
             initial={{ opacity: 0, x: 20 }} 
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"
+            className="bg-slate-900/50 rounded-[2.5rem] border border-white/5 shadow-2xl p-8 backdrop-blur-md"
           >
-            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Publication Actions</h4>
+            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6">Publication Actions</h4>
             
-            <div className="space-y-2">
+            <div className="space-y-3">
               {mounted && park && survey && speciesData.length > 0 ? (
                 <PDFDownloadLink
                   document={<ManaPoolsReportPDF park={park} survey={survey} speciesData={speciesData} />}
@@ -224,36 +224,36 @@ export default function ReportsPage({ params }: { params: Promise<{ parkId: stri
                 >
                   {(( { loading: pdfLoading }: any ) => (
                     <button 
-                      className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 text-white text-xs font-black shadow-md shadow-emerald-100 transition-all hover:bg-emerald-800 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none ${pdfLoading ? 'cursor-wait' : 'cursor-pointer'}`}
+                      className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-emerald-900/20 transition-all hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-600 disabled:shadow-none active:scale-95 ${pdfLoading ? 'cursor-wait' : 'cursor-pointer'}`}
                       disabled={pdfLoading}
                     >
-                      <FileDown size={16} />
-                      {pdfLoading ? 'Processing...' : 'Download PDF Report'}
+                      <FileDown size={18} />
+                      {pdfLoading ? 'Compiling Matrix...' : 'Download Intel Report'}
                     </button>
                   )) as any}
                 </PDFDownloadLink>
               ) : (
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 text-slate-400 text-xs font-black cursor-not-allowed" disabled>
-                  Data Unavailable
+                <button className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-white/5 text-slate-600 text-[10px] font-black uppercase tracking-widest cursor-not-allowed border border-white/5" disabled>
+                  Data Stream Empty
                 </button>
               )}
 
-              <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-black hover:bg-slate-50 transition-colors">
-                <FileText size={16} /> Preview Online
+              <button className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all active:scale-95">
+                <FileText size={18} /> Preview Analytics
               </button>
             </div>
 
-            <div className="mt-6 pt-6 border-t border-slate-50 space-y-4">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Metadata Registry</p>
-              <div className="space-y-2">
+            <div className="mt-8 pt-8 border-t border-white/5 space-y-4">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Metadata Registry</p>
+              <div className="space-y-3">
                 {[
                   { label: 'Standard', value: 'ZEWC Protocol' },
                   { label: 'Format', value: 'PDF/A4' },
                   { label: 'Version', value: 'v1.1.0 Stable', isStatus: true }
                 ].map(m => (
-                  <div key={m.label} className="flex justify-between text-[11px] font-bold">
-                    <span className="text-slate-400">{m.label}</span>
-                    <span className={m.isStatus ? 'text-emerald-600 font-black' : 'text-slate-700 font-black'}>{m.value}</span>
+                  <div key={m.label} className="flex justify-between text-[11px] font-black uppercase tracking-widest">
+                    <span className="text-slate-600">{m.label}</span>
+                    <span className={m.isStatus ? 'text-emerald-400' : 'text-slate-300'}>{m.value}</span>
                   </div>
                 ))}
               </div>
@@ -263,12 +263,12 @@ export default function ReportsPage({ params }: { params: Promise<{ parkId: stri
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }} 
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-amber-50/50 p-4 rounded-xl border border-amber-100/50 flex items-start gap-3"
+            className="bg-amber-500/5 p-6 rounded-2xl border border-amber-500/10 flex items-start gap-4 backdrop-blur-md"
           >
-            <div className="p-1.5 bg-white rounded-lg shadow-sm border border-amber-100">
-              <Info size={14} className="text-amber-600" />
+            <div className="p-2 bg-amber-500/10 rounded-xl border border-amber-500/20 shadow-2xl">
+              <Info size={16} className="text-amber-500" />
             </div>
-            <p className="text-[10px] text-amber-800 font-bold leading-relaxed">
+            <p className="text-[10px] text-amber-500/70 font-black uppercase tracking-[0.2em] leading-relaxed">
               Reports are cached for 24 hours. Use 'Refresh Node' to force current parity.
             </p>
           </motion.div>
