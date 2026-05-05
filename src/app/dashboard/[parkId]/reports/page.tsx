@@ -16,11 +16,9 @@ import {
 } from 'lucide-react';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import YearSelector from '@/components/YearSelector';
-import { ManaPoolsReportPDF } from '@/components/pdf/ManaPoolsReport';
-
 // Client-only dynamic import for PDF components
-const PDFDownloadLink = dynamic(
-  () => import('@react-pdf/renderer').then(mod => mod.PDFDownloadLink),
+const ManaPoolsPDFButton = dynamic(
+  () => import('@/components/pdf/ManaPoolsPDFButton'),
   { ssr: false }
 );
 
@@ -215,22 +213,8 @@ export default function ReportsPage({ params }: { params: Promise<{ parkId: stri
             <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6">Publication Actions</h4>
             
             <div className="space-y-3">
-              {mounted && park && survey && speciesData.length > 0 ? (
-                <PDFDownloadLink
-                  document={<ManaPoolsReportPDF park={park} survey={survey} speciesData={speciesData} />}
-                  fileName={`WEZ_${park.name.replace(/\s+/g, '_')}_Report_${survey.year}.pdf`}
-                  style={{ textDecoration: 'none' }}
-                >
-                  {(( { loading: pdfLoading }: any ) => (
-                    <button 
-                      className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-emerald-900/20 transition-all hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-600 disabled:shadow-none active:scale-95 ${pdfLoading ? 'cursor-wait' : 'cursor-pointer'}`}
-                      disabled={pdfLoading}
-                    >
-                      <FileDown size={18} />
-                      {pdfLoading ? 'Compiling Matrix...' : 'Download Intel Report'}
-                    </button>
-                  )) as any}
-                </PDFDownloadLink>
+              {park && survey && speciesData.length > 0 ? (
+                <ManaPoolsPDFButton park={park} survey={survey} speciesData={speciesData} />
               ) : (
                 <button className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-white/5 text-slate-600 text-[10px] font-black uppercase tracking-widest cursor-not-allowed border border-white/5" disabled>
                   Data Stream Empty
