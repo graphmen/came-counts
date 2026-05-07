@@ -336,9 +336,9 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                  className="space-y-8"
                >
                  {/* Spotlight Header */}
-                 <div className="bg-slate-50 rounded-[2.5rem] border border-slate-200 p-10 relative overflow-hidden shadow-sm">
-                        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10 relative z-10">
-                           <div className="flex flex-col sm:flex-row gap-10 items-center">
+                 <div className="bg-slate-50 rounded-[2rem] border border-slate-200 p-8 relative overflow-hidden shadow-sm">
+                        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 relative z-10">
+                           <div className="flex flex-col sm:flex-row gap-8 items-center">
                               <div className="w-44 h-44 rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl bg-white group/spot relative shrink-0">
                                  <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent z-10 pointer-events-none" />
                                  <SpecimenImage 
@@ -351,7 +351,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                                    <span className="px-4 py-1.5 bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-[0.2em] rounded-full border border-emerald-200 shadow-sm">Priority Asset</span>
                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono opacity-60">NODE-REF: {(selectedSpecies || 'UNK').toUpperCase().substring(0, 3)}-ALPHA</span>
                                 </div>
-                                <h2 className="text-6xl font-display font-black text-slate-900 tracking-tight uppercase leading-none mb-6">{selectedSpecies}</h2>
+                                <h2 className="text-4xl font-display font-black text-slate-900 tracking-tight uppercase leading-none mb-6">{selectedSpecies}</h2>
                                 <div className="text-[11px] text-slate-500 font-black uppercase tracking-[0.3em] flex items-center justify-center sm:justify-start gap-3">
                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
                                    Biometric Protocol Standardized
@@ -359,9 +359,9 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                               </div>
                            </div>
                            
-                           <div className="flex items-center gap-6 bg-white/80 backdrop-blur-md p-8 rounded-[2.5rem] border border-white shadow-xl min-w-[200px] justify-center lg:justify-start">
+                           <div className="flex items-center gap-6 bg-white/80 backdrop-blur-md p-6 rounded-[2rem] border border-white shadow-xl min-w-[200px] justify-center lg:justify-start">
                               <div className="text-center w-full">
-                                <p className="text-5xl font-display font-black text-slate-900 leading-none tracking-tighter">{speciesProfile.radar?.[0]?.A?.toFixed(1) || '0.0'}%</p>
+                                <p className="text-3xl font-display font-black text-slate-900 leading-none tracking-tighter">{speciesProfile.radar?.[0]?.A?.toFixed(1) || '0.0'}%</p>
                                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-4">Relative Frequency</p>
                               </div>
                            </div>
@@ -369,15 +369,15 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                  </div>
 
                  {/* Charts Grid */}
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="bg-slate-50 rounded-[2.5rem] border border-slate-200 p-8 shadow-sm">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-slate-50 rounded-[2rem] border border-slate-200 p-6 shadow-sm">
                        <div className="flex items-center gap-3 mb-8">
                           <div className="p-2 bg-indigo-100 rounded-xl text-indigo-600 border border-indigo-200">
                              <Target size={16} />
                           </div>
                           <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Distribution Matrix</h4>
                        </div>
-                       <div className="h-72 flex items-center justify-center">
+                       <div className="h-48 flex items-center justify-center">
                           {speciesProfile?.radar ? (
                             <ResponsiveContainer width="100%" height="100%">
                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={speciesProfile.radar}>
@@ -398,14 +398,14 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                        </div>
                     </div>
 
-                    <div className="bg-slate-50 rounded-[2.5rem] border border-slate-200 p-8 shadow-sm">
+                    <div className="bg-slate-50 rounded-[2rem] border border-slate-200 p-6 shadow-sm">
                        <div className="flex items-center gap-3 mb-8">
                           <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-600 border border-emerald-500/20">
                              <TrendingUp size={16} />
                           </div>
                           <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Temporal Activity Flow</h4>
                        </div>
-                       <div className="h-64">
+                       <div className="h-44">
                           <ResponsiveContainer width="100%" height="100%">
                              <AreaChart data={temporalData}>
                                 <defs>
@@ -423,27 +423,30 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                                 />
                                 <Area type="monotone" dataKey="Morning" stackId="1" stroke={COLORS.emerald} fillOpacity={1} fill="url(#colorMorning)" strokeWidth={3} />
                                 <Area type="monotone" dataKey="Midday" stackId="1" stroke={COLORS.amber} fillOpacity={0.1} fill={COLORS.amber} strokeWidth={2} />
-                                <Area type="monotone" dataKey="Afternoon" stackId="1" stroke={COLORS.indigo} fillOpacity={0.1} fill={COLORS.indigo} strokeWidth={2} />
-                                <Area type="monotone" dataKey="Evening" stackId="1" stroke={COLORS.rose} fillOpacity={0.1} fill={COLORS.rose} strokeWidth={2} />
-                             </AreaChart>
-                          </ResponsiveContainer>
-                       </div>
-                    </div>
-                 </div>
-
-                 {/* Detailed Metrics Table */}
-                  <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm overflow-hidden">
-                     <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center gap-3">
-                           <div className="p-2 bg-slate-100 rounded-xl text-slate-600 border border-slate-200">
-                              <Database size={16} />
-                           </div>
-                           <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Raw Intelligence Log</h4>
+                                                        <Area type="monotone" dataKey="Evening" stackId="1" stroke={COLORS.rose} fillOpacity={0.1} fill={COLORS.rose} strokeWidth={2} />
+                              </AreaChart>
+                           </ResponsiveContainer>
                         </div>
-                        <div className="flex gap-6">
+                     </div>
+                  </div>
+
+                  {/* Detailed Metrics Table */}
+                  <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm overflow-hidden">
+                     <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-2">
+                           <div className="p-1.5 bg-slate-100 rounded-lg text-slate-600 border border-slate-200">
+                              <Database size={14} />
+                           </div>
+                           <h4 className="text-[9px] font-black text-slate-900 uppercase tracking-[0.2em]">Raw Intelligence Log</h4>
+                        </div>
+                        <div className="flex gap-4">
                            <div className="text-right">
-                              <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Confidence Score</p>
-                              <p className="text-sm font-black text-emerald-600">98.2%</p>
+                              <p className="text-[7px] font-black text-slate-500 uppercase tracking-widest">Confidence Score</p>
+                              <p className="text-[12px] font-black text-emerald-600">98.2%</p>
+                           </div>
+                        </div>
+                     </div>
+me="text-sm font-black text-emerald-600">98.2%</p>
                            </div>
                         </div>
                      </div>
@@ -472,16 +475,16 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                   </div>
 
                  {/* Export Section */}
-                 <div className="bg-emerald-600 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-10 relative overflow-hidden shadow-xl shadow-emerald-600/20 group/cta">
+                 <div className="bg-emerald-600 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden shadow-xl shadow-emerald-600/20 group/cta">
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-500 pointer-events-none" />
                     <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white/10 rounded-full blur-[80px] pointer-events-none" />
-                    <div className="relative z-10 flex items-center gap-8">
-                       <div className="w-20 h-20 bg-white/20 rounded-[2rem] flex items-center justify-center text-white backdrop-blur-md border border-white/20 shadow-2xl">
-                          <Zap size={40} className="group-hover/cta:scale-110 transition-transform duration-500" />
+                    <div className="relative z-10 flex items-center gap-6">
+                       <div className="w-14 h-14 bg-white/20 rounded-[1.5rem] flex items-center justify-center text-white backdrop-blur-md border border-white/20 shadow-2xl">
+                          <Zap size={28} className="group-hover/cta:scale-110 transition-transform duration-500" />
                        </div>
                        <div>
-                          <h2 className="text-3xl font-display font-black leading-tight text-white uppercase tracking-tight">Deploy Tactical Dossier</h2>
-                          <p className="text-sm text-emerald-50/70 mt-2 font-bold uppercase tracking-widest">Standardized Intel Export for Operational Oversight</p>
+                          <h2 className="text-xl font-display font-black leading-tight text-white uppercase tracking-tight">Deploy Tactical Dossier</h2>
+                          <p className="text-[9px] text-emerald-50/70 mt-1 font-bold uppercase tracking-widest">Standardized Intel Export for Operational Oversight</p>
                        </div>
                     </div>
                     <div className="relative z-10">
