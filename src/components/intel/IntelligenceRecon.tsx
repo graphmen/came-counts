@@ -337,34 +337,35 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                >
                  {/* Spotlight Header */}
                  <div className="bg-slate-50 rounded-[2.5rem] border border-slate-200 p-10 relative overflow-hidden shadow-sm">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10">
-                       <div className="flex gap-8 items-center">
-                          <div className="w-32 h-32 rounded-[2rem] overflow-hidden border-2 border-slate-200 shadow-sm bg-white group/spot">
-                             <SpecimenImage 
-                                speciesName={selectedSpecies || 'Unknown'} 
-                                fieldPhotoUrl={speciesProfile.observations.find(o => o.photo_url)?.photo_url} 
-                             />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-3 mb-4">
-                               <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[8px] font-black uppercase tracking-[0.2em] rounded-full border border-emerald-200">Priority Asset</span>
-                               <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest font-mono">NODE-REF: {(selectedSpecies || 'UNK').toUpperCase().substring(0, 3)}-ALPHA</span>
-                            </div>
-                            <h2 className="text-5xl font-display font-black text-slate-900 tracking-tight uppercase leading-none">{selectedSpecies}</h2>
-                            <div className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em] mt-4 flex items-center gap-2">
-                               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                               Biometric Protocol Standardized
-                            </div>
-                          </div>
-                       </div>
-                       
-                       <div className="flex items-center gap-4 bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
-                          <div className="text-center">
-                            <p className="text-4xl font-display font-black text-slate-900 leading-none">{speciesProfile.radar?.[0]?.A?.toFixed(1) || '0.0'}%</p>
-                            <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-3">Relative Frequency</p>
-                          </div>
-                       </div>
-                    </div>
+                        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10 relative z-10">
+                           <div className="flex flex-col sm:flex-row gap-10 items-center">
+                              <div className="w-44 h-44 rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl bg-white group/spot relative shrink-0">
+                                 <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent z-10 pointer-events-none" />
+                                 <SpecimenImage 
+                                    speciesName={selectedSpecies || 'Unknown'} 
+                                    fieldPhotoUrl={speciesProfile.observations.find(o => o.photo_url)?.photo_url} 
+                                 />
+                              </div>
+                              <div className="text-center sm:text-left">
+                                <div className="flex items-center justify-center sm:justify-start gap-3 mb-6">
+                                   <span className="px-4 py-1.5 bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-[0.2em] rounded-full border border-emerald-200 shadow-sm">Priority Asset</span>
+                                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono opacity-60">NODE-REF: {(selectedSpecies || 'UNK').toUpperCase().substring(0, 3)}-ALPHA</span>
+                                </div>
+                                <h2 className="text-6xl font-display font-black text-slate-900 tracking-tight uppercase leading-none mb-6">{selectedSpecies}</h2>
+                                <div className="text-[11px] text-slate-500 font-black uppercase tracking-[0.3em] flex items-center justify-center sm:justify-start gap-3">
+                                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                                   Biometric Protocol Standardized
+                                </div>
+                              </div>
+                           </div>
+                           
+                           <div className="flex items-center gap-6 bg-white/80 backdrop-blur-md p-8 rounded-[2.5rem] border border-white shadow-xl min-w-[200px] justify-center lg:justify-start">
+                              <div className="text-center w-full">
+                                <p className="text-5xl font-display font-black text-slate-900 leading-none tracking-tighter">{speciesProfile.radar?.[0]?.A?.toFixed(1) || '0.0'}%</p>
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-4">Relative Frequency</p>
+                              </div>
+                           </div>
+                        </div>
                  </div>
 
                  {/* Charts Grid */}

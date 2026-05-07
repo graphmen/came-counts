@@ -39,7 +39,7 @@ export default function PDFExportButton({ parkName, observations, speciesData, i
   // ── Step 1: Inactive State (Safe Mode) ──────────────────────────────────
   if (!isActivated) {
     return (
-      <button 
+      <button
         onClick={() => setIsActivated(true)}
         className={`${isFullWidth ? 'w-full' : ''} px-10 py-5 bg-white text-emerald-600 border-2 border-emerald-500/20 rounded-[2rem] font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-500/40 active:scale-95 transition-all flex items-center justify-center gap-3 group`}
       >
@@ -60,7 +60,7 @@ export default function PDFExportButton({ parkName, observations, speciesData, i
         {({ loading, error }) => {
           if (error) {
             return (
-              <button 
+              <button
                 onClick={() => setIsActivated(false)}
                 className={`${isFullWidth ? 'w-full' : ''} px-10 py-5 bg-rose-50 text-rose-600 border-2 border-rose-200 rounded-[2rem] font-black text-[11px] uppercase tracking-widest flex items-center justify-center gap-3`}
               >
@@ -71,13 +71,12 @@ export default function PDFExportButton({ parkName, observations, speciesData, i
           }
 
           return (
-            <button 
+            <button
               disabled={loading}
-              className={`${isFullWidth ? 'w-full' : ''} px-10 py-5 ${
-                loading 
-                  ? 'bg-slate-50 text-slate-400 border-2 border-slate-200 cursor-wait' 
+              className={`${isFullWidth ? 'w-full' : ''} px-10 py-5 ${loading
+                  ? 'bg-slate-50 text-slate-400 border-2 border-slate-200 cursor-wait'
                   : 'bg-emerald-600 text-white border-2 border-emerald-500 shadow-2xl shadow-emerald-600/20 hover:bg-emerald-500'
-              } rounded-[2rem] font-black text-[11px] uppercase tracking-[0.2em] active:scale-95 transition-all flex items-center justify-center gap-3`}
+                } rounded-[2rem] font-black text-[11px] uppercase tracking-[0.2em] active:scale-95 transition-all flex items-center justify-center gap-3`}
             >
               {loading ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -91,15 +90,15 @@ export default function PDFExportButton({ parkName, observations, speciesData, i
           );
         }}
       </PDFDownloadLink>
-      
+
       {/* Reset switch if user wants to cancel or redo */}
       {!isFullWidth && (
-         <button 
-           onClick={() => setIsActivated(false)}
-           className="mt-3 text-[9px] font-black text-slate-400 uppercase tracking-widest hover:text-emerald-600 transition-colors mx-auto flex items-center gap-1"
-         >
-           <RefreshCw size={10} /> Reset Engine
-         </button>
+        <button
+          onClick={() => setIsActivated(false)}
+          className="mt-3 text-[9px] font-black text-slate-400 uppercase tracking-widest hover:text-emerald-600 transition-colors mx-auto flex items-center gap-1"
+        >
+          <RefreshCw size={10} /> Reset Engine
+        </button>
       )}
     </div>
   );
