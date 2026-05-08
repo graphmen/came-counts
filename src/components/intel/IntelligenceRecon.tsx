@@ -227,10 +227,10 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
       
 
       {/* ── Main Intel Hub: 3-Column Layout ────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[750px] gap-0 border border-slate-200 rounded-3xl overflow-hidden shadow-2xl relative z-10 bg-white">
+      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[700px] gap-0 border border-slate-200 rounded-3xl overflow-hidden shadow-2xl relative z-10 bg-white">
         
-        {/* Col 1: Species Sidebar */}
-        <div className="lg:col-span-3 flex flex-col border-r border-slate-200 bg-white h-[500px] lg:h-full">
+        {/* Col 1: Species Sidebar (Narrower for V3.2) */}
+        <div className="lg:col-span-2 flex flex-col border-r border-slate-200 bg-white h-[400px] lg:h-full">
           <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
              <div>
                <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Asset Recognition</h3>
@@ -260,7 +260,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
           {/* Rigid Scrollable Container with Fixed Pixel Math for Maximum Stability */}
           <div 
             className="overflow-y-auto custom-scrollbar p-3 space-y-1.5 bg-slate-50/30"
-            style={{ height: 'calc(750px - 140px)', minHeight: '500px' }}
+            style={{ height: 'calc(700px - 140px)', minHeight: '400px' }}
           >
             {filteredSpecies.map(s => (
               <button 
@@ -291,8 +291,8 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
           </div>
         </div>
 
-        {/* Col 2: LARGE Specimen Image - Fixed Scaling */}
-        <div className="lg:col-span-5 relative bg-slate-950 overflow-hidden h-[400px] lg:h-full group">
+        {/* Col 2: LARGE Specimen Image (Expanded for V3.2) */}
+        <div className="lg:col-span-8 relative bg-slate-950 overflow-hidden h-[400px] lg:h-full group">
           <AnimatePresence mode="wait">
             {selectedSpecies && (
               <motion.div
@@ -301,10 +301,10 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="absolute inset-0 flex items-center justify-center p-4"
+                className="absolute inset-0 flex items-center justify-center p-0"
               >
-                {/* Containerized image for perfect centering */}
-                <div className="w-full h-full relative z-10 flex items-center justify-center p-8">
+                {/* Containerized image for perfect centering - P-0 for maximum size */}
+                <div className="w-full h-full relative z-10 flex items-center justify-center p-0">
                   {(() => {
                     const portrait = getSpeciesPortrait(selectedSpecies);
                     const fieldPhoto = speciesProfile?.observations?.find(o => o.photo_url)?.photo_url;
@@ -332,8 +332,8 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
           </AnimatePresence>
         </div>
 
-        {/* Col 3: Compact Analytics Panel */}
-        <div className="lg:col-span-4 flex flex-col border-l border-slate-200 bg-white h-[500px] lg:h-full overflow-hidden">
+        {/* Col 3: Compact Analytics Panel (Minimized for V3.2) */}
+        <div className="lg:col-span-2 flex flex-col border-l border-slate-200 bg-white h-[400px] lg:h-full overflow-hidden">
           <AnimatePresence mode="wait">
             {speciesProfile ? (
               <motion.div
