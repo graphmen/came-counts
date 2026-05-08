@@ -227,7 +227,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
       
 
       {/* ── Main Intel Hub: 3-Column Layout ────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[600px] gap-0 border border-slate-200 rounded-3xl overflow-hidden shadow-2xl relative z-10 bg-white">
+      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[540px] gap-0 border border-slate-200 rounded-3xl overflow-hidden shadow-2xl relative z-10 bg-white">
         
         {/* Col 1: Species Sidebar (Balanced for V3.3) */}
         <div className="lg:col-span-3 flex flex-col border-r border-slate-200 bg-white h-[500px] lg:h-full">
@@ -260,7 +260,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
           {/* Rigid Scrollable Container with Fixed Pixel Math for Maximum Stability */}
           <div 
             className="overflow-y-auto custom-scrollbar p-3 space-y-1.5 bg-slate-50/30"
-            style={{ height: 'calc(600px - 140px)', minHeight: '400px' }}
+            style={{ height: 'calc(540px - 140px)', minHeight: '350px' }}
           >
             {filteredSpecies.map(s => (
               <button 
