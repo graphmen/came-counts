@@ -471,6 +471,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                       parkName={parkName} 
                       observations={observations} 
                       speciesData={speciesData} 
+                      isFullWidth={true}
                     />
                   </div>
                 </div>

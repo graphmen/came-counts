@@ -41,10 +41,10 @@ export default function PDFExportButton({ parkName, observations, speciesData, i
     return (
       <button
         onClick={() => setIsActivated(true)}
-        className={`${isFullWidth ? 'w-full' : ''} px-10 py-5 bg-white text-emerald-600 border-2 border-emerald-500/20 rounded-[2rem] font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-500/40 active:scale-95 transition-all flex items-center justify-center gap-3 group`}
+        className={`${isFullWidth ? 'w-full' : ''} px-4 py-3 bg-white text-emerald-600 border border-emerald-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:border-emerald-500/40 active:scale-95 transition-all flex items-center justify-center gap-2 group`}
       >
-        <Download size={16} className="group-hover:bounce transition-transform" />
-        <span>Initialize Tactical Dossier</span>
+        <Download size={14} className="group-hover:translate-y-0.5 transition-transform" />
+        <span>Initialize Dossier</span>
       </button>
     );
   }
@@ -62,10 +62,10 @@ export default function PDFExportButton({ parkName, observations, speciesData, i
             return (
               <button
                 onClick={() => setIsActivated(false)}
-                className={`${isFullWidth ? 'w-full' : ''} px-10 py-5 bg-rose-50 text-rose-600 border-2 border-rose-200 rounded-[2rem] font-black text-[11px] uppercase tracking-widest flex items-center justify-center gap-3`}
+                className={`${isFullWidth ? 'w-full' : ''} px-4 py-3 bg-rose-50 text-rose-600 border border-rose-200 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2`}
               >
-                <AlertCircle size={16} />
-                <span>Engine Error · Retry</span>
+                <AlertCircle size={14} />
+                <span>Error · Retry</span>
               </button>
             );
           }
@@ -73,33 +73,25 @@ export default function PDFExportButton({ parkName, observations, speciesData, i
           return (
             <button
               disabled={loading}
-              className={`${isFullWidth ? 'w-full' : ''} px-10 py-5 ${loading
-                  ? 'bg-slate-50 text-slate-400 border-2 border-slate-200 cursor-wait'
-                  : 'bg-emerald-600 text-white border-2 border-emerald-500 shadow-2xl shadow-emerald-600/20 hover:bg-emerald-500'
-                } rounded-[2rem] font-black text-[11px] uppercase tracking-[0.2em] active:scale-95 transition-all flex items-center justify-center gap-3`}
+              className={`${isFullWidth ? 'w-full' : ''} px-4 py-3 ${loading
+                  ? 'bg-slate-50 text-slate-400 border border-slate-200 cursor-wait'
+                  : 'bg-emerald-600 text-white border border-emerald-500 shadow-xl shadow-emerald-600/10 hover:bg-emerald-500'
+                } rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2`}
             >
               {loading ? (
-                <Loader2 size={16} className="animate-spin" />
+                <Loader2 size={14} className="animate-spin" />
               ) : (
-                <FileCheck size={16} className="animate-bounce" />
+                <FileCheck size={14} className="animate-bounce" />
               )}
               <span>
-                {loading ? 'Compiling Intelligence...' : 'Download Tactical Dossier'}
+                {loading ? 'Compiling...' : 'Download Dossier'}
               </span>
             </button>
           );
         }}
       </PDFDownloadLink>
 
-      {/* Reset switch if user wants to cancel or redo */}
-      {!isFullWidth && (
-        <button
-          onClick={() => setIsActivated(false)}
-          className="mt-3 text-[9px] font-black text-slate-400 uppercase tracking-widest hover:text-emerald-600 transition-colors mx-auto flex items-center gap-1"
-        >
-          <RefreshCw size={10} /> Reset Engine
-        </button>
-      )}
+      {/* Reset switch removed for space efficiency in V3.6 */}
     </div>
   );
 }
