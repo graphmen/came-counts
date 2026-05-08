@@ -227,7 +227,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
       
 
       {/* ── Main Intel Hub: 3-Column Layout ────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[650px] gap-0 border border-slate-200 rounded-3xl overflow-hidden shadow-2xl relative z-10 bg-white">
+      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[600px] gap-0 border border-slate-200 rounded-3xl overflow-hidden shadow-2xl relative z-10 bg-white">
         
         {/* Col 1: Species Sidebar (Balanced for V3.3) */}
         <div className="lg:col-span-3 flex flex-col border-r border-slate-200 bg-white h-[500px] lg:h-full">
@@ -260,7 +260,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
           {/* Rigid Scrollable Container with Fixed Pixel Math for Maximum Stability */}
           <div 
             className="overflow-y-auto custom-scrollbar p-3 space-y-1.5 bg-slate-50/30"
-            style={{ height: 'calc(650px - 140px)', minHeight: '400px' }}
+            style={{ height: 'calc(600px - 140px)', minHeight: '400px' }}
           >
             {filteredSpecies.map(s => (
               <button 
@@ -455,19 +455,18 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                   </div>
                 </div>
 
-                {/* Sticky Export Section: Always Visible at Bottom of Col 3 */}
-                <div className="p-3 bg-emerald-600 flex items-center justify-between relative overflow-hidden group/cta mt-auto shrink-0">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-500 pointer-events-none" />
-                  <div className="relative z-10 flex items-center gap-3">
-                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center border border-white/20 shadow-lg">
-                      <Zap size={16} className="text-white group-hover/cta:scale-110 transition-transform duration-300" />
+                {/* Vertical Stacked Footer: Prevents Squeezing */}
+                <div className="p-4 bg-emerald-600 flex flex-col gap-3 relative overflow-hidden mt-auto shrink-0">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 to-emerald-700 pointer-events-none" />
+                  <div className="relative z-10 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                       <Zap size={14} className="text-white/80" />
+                       <h2 className="text-[10px] font-black text-white uppercase tracking-widest">Tactical Export</h2>
                     </div>
-                    <div>
-                      <h2 className="text-[11px] font-display font-black text-white uppercase tracking-tight leading-none">Deploy Tactical Dossier</h2>
-                      <p className="text-[6px] text-emerald-100/70 font-bold uppercase tracking-wider mt-0.5">Standardized Intel Export</p>
-                    </div>
+                    <span className="text-[6px] text-emerald-100/50 font-black uppercase tracking-[0.2em]">Standard v1.2</span>
                   </div>
-                  <div className="relative z-10 shrink-0">
+                  
+                  <div className="relative z-10 w-full">
                     <PDFExportButton 
                       parkName={parkName} 
                       observations={observations} 
