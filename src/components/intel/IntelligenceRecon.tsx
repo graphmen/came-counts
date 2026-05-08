@@ -227,16 +227,19 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
       
 
       {/* ── Main Intel Hub: 3-Column Layout ────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[720px] gap-0 border border-slate-200 rounded-2xl overflow-hidden shadow-md relative z-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[750px] gap-0 border border-slate-200 rounded-3xl overflow-hidden shadow-2xl relative z-10 bg-white">
         
         {/* Col 1: Species Sidebar */}
         <div className="lg:col-span-3 flex flex-col border-r border-slate-200 bg-white h-[500px] lg:h-full">
-          <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+          <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
              <div>
-               <h3 className="text-[9px] font-black text-slate-900 uppercase tracking-[0.2em]">Species Intelligence</h3>
-               <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Index</p>
+               <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Asset Recognition</h3>
+               <p className="text-[8px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1">
+                 <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                 Tactical V3.0 Active
+               </p>
              </div>
-             <div className="px-2 py-1 bg-emerald-100 text-emerald-700 text-[8px] font-black rounded-md border border-emerald-200">
+             <div className="px-2.5 py-1 bg-slate-900 text-white text-[8px] font-black rounded-lg border border-slate-700 shadow-sm">
                 {speciesData.length} NODES
              </div>
           </div>
@@ -254,26 +257,28 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
             </div>
           </div>
           
-          <div className="flex-1 overflow-y-auto p-2 space-y-1">
+          {/* Rigid Scrollable Container */}
+          <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar p-3 space-y-1.5 bg-slate-50/30">
             {filteredSpecies.map(s => (
               <button 
                 key={s.name}
                 onClick={() => setSelectedSpecies(s.name)}
-                className={`w-full p-3 flex items-center gap-3 transition-all rounded-xl group ${selectedSpecies === s.name ? 'bg-emerald-600 shadow-md shadow-emerald-600/20' : 'hover:bg-slate-50'}`}
+                className={`w-full p-3.5 flex items-center gap-4 transition-all rounded-2xl group border ${selectedSpecies === s.name ? 'bg-emerald-600 border-emerald-500 shadow-lg shadow-emerald-600/30' : 'bg-white border-transparent hover:border-slate-200 hover:bg-slate-50 shadow-sm'}`}
               >
-                <div className={`w-9 h-9 rounded-lg overflow-hidden border flex-shrink-0 ${selectedSpecies === s.name ? 'border-white/20 bg-emerald-500' : 'border-slate-200 bg-slate-100'}`}>
+                <div className={`w-10 h-10 rounded-xl overflow-hidden border flex-shrink-0 transition-transform group-hover:scale-105 ${selectedSpecies === s.name ? 'border-white/20 bg-emerald-500 shadow-inner' : 'border-slate-100 bg-slate-50'}`}>
                   <SpecimenImage speciesName={s.name} />
                 </div>
                 <div className="flex-1 text-left min-w-0">
-                   <div className={`text-[10px] font-black uppercase tracking-wide truncate ${selectedSpecies === s.name ? 'text-white' : 'text-slate-900'}`}>{s.name}</div>
-                   <div className={`text-[8px] font-black font-mono ${selectedSpecies === s.name ? 'text-emerald-100' : 'text-slate-500'}`}>{s.value} OBS</div>
+                   <div className={`text-[11px] font-black uppercase tracking-wide truncate ${selectedSpecies === s.name ? 'text-white' : 'text-slate-900'}`}>{s.name}</div>
+                   <div className={`text-[8px] font-black font-mono ${selectedSpecies === s.name ? 'text-emerald-100/80' : 'text-slate-400'}`}>{s.value} Observations</div>
                 </div>
-                <ChevronRight size={11} className={`flex-shrink-0 ${selectedSpecies === s.name ? 'text-white' : 'text-slate-400'}`} />
+                <ChevronRight size={12} className={`flex-shrink-0 transition-transform group-hover:translate-x-0.5 ${selectedSpecies === s.name ? 'text-white' : 'text-slate-300'}`} />
               </button>
             ))}
             {filteredSpecies.length === 0 && (
-              <div className="p-6 text-center">
-                 <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">No Matches</div>
+              <div className="p-10 text-center flex flex-col items-center justify-center gap-2">
+                 <Search size={20} className="text-slate-200" />
+                 <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">No Active Nodes</div>
               </div>
             )}
           </div>
@@ -295,15 +300,15 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                 transition={{ duration: 0.3 }}
                 className="absolute inset-0 flex items-center justify-center p-4"
               >
-                {/* Contain the image to ensure the whole specimen is visible */}
-                <div className="w-full h-full relative z-10">
+                {/* Containerized image for perfect centering */}
+                <div className="w-full h-full relative z-10 flex items-center justify-center p-8">
                   {(() => {
                     const portrait = getSpeciesPortrait(selectedSpecies);
                     const fieldPhoto = speciesProfile?.observations?.find(o => o.photo_url)?.photo_url;
                     return (
                       <img 
                         src={portrait || fieldPhoto || ''} 
-                        className="w-full h-full object-contain object-center drop-shadow-2xl" 
+                        className="max-w-full max-h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]" 
                         alt={selectedSpecies} 
                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                       />
