@@ -455,9 +455,6 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                   </div>
                 </div>
 
-                  </div>
-                </div>
-
                 {/* Sticky Export Section: Always Visible at Bottom of Col 3 */}
                 <div className="p-3 bg-emerald-600 flex items-center justify-between relative overflow-hidden group/cta mt-auto shrink-0">
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-500 pointer-events-none" />
