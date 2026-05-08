@@ -257,8 +257,11 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
             </div>
           </div>
           
-          {/* Rigid Scrollable Container */}
-          <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar p-3 space-y-1.5 bg-slate-50/30">
+          {/* Rigid Scrollable Container with Fixed Pixel Math for Maximum Stability */}
+          <div 
+            className="overflow-y-auto custom-scrollbar p-3 space-y-1.5 bg-slate-50/30"
+            style={{ height: 'calc(750px - 140px)', minHeight: '500px' }}
+          >
             {filteredSpecies.map(s => (
               <button 
                 key={s.name}
@@ -362,9 +365,6 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                   </div>
                 </div>
 
-                {/* Charts Row */}
-                <div className="grid grid-cols-2 border-b border-slate-100">
-                  {/* Distribution Matrix */}
                 {/* Analytical Charts: Restored legibility */}
                 <div className="grid grid-cols-2 gap-4 p-4 border-b border-slate-100 bg-slate-50/30">
                   <div className="flex flex-col">
@@ -430,7 +430,10 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                       <span className="text-[7px] font-black text-slate-400 uppercase tracking-[0.2em]">Live Stream Active</span>
                     </div>
                   </div>
-                  <div className="overflow-y-auto custom-scrollbar flex-1 bg-slate-50/50 rounded-xl border border-slate-200 shadow-inner">
+                  <div 
+                    className="overflow-y-auto custom-scrollbar bg-slate-50/50 rounded-xl border border-slate-200 shadow-inner"
+                    style={{ maxHeight: '240px' }}
+                  >
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="border-b border-slate-200 bg-white/50">
