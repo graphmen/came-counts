@@ -372,7 +372,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                       <div className="w-1 h-1 rounded-full bg-indigo-500" />
                       <h4 className="text-[8px] font-black text-slate-900 uppercase tracking-widest">Distribution Matrix</h4>
                     </div>
-                    <div className="h-40 relative">
+                    <div className="h-[110px] relative">
                       <ResponsiveContainer width="100%" height="100%">
                         <RadarChart cx="50%" cy="50%" outerRadius="65%" data={speciesProfile.radar}>
                           <PolarGrid stroke="#e2e8f0" />
@@ -397,7 +397,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                       <div className="w-1 h-1 rounded-full bg-emerald-500" />
                       <h4 className="text-[8px] font-black text-slate-900 uppercase tracking-widest">Temporal Activity Flow</h4>
                     </div>
-                    <div className="h-40">
+                    <div className="h-[110px]">
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={temporalData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                           <defs>
@@ -432,7 +432,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                   </div>
                   <div 
                     className="overflow-y-auto custom-scrollbar bg-slate-50/50 rounded-xl border border-slate-200 shadow-inner"
-                    style={{ maxHeight: '240px' }}
+                    style={{ maxHeight: '120px' }}
                   >
                     <table className="w-full text-left border-collapse">
                       <thead>
@@ -443,7 +443,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {speciesProfile.observations.slice(0, 12).map(o => (
+                        {speciesProfile.observations.slice(0, 3).map(o => (
                           <tr key={o.id} className="group hover:bg-white transition-all duration-200">
                             <td className="py-2.5 px-3 text-[9px] font-black font-mono text-emerald-600 whitespace-nowrap">{o.time}</td>
                             <td className="py-2.5 px-3 text-[9px] font-black uppercase tracking-tight text-slate-700">{o.habitat}</td>
@@ -455,8 +455,8 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                   </div>
                 </div>
 
-                {/* Vertical Stacked Footer: Prevents Squeezing */}
-                <div className="p-4 bg-emerald-600 flex flex-col gap-3 relative overflow-hidden mt-auto shrink-0">
+                {/* Vertical Stacked Footer: Lifted to avoid clipping in V3.7 */}
+                <div className="p-4 pb-10 bg-emerald-600 flex flex-col gap-3 relative overflow-hidden mt-auto shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] mb-1">
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 to-emerald-700 pointer-events-none" />
                   <div className="relative z-10 flex items-center justify-between">
                     <div className="flex items-center gap-2">
