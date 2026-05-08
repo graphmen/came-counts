@@ -227,7 +227,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
       
 
       {/* ── Main Intel Hub: 3-Column Layout ────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[720px] gap-0 border border-slate-200 rounded-3xl overflow-hidden shadow-2xl relative z-10 bg-white">
+      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[650px] gap-0 border border-slate-200 rounded-3xl overflow-hidden shadow-2xl relative z-10 bg-white">
         
         {/* Col 1: Species Sidebar (Balanced for V3.3) */}
         <div className="lg:col-span-3 flex flex-col border-r border-slate-200 bg-white h-[500px] lg:h-full">
@@ -260,7 +260,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
           {/* Rigid Scrollable Container with Fixed Pixel Math for Maximum Stability */}
           <div 
             className="overflow-y-auto custom-scrollbar p-3 space-y-1.5 bg-slate-50/30"
-            style={{ height: 'calc(720px - 140px)', minHeight: '500px' }}
+            style={{ height: 'calc(650px - 140px)', minHeight: '400px' }}
           >
             {filteredSpecies.map(s => (
               <button 
@@ -455,8 +455,11 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                   </div>
                 </div>
 
-                {/* Export Section: Compacted */}
-                <div className="p-3 bg-emerald-600 flex items-center justify-between relative overflow-hidden group/cta">
+                  </div>
+                </div>
+
+                {/* Sticky Export Section: Always Visible at Bottom of Col 3 */}
+                <div className="p-3 bg-emerald-600 flex items-center justify-between relative overflow-hidden group/cta mt-auto shrink-0">
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-500 pointer-events-none" />
                   <div className="relative z-10 flex items-center gap-3">
                     <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center border border-white/20 shadow-lg">
