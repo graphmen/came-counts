@@ -227,10 +227,10 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
       
 
       {/* ── Main Intel Hub: 3-Column Layout ────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 border border-slate-200 rounded-2xl overflow-hidden shadow-md relative z-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[650px] gap-0 border border-slate-200 rounded-2xl overflow-hidden shadow-md relative z-10">
         
         {/* Col 1: Species Sidebar */}
-        <div className="lg:col-span-3 flex flex-col border-r border-slate-200 bg-white" style={{minHeight: '580px'}}>
+        <div className="lg:col-span-3 flex flex-col border-r border-slate-200 bg-white h-[500px] lg:h-full">
           <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
              <div>
                <h3 className="text-[9px] font-black text-slate-900 uppercase tracking-[0.2em]">Species Intelligence</h3>
@@ -284,7 +284,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
         </div>
 
         {/* Col 2: LARGE Specimen Image */}
-        <div className="lg:col-span-5 relative bg-slate-900 overflow-hidden" style={{minHeight: '580px'}}>
+        <div className="lg:col-span-5 relative bg-slate-900 overflow-hidden h-[400px] lg:h-full">
           <AnimatePresence mode="wait">
             {selectedSpecies && (
               <motion.div
@@ -326,7 +326,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
         </div>
 
         {/* Col 3: Compact Analytics Panel */}
-        <div className="lg:col-span-4 flex flex-col border-l border-slate-200 bg-white overflow-y-auto" style={{minHeight: '580px'}}>
+        <div className="lg:col-span-4 flex flex-col border-l border-slate-200 bg-white h-[500px] lg:h-full overflow-hidden">
           <AnimatePresence mode="wait">
             {speciesProfile ? (
               <motion.div
