@@ -227,7 +227,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
       
 
       {/* ── Main Intel Hub: 3-Column Layout ────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[650px] gap-0 border border-slate-200 rounded-2xl overflow-hidden shadow-md relative z-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[720px] gap-0 border border-slate-200 rounded-2xl overflow-hidden shadow-md relative z-10">
         
         {/* Col 1: Species Sidebar */}
         <div className="lg:col-span-3 flex flex-col border-r border-slate-200 bg-white h-[500px] lg:h-full">
@@ -283,43 +283,42 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
           </div>
         </div>
 
-        {/* Col 2: LARGE Specimen Image */}
-        <div className="lg:col-span-5 relative bg-slate-900 overflow-hidden h-[400px] lg:h-full">
+        {/* Col 2: LARGE Specimen Image - Fixed Scaling */}
+        <div className="lg:col-span-5 relative bg-slate-950 overflow-hidden h-[400px] lg:h-full group">
           <AnimatePresence mode="wait">
             {selectedSpecies && (
               <motion.div
                 key={selectedSpecies + '_img'}
-                initial={{ opacity: 0, scale: 1.05 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.97 }}
-                transition={{ duration: 0.4 }}
-                className="absolute inset-0"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="absolute inset-0 flex items-center justify-center p-4"
               >
-                {/* Full-bleed specimen image */}
-                <div className="w-full h-full group/img">
+                {/* Contain the image to ensure the whole specimen is visible */}
+                <div className="w-full h-full relative z-10">
                   {(() => {
                     const portrait = getSpeciesPortrait(selectedSpecies);
                     const fieldPhoto = speciesProfile?.observations?.find(o => o.photo_url)?.photo_url;
-                    if (portrait) {
-                      return <img src={portrait} className="w-full h-full object-cover object-center" alt={selectedSpecies} />;
-                    }
-                    if (fieldPhoto) {
-                      return <img src={fieldPhoto} className="w-full h-full object-cover object-center" alt={selectedSpecies} />;
-                    }
                     return (
-                      <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
-                        <Target size={64} className="text-slate-600" />
-                      </div>
+                      <img 
+                        src={portrait || fieldPhoto || ''} 
+                        className="w-full h-full object-contain object-center drop-shadow-2xl" 
+                        alt={selectedSpecies} 
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
                     );
                   })()}
                 </div>
-                {/* Subtle gradient overlay at bottom */}
-                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-900/60 to-transparent pointer-events-none" />
+                {/* Tactical grid backdrop */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none" 
+                     style={{ backgroundImage: 'radial-gradient(circle, #334155 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
               </motion.div>
             )}
             {!selectedSpecies && (
-              <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
-                <Activity size={48} className="text-slate-600 animate-pulse" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/50">
+                <Activity size={48} className="text-slate-700 animate-pulse mb-4" />
+                <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em]">Awaiting Link</p>
               </div>
             )}
           </AnimatePresence>
@@ -336,74 +335,76 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                 exit={{ opacity: 0, x: -16 }}
                 className="flex flex-col h-full"
               >
-                {/* Profile Header: Compact Metadata */}
-                <div className="flex justify-between items-center px-4 py-3 border-b border-slate-100 bg-slate-50/50">
-                  <div className="flex items-center gap-3">
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 text-[6px] font-black uppercase tracking-wider rounded-md border border-emerald-200">Priority Asset</span>
-                        <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest font-mono opacity-80">NODE-REF: {(selectedSpecies || 'UNK').toUpperCase().substring(0, 3)}-ALPHA</span>
-                      </div>
-                      <h2 className="text-lg font-display font-black text-slate-900 tracking-tight uppercase leading-none">{selectedSpecies}</h2>
+                {/* Profile Header: Re-engineered Grid */}
+                <div className="grid grid-cols-2 gap-4 p-4 border-b border-slate-100 bg-white">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="px-1.5 py-0.5 bg-emerald-50 text-emerald-600 text-[6px] font-black uppercase tracking-wider rounded border border-emerald-100">Priority Asset</span>
+                      <span className="text-[7px] font-black text-slate-300 uppercase tracking-widest font-mono">{(selectedSpecies || 'UNK').toUpperCase().substring(0, 3)}-ALPHA</span>
                     </div>
-                    <div className="h-6 w-px bg-slate-200 mx-2" />
-                    <div className="text-[8px] text-slate-500 font-black uppercase tracking-widest flex items-center gap-1.5">
-                      <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                      Biometric Protocol Standardized
-                    </div>
+                    <h2 className="text-2xl font-display font-black text-slate-900 tracking-tighter uppercase leading-none">{selectedSpecies}</h2>
                   </div>
                   
-                  <div className="text-right">
-                    <p className="text-[14px] font-display font-black text-emerald-600 leading-none">{speciesProfile.radar?.[0]?.A?.toFixed(1) || '0.0'}%</p>
-                    <p className="text-[6px] font-black text-slate-400 uppercase tracking-widest mt-1">Rel. Freq</p>
+                  <div className="flex flex-col items-end justify-between py-0.5">
+                    <div className="flex items-center gap-2">
+                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
+                       <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Protocol Standardized</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-2xl font-display font-black text-emerald-600 leading-none">{speciesProfile.radar?.[0]?.A?.toFixed(1) || '0.0'}%</span>
+                      <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest ml-2">Rel. Freq</span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Charts Row */}
                 <div className="grid grid-cols-2 border-b border-slate-100">
                   {/* Distribution Matrix */}
-                  <div className="p-3 border-r border-slate-100">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                      <span className="text-[8px] font-black text-slate-700 uppercase tracking-wider">Distribution Matrix</span>
+                {/* Analytical Charts: Restored legibility */}
+                <div className="grid grid-cols-2 gap-4 p-4 border-b border-slate-100 bg-slate-50/30">
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1.5 mb-4">
+                      <div className="w-1 h-1 rounded-full bg-indigo-500" />
+                      <h4 className="text-[8px] font-black text-slate-900 uppercase tracking-widest">Distribution Matrix</h4>
                     </div>
-                    <div className="h-28">
-                      {speciesProfile?.radar ? (
-                        <ResponsiveContainer width="100%" height="100%">
-                          <RadarChart cx="50%" cy="50%" outerRadius="70%" data={speciesProfile.radar}>
-                            <PolarGrid stroke="#e2e8f0" />
-                            <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 6, fontWeight: 900 }} />
-                            <Radar name={selectedSpecies || 'SPECIMEN'} dataKey="A" stroke={COLORS.emerald} fill={COLORS.emerald} fillOpacity={0.35} strokeWidth={1.5} />
-                          </RadarChart>
-                        </ResponsiveContainer>
-                      ) : (
-                        <div className="h-full flex items-center justify-center">
-                          <span className="text-[8px] text-slate-400 uppercase">N/A</span>
-                        </div>
-                      )}
+                    <div className="h-40 relative">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart cx="50%" cy="50%" outerRadius="65%" data={speciesProfile.radar}>
+                          <PolarGrid stroke="#e2e8f0" />
+                          <PolarAngleAxis 
+                            dataKey="subject" 
+                            tick={{ fill: '#94a3b8', fontSize: 7, fontWeight: 900 }} 
+                          />
+                          <Radar
+                            name={selectedSpecies || 'Asset'}
+                            dataKey="A"
+                            stroke={COLORS.emerald}
+                            fill={COLORS.emerald}
+                            fillOpacity={0.5}
+                          />
+                        </RadarChart>
+                      </ResponsiveContainer>
                     </div>
                   </div>
-                  {/* Temporal Activity */}
-                  <div className="p-3">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                      <span className="text-[8px] font-black text-slate-700 uppercase tracking-wider">Temporal Activity Flow</span>
+
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1.5 mb-4">
+                      <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                      <h4 className="text-[8px] font-black text-slate-900 uppercase tracking-widest">Temporal Activity Flow</h4>
                     </div>
-                    <div className="h-28">
+                    <div className="h-40">
                       <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={temporalData}>
+                        <AreaChart data={temporalData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                           <defs>
-                            <linearGradient id="tcGrad" x1="0" y1="0" x2="0" y2="1">
+                            <linearGradient id="colorActivity" x1="0" y1="0" x2="0" y2="1">
                               <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.2}/>
                               <stop offset="95%" stopColor={COLORS.emerald} stopOpacity={0}/>
                             </linearGradient>
                           </defs>
-                          <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 6, fontWeight: 900 }} axisLine={false} tickLine={false} />
-                          <YAxis hide />
-                          <Tooltip contentStyle={{ fontSize: '8px', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px' }} />
-                          <Area type="monotone" dataKey="Morning" stroke={COLORS.emerald} fill="url(#tcGrad)" strokeWidth={2} dot={false} />
-                          <Area type="monotone" dataKey="Midday" stroke={COLORS.amber} fill="none" strokeWidth={1} dot={false} />
-                          <Area type="monotone" dataKey="Evening" stroke={COLORS.rose} fill="none" strokeWidth={1} dot={false} />
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                          <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 7, fontWeight: 900 }} axisLine={false} tickLine={false} />
+                          <YAxis tick={{ fill: '#94a3b8', fontSize: 7, fontWeight: 900 }} axisLine={false} tickLine={false} />
+                          <Area type="monotone" dataKey="Morning" stroke={COLORS.emerald} fillOpacity={1} fill="url(#colorActivity)" strokeWidth={2} />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
@@ -411,31 +412,34 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                 </div>
 
                 {/* Detailed Metrics Table: Raw Intelligence Log */}
-                <div className="px-4 py-3 overflow-hidden flex flex-col flex-1">
-                  <div className="flex items-center justify-between mb-2 shrink-0">
+                <div className="px-4 py-4 overflow-hidden flex flex-col flex-1">
+                  <div className="flex items-center justify-between mb-3 shrink-0">
                     <div className="flex items-center gap-2">
-                      <div className="p-1 bg-slate-100 rounded text-slate-600 border border-slate-200">
-                        <Database size={10} />
+                      <div className="p-1.5 bg-slate-100 rounded-lg text-slate-600 border border-slate-200">
+                        <Database size={12} />
                       </div>
-                      <h4 className="text-[8px] font-black text-slate-900 uppercase tracking-[0.15em]">Raw Intelligence Log</h4>
+                      <h4 className="text-[9px] font-black text-slate-900 uppercase tracking-[0.2em]">Raw Intelligence Log</h4>
                     </div>
-                    <span className="text-[6px] font-black text-slate-400 uppercase tracking-[0.2em]">Live Stream Active</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-[7px] font-black text-slate-400 uppercase tracking-[0.2em]">Live Stream Active</span>
+                    </div>
                   </div>
-                  <div className="overflow-y-auto custom-scrollbar flex-1 bg-slate-50/30 rounded-lg border border-slate-100">
+                  <div className="overflow-y-auto custom-scrollbar flex-1 bg-slate-50/50 rounded-xl border border-slate-200 shadow-inner">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="border-b border-slate-200">
-                          <th className="py-2 px-2 text-[7px] font-black text-slate-500 uppercase tracking-widest">Temporal Node</th>
-                          <th className="py-2 px-2 text-[7px] font-black text-slate-500 uppercase tracking-widest">Sector / Habitat</th>
-                          <th className="py-2 px-2 text-[7px] font-black text-slate-500 uppercase tracking-widest">Behavioral State</th>
+                        <tr className="border-b border-slate-200 bg-white/50">
+                          <th className="py-2.5 px-3 text-[7px] font-black text-slate-500 uppercase tracking-widest">Temporal Node</th>
+                          <th className="py-2.5 px-3 text-[7px] font-black text-slate-500 uppercase tracking-widest">Sector / Habitat</th>
+                          <th className="py-2.5 px-3 text-[7px] font-black text-slate-500 uppercase tracking-widest">Behavioral State</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {speciesProfile.observations.slice(0, 10).map(o => (
-                          <tr key={o.id} className="group hover:bg-white transition-colors">
-                            <td className="py-2 px-2 text-[8px] font-black font-mono text-emerald-600 whitespace-nowrap">{o.time}</td>
-                            <td className="py-2 px-2 text-[8px] font-black uppercase tracking-tight text-slate-700">{o.habitat}</td>
-                            <td className="py-2 px-2 text-[8px] font-black uppercase tracking-tight text-slate-700">{o.activity}</td>
+                        {speciesProfile.observations.slice(0, 12).map(o => (
+                          <tr key={o.id} className="group hover:bg-white transition-all duration-200">
+                            <td className="py-2.5 px-3 text-[9px] font-black font-mono text-emerald-600 whitespace-nowrap">{o.time}</td>
+                            <td className="py-2.5 px-3 text-[9px] font-black uppercase tracking-tight text-slate-700">{o.habitat}</td>
+                            <td className="py-2.5 px-3 text-[9px] font-black uppercase tracking-tight text-slate-700">{o.activity}</td>
                           </tr>
                         ))}
                       </tbody>
