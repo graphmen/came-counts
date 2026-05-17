@@ -335,6 +335,7 @@ export default function IntelligenceHubPage() {
               { id: 'gallery', label: 'Evidence Gallery', icon: ImageIcon },
               { id: 'analytics', label: 'Tactical Recon', icon: Activity },
               { id: 'map',   label: 'Geospatial',  icon: MapIcon },
+              { id: 'export', label: 'Export Data', icon: Download },
             ].map((btn) => (
               <button
                 key={btn.id}

@@ -1,18 +1,18 @@
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { 
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, 
+import {
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   RadarChart, PolarGrid, PolarAngleAxis, Radar, CartesianGrid
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Activity, 
-  Shield, 
-  Zap, 
-  Target, 
-  Flame, 
-  Eye, 
+import {
+  Activity,
+  Shield,
+  Zap,
+  Target,
+  Flame,
+  Eye,
   ChevronRight,
   Info,
   TrendingUp,
@@ -26,12 +26,14 @@ import nextDynamic from 'next/dynamic';
 
 const PDFExportButton = nextDynamic(
   () => import('@/components/intel/PDFExportButton'),
-  { ssr: false, loading: () => (
-    <button className="px-10 py-4 bg-white/5 text-slate-400 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl flex items-center gap-2 animate-pulse border border-white/10">
-      <Download size={14} />
-      <span>Initializing Engine...</span>
-    </button>
-  )}
+  {
+    ssr: false, loading: () => (
+      <button className="px-10 py-4 bg-white/5 text-slate-400 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl flex items-center gap-2 animate-pulse border border-white/10">
+        <Download size={14} />
+        <span>Initializing Engine...</span>
+      </button>
+    )
+  }
 );
 
 interface Observation {
@@ -97,6 +99,15 @@ const SPECIES_PORTRAITS: Record<string, string> = {
   'fishing owl': '/images/species/pels-fishing-owl.png',
   'ground hornbill': '/images/species/ground-hornbill.png',
   'goliath heron': '/images/species/goliath-heron.png',
+  'boomslang': '/images/species/boomslang.png',
+  'spitting cobra': '/images/species/spitting-cobra.png',
+  'snouted cobra': '/images/species/spitting-cobra.png',
+  'vine snake': '/images/species/vine-snake.png',
+  'bush snake': '/images/species/vine-snake.png',
+  'leopard tortoise': '/images/species/leopard-tortoise.png',
+  'geometric tortoise': '/images/species/leopard-tortoise.png',
+  'hinged tortoise': '/images/species/leopard-tortoise.png',
+  'terrapin': '/images/species/leopard-tortoise.png',
 };
 
 const getSpeciesPortrait = (speciesName: string | null) => {
@@ -114,9 +125,9 @@ const SpecimenImage = ({ speciesName, fieldPhotoUrl }: { speciesName: string, fi
 
   if (portrait && !error) {
     return (
-      <img 
-        src={portrait} 
-        className="w-full h-full object-cover transition-transform group-hover/img:scale-110 relative z-20" 
+      <img
+        src={portrait}
+        className="w-full h-full object-cover transition-transform group-hover/img:scale-110 relative z-20"
         alt={speciesName}
         onError={() => setError(true)}
       />
@@ -125,9 +136,9 @@ const SpecimenImage = ({ speciesName, fieldPhotoUrl }: { speciesName: string, fi
 
   if (fieldPhotoUrl) {
     return (
-      <img 
-        src={fieldPhotoUrl} 
-        className="w-full h-full object-cover transition-transform group-hover/img:scale-110 relative z-20" 
+      <img
+        src={fieldPhotoUrl}
+        className="w-full h-full object-cover transition-transform group-hover/img:scale-110 relative z-20"
         alt={speciesName}
       />
     );
@@ -158,7 +169,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
 
   const filteredSpecies = useMemo(() => {
     if (!speciesData) return [];
-    return speciesData.filter(s => 
+    return speciesData.filter(s =>
       s && s.name && s.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [speciesData, searchTerm]);
@@ -166,13 +177,13 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
   const temporalData = useMemo(() => {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const periods = ['Morning', 'Midday', 'Afternoon', 'Evening'];
-    
+
     const grid: any[] = [];
     days.forEach(day => {
       const entry: any = { name: day, day };
       let dayTotal = 0;
       periods.forEach(period => {
-        const pCount = observations.filter(o => 
+        const pCount = observations.filter(o =>
           o && o.day_of_week?.startsWith(day) && o.period_of_day === period
         ).length;
         entry[period] = pCount;
@@ -224,31 +235,31 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
 
   return (
     <div className="bg-white p-6 space-y-8 text-slate-900 min-h-[700px] animate-in fade-in duration-700 rounded-3xl border border-slate-200 shadow-sm">
-      
+
 
       {/* ── Main Intel Hub: 3-Column Layout ────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[540px] gap-0 border border-slate-200 rounded-3xl overflow-hidden shadow-2xl relative z-10 bg-white">
-        
+
         {/* Col 1: Species Sidebar (Balanced for V3.3) */}
         <div className="lg:col-span-3 flex flex-col border-r border-slate-200 bg-white h-[500px] lg:h-full">
           <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
-             <div>
-               <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Asset Recognition</h3>
-               <p className="text-[8px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1">
-                 <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                 Tactical V3.0 Active
-               </p>
-             </div>
-             <div className="px-2.5 py-1 bg-slate-900 text-white text-[8px] font-black rounded-lg border border-slate-700 shadow-sm">
-                {speciesData.length} NODES
-             </div>
+            <div>
+              <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Asset Recognition</h3>
+              <p className="text-[8px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1">
+                <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                Tactical V3.0 Active
+              </p>
+            </div>
+            <div className="px-2.5 py-1 bg-slate-900 text-white text-[8px] font-black rounded-lg border border-slate-700 shadow-sm">
+              {speciesData.length} NODES
+            </div>
           </div>
-          
+
           <div className="p-3 bg-white border-b border-slate-100">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={11} />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="FILTER NODES..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -256,14 +267,14 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
               />
             </div>
           </div>
-          
+
           {/* Rigid Scrollable Container with Fixed Pixel Math for Maximum Stability */}
-          <div 
+          <div
             className="overflow-y-auto custom-scrollbar p-3 space-y-1.5 bg-slate-50/30"
             style={{ height: 'calc(540px - 140px)', minHeight: '350px' }}
           >
             {filteredSpecies.map(s => (
-              <button 
+              <button
                 key={s.name}
                 onClick={() => setSelectedSpecies(s.name)}
                 className={`w-full p-3.5 flex items-center gap-4 transition-all rounded-2xl group border ${selectedSpecies === s.name ? 'bg-emerald-600 border-emerald-500 shadow-lg shadow-emerald-600/30' : 'bg-white border-transparent hover:border-slate-200 hover:bg-slate-50 shadow-sm'}`}
@@ -272,20 +283,20 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                   <SpecimenImage speciesName={s.name} />
                 </div>
                 <div className="flex-1 text-left min-w-0">
-                   <div className={`text-[11px] font-black uppercase tracking-wide truncate ${selectedSpecies === s.name ? 'text-white' : 'text-slate-900'}`}>{s.name}</div>
-                   <div className={`text-[8px] font-black font-mono ${selectedSpecies === s.name ? 'text-emerald-100/80' : 'text-slate-400'}`}>{s.value} Observations</div>
+                  <div className={`text-[11px] font-black uppercase tracking-wide truncate ${selectedSpecies === s.name ? 'text-white' : 'text-slate-900'}`}>{s.name}</div>
+                  <div className={`text-[8px] font-black font-mono ${selectedSpecies === s.name ? 'text-emerald-100/80' : 'text-slate-400'}`}>{s.value} Observations</div>
                 </div>
                 <ChevronRight size={12} className={`flex-shrink-0 transition-transform group-hover:translate-x-0.5 ${selectedSpecies === s.name ? 'text-white' : 'text-slate-300'}`} />
               </button>
             ))}
             {filteredSpecies.length === 0 && (
               <div className="p-10 text-center flex flex-col items-center justify-center gap-2">
-                 <Search size={20} className="text-slate-200" />
-                 <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">No Active Nodes</div>
+                <Search size={20} className="text-slate-200" />
+                <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">No Active Nodes</div>
               </div>
             )}
           </div>
-          
+
           <div className="p-3 border-t border-slate-100 text-center bg-slate-50">
             <div className="text-[8px] font-black text-slate-500 uppercase tracking-[0.3em]">Operational Nodes: {speciesData.length}</div>
           </div>
@@ -309,18 +320,18 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                     const portrait = getSpeciesPortrait(selectedSpecies);
                     const fieldPhoto = speciesProfile?.observations?.find(o => o.photo_url)?.photo_url;
                     return (
-                      <img 
-                        src={portrait || fieldPhoto || ''} 
-                        className="max-w-full max-h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]" 
-                        alt={selectedSpecies} 
+                      <img
+                        src={portrait || fieldPhoto || ''}
+                        className="max-w-full max-h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                        alt={selectedSpecies}
                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                       />
                     );
                   })()}
                 </div>
                 {/* Tactical grid backdrop */}
-                <div className="absolute inset-0 opacity-10 pointer-events-none" 
-                     style={{ backgroundImage: 'radial-gradient(circle, #334155 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                  style={{ backgroundImage: 'radial-gradient(circle, #334155 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
               </motion.div>
             )}
             {!selectedSpecies && (
@@ -352,11 +363,11 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                     </div>
                     <h2 className="text-2xl font-display font-black text-slate-900 tracking-tighter uppercase leading-none">{selectedSpecies}</h2>
                   </div>
-                  
+
                   <div className="flex flex-col items-end justify-between py-0.5">
                     <div className="flex items-center gap-2">
-                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
-                       <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Protocol Standardized</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
+                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Protocol Standardized</span>
                     </div>
                     <div className="text-right">
                       <span className="text-2xl font-display font-black text-emerald-600 leading-none">{speciesProfile.radar?.[0]?.A?.toFixed(1) || '0.0'}%</span>
@@ -376,9 +387,9 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                       <ResponsiveContainer width="100%" height="100%">
                         <RadarChart cx="50%" cy="50%" outerRadius="65%" data={speciesProfile.radar}>
                           <PolarGrid stroke="#e2e8f0" />
-                          <PolarAngleAxis 
-                            dataKey="subject" 
-                            tick={{ fill: '#94a3b8', fontSize: 7, fontWeight: 900 }} 
+                          <PolarAngleAxis
+                            dataKey="subject"
+                            tick={{ fill: '#94a3b8', fontSize: 7, fontWeight: 900 }}
                           />
                           <Radar
                             name={selectedSpecies || 'Asset'}
@@ -402,8 +413,8 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                         <AreaChart data={temporalData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                           <defs>
                             <linearGradient id="colorActivity" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.2}/>
-                              <stop offset="95%" stopColor={COLORS.emerald} stopOpacity={0}/>
+                              <stop offset="5%" stopColor={COLORS.emerald} stopOpacity={0.2} />
+                              <stop offset="95%" stopColor={COLORS.emerald} stopOpacity={0} />
                             </linearGradient>
                           </defs>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -430,7 +441,7 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                       <span className="text-[7px] font-black text-slate-400 uppercase tracking-[0.2em]">Live Stream Active</span>
                     </div>
                   </div>
-                  <div 
+                  <div
                     className="overflow-y-auto custom-scrollbar bg-slate-50/50 rounded-xl border border-slate-200 shadow-inner"
                     style={{ maxHeight: '120px' }}
                   >
@@ -460,17 +471,17 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 to-emerald-700 pointer-events-none" />
                   <div className="relative z-10 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                       <Zap size={14} className="text-white/80" />
-                       <h2 className="text-[10px] font-black text-white uppercase tracking-widest">Tactical Export</h2>
+                      <Zap size={14} className="text-white/80" />
+                      <h2 className="text-[10px] font-black text-white uppercase tracking-widest">Tactical Export</h2>
                     </div>
                     <span className="text-[6px] text-emerald-100/50 font-black uppercase tracking-[0.2em]">Standard v1.2</span>
                   </div>
-                  
+
                   <div className="relative z-10 w-full">
-                    <PDFExportButton 
-                      parkName={parkName} 
-                      observations={observations} 
-                      speciesData={speciesData} 
+                    <PDFExportButton
+                      parkName={parkName}
+                      observations={observations}
+                      speciesData={speciesData}
                       isFullWidth={true}
                     />
                   </div>
@@ -489,51 +500,51 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
       {/* ── Bottom Metric Banner ────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
         <div className="bg-slate-50 p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4 hover:border-emerald-500/30 transition-all duration-300">
-           <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600 border border-emerald-200 shrink-0">
-              <Activity size={16} />
-           </div>
-           <div>
-              <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.15em] block">Active Operations</span>
-              <div className="text-2xl font-display font-black text-slate-900 leading-tight">14 <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">/ Sectors</span></div>
-           </div>
+          <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600 border border-emerald-200 shrink-0">
+            <Activity size={16} />
+          </div>
+          <div>
+            <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.15em] block">Active Operations</span>
+            <div className="text-2xl font-display font-black text-slate-900 leading-tight">14 <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">/ Sectors</span></div>
+          </div>
         </div>
 
         <div className="bg-slate-50 p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4 hover:border-indigo-500/30 transition-all duration-300">
-           <div className="p-2 bg-indigo-100 rounded-xl text-indigo-600 border border-indigo-200 shrink-0">
-              <Shield size={16} />
-           </div>
-           <div>
-              <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.15em] block">Patrol Coverage</span>
-              <div className="text-2xl font-display font-black text-slate-900 leading-tight">88.4% <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Total</span></div>
-           </div>
+          <div className="p-2 bg-indigo-100 rounded-xl text-indigo-600 border border-indigo-200 shrink-0">
+            <Shield size={16} />
+          </div>
+          <div>
+            <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.15em] block">Patrol Coverage</span>
+            <div className="text-2xl font-display font-black text-slate-900 leading-tight">88.4% <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Total</span></div>
+          </div>
         </div>
 
         <div className="bg-slate-50 p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4 hover:border-amber-500/30 transition-all duration-300">
-           <div className="p-2 bg-amber-100 rounded-xl text-amber-600 border border-amber-200 shrink-0">
-              <Zap size={16} />
-           </div>
-           <div>
-              <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.15em] block">Hotspots Logged</span>
-              <div className="text-2xl font-display font-black text-slate-900 leading-tight">24 <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Priority</span></div>
-           </div>
+          <div className="p-2 bg-amber-100 rounded-xl text-amber-600 border border-amber-200 shrink-0">
+            <Zap size={16} />
+          </div>
+          <div>
+            <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.15em] block">Hotspots Logged</span>
+            <div className="text-2xl font-display font-black text-slate-900 leading-tight">24 <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Priority</span></div>
+          </div>
         </div>
 
         <div className="bg-slate-50 p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4 hover:border-rose-500/30 transition-all duration-300">
-           <div className="p-2 bg-rose-100 rounded-xl text-rose-600 border border-rose-200 shrink-0">
-              <Eye size={16} />
-           </div>
-           <div>
-              <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.15em] block">Detection Rate</span>
-              <div className="text-2xl font-display font-black text-slate-900 leading-tight">+12% <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Weekly</span></div>
-           </div>
+          <div className="p-2 bg-rose-100 rounded-xl text-rose-600 border border-rose-200 shrink-0">
+            <Eye size={16} />
+          </div>
+          <div>
+            <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.15em] block">Detection Rate</span>
+            <div className="text-2xl font-display font-black text-slate-900 leading-tight">+12% <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Weekly</span></div>
+          </div>
         </div>
       </div>
 
       <div className="flex items-center gap-4 pt-2 border-t border-slate-100">
-         <Info size={12} className="text-slate-400" />
-         <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.4em]">
-           Authenticated Intelligence Stream · Encryption Protocol Active · Terminal: WEZ-GAMECOUNT-Z01
-         </p>
+        <Info size={12} className="text-slate-400" />
+        <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.4em]">
+          Authenticated Intelligence Stream · Encryption Protocol Active · Terminal: WEZ-GAMECOUNT-Z01
+        </p>
       </div>
     </div>
   );

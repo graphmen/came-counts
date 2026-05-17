@@ -97,6 +97,41 @@ export default function ExportEngine({ observations, parkName }: { observations:
     triggerDownload(href, filename, 'geojson');
   };
 
+  const downloadKML = () => {
+    const placemarks = observations
+      .filter(obs => obs.lat && obs.lng && !isNaN(parseFloat(obs.lat)))
+      .map(obs => `
+        <Placemark>
+          <name>${obs.species} (${obs.count})</name>
+          <description>
+            <![CDATA[
+              <h3>Observation Details</h3>
+              <p><b>Observer:</b> ${obs.observer}</p>
+              <p><b>Date:</b> ${obs.date} ${obs.time}</p>
+              <p><b>Location:</b> ${obs.location}</p>
+              <p><b>Activity:</b> ${obs.activity}</p>
+              <p><b>Habitat:</b> ${obs.habitat}</p>
+            ]]>
+          </description>
+          <Point>
+            <coordinates>${parseFloat(obs.lng)},${parseFloat(obs.lat)},0</coordinates>
+          </Point>
+        </Placemark>
+      `).join('\n');
+
+    const kml = `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>WEZ GIS Export - ${parkName}</name>
+    ${placemarks}
+  </Document>
+</kml>`;
+    
+    const href = 'data:application/vnd.google-earth.kml+xml;charset=utf-8,' + encodeURIComponent(kml);
+    const filename = `WEZ_GIS_${(parkName || 'export').replace(/\s+/g, '_')}.kml`;
+    triggerDownload(href, filename, 'kml');
+  };
+
   const formats = [
     {
       id: 'csv',
@@ -120,13 +155,23 @@ export default function ExportEngine({ observations, parkName }: { observations:
     },
     {
       id: 'geojson',
-      label: 'GeoJSON Spatial',
+      label: 'GeoJSON / Shapefile',
       sub: 'QGIS · ArcGIS · GIS Ready',
       icon: FileSpreadsheet,
       ext: '.GEOJSON',
       action: downloadGeoJSON,
       bg: 'hover:bg-blue-50 hover:border-blue-200',
       iconBg: 'bg-blue-50 text-blue-600 border-blue-100',
+    },
+    {
+      id: 'kml',
+      label: 'Google Earth KML',
+      sub: '3D Mapping & Visualization',
+      icon: Globe,
+      ext: '.KML',
+      action: downloadKML,
+      bg: 'hover:bg-amber-50 hover:border-amber-200',
+      iconBg: 'bg-amber-50 text-amber-600 border-amber-100',
     },
     {
       id: 'pdf',
@@ -192,7 +237,7 @@ export default function ExportEngine({ observations, parkName }: { observations:
         </div>
 
         {/* Export Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {formats.map(fmt => {
             const Icon = fmt.icon;
             const isLoading = loading === fmt.id;
