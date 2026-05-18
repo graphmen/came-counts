@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Download, FileText, FileJson, ShieldCheck, FileSpreadsheet, CheckCircle2, Loader2, FileType, Database, Globe, Info } from 'lucide-react';
+import { Download, FileText, FileJson, ShieldCheck, FileSpreadsheet, CheckCircle2, Loader2, FileType, Database, Globe, Info, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import nextDynamic from 'next/dynamic';
 
