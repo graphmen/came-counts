@@ -108,6 +108,30 @@ const SPECIES_PORTRAITS: Record<string, string> = {
   'geometric tortoise': '/images/species/leopard-tortoise.png',
   'hinged tortoise': '/images/species/leopard-tortoise.png',
   'terrapin': '/images/species/leopard-tortoise.png',
+  
+  // Mobile app revision fallbacks
+  'eagle': '/images/species/martial-eagle.png',
+  'vulture': '/images/species/martial-eagle.png',
+  'stork': '/images/species/goliath-heron.png',
+  'owl': '/images/species/pels-fishing-owl.png',
+  'falcon': '/images/species/bateleur.png',
+  'guinea fowl': '/images/species/ground-hornbill.png',
+  'guinea': '/images/species/ground-hornbill.png',
+  'goose': '/images/species/goliath-heron.png',
+  'pelican': '/images/species/skimmer.png',
+  'hammerkop': '/images/species/carmine-bee-eater.png',
+  'roller': '/images/species/carmine-bee-eater.png',
+  'shrike': '/images/species/carmine-bee-eater.png',
+  'mouse bird': '/images/species/carmine-bee-eater.png',
+  'civet': '/images/species/honey-badger.png',
+  'genet': '/images/species/honey-badger.png',
+  'mongoose': '/images/species/honey-badger.png',
+  'bush pig': '/images/species/warthog.png',
+  'hare': '/images/species/honey-badger.png',
+  'pangolin': '/images/species/honey-badger.png',
+  'jackal': '/images/species/wild-dog.png',
+  'painted dog': '/images/species/wild-dog.png',
+  'lenguann': '/images/species/monitor.png',
 };
 
 const getSpeciesPortrait = (speciesName: string | null) => {
