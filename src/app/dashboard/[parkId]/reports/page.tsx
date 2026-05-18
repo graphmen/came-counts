@@ -117,7 +117,7 @@ export default function ReportsPage({ params }: { params: Promise<{ parkId: stri
             </div>
             
             <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-              <h1 className="text-5xl md:text-7xl font-display font-black text-slate-900 tracking-tighter leading-none uppercase">
+              <h1 className="text-3xl md:text-4xl font-display font-black text-slate-900 tracking-tight leading-none uppercase">
                 Report Generator
               </h1>
               <div className="h-16 w-px bg-slate-200 hidden md:block" />

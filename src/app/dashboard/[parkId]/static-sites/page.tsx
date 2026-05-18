@@ -140,7 +140,7 @@ export default function StaticSitesPage({ params }: { params: Promise<{ parkId: 
             </div>
             
             <div className="flex items-center gap-6">
-              <h1 className="text-5xl font-black text-slate-900 tracking-tighter uppercase font-display">
+              <h1 className="text-3xl md:text-4xl font-display font-black text-slate-900 tracking-tight leading-none uppercase">
                 Waterhole Analysis
               </h1>
               {parkId && (

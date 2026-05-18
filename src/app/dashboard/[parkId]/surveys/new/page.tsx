@@ -40,7 +40,7 @@ export default function NewSurveyPage() {
                         <h1 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-500">Security Protocol Alpha</h1>
                     </div>
 
-                    <h2 className="text-4xl font-display font-black tracking-tight uppercase leading-none mb-6">
+                    <h2 className="text-3xl md:text-4xl font-display font-black text-slate-900 tracking-tight uppercase leading-none mb-6">
                         Field Data Collection <br /> 
                         <span className="text-emerald-600">Mobile-Only Access</span>
                     </h2>

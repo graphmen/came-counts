@@ -105,7 +105,7 @@ export default function ParkDashboard({ params }: { params: Promise<{ parkId: st
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <h1 className="text-2xl md:text-3xl font-display font-bold text-slate-900 tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-display font-black text-slate-900 tracking-tight leading-none uppercase">
                 {park.name}
               </h1>
               <div className="h-10 w-px bg-slate-100 hidden md:block" />

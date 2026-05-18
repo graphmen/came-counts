@@ -156,6 +156,24 @@ export default function IntelligenceHubPage() {
 
   const mobileParkId = routeParamToParkId(routeParkId as string);
 
+  const handleDownloadImage = async (url: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `WEZ_Evidence_${new Date().getTime()}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Download failed:', error);
+      window.open(url, '_blank');
+    }
+  };
+
   useEffect(() => {
     async function fetchIntel() {
       if (!mobileParkId) return;
@@ -321,7 +339,7 @@ export default function IntelligenceHubPage() {
               )}
             </div>
             
-            <h1 className="text-3xl font-display font-black tracking-tight leading-none text-slate-900">
+            <h1 className="text-3xl md:text-4xl font-display font-black text-slate-900 tracking-tight leading-none uppercase">
               Raw Intelligence <span className="text-emerald-600 underline decoration-emerald-600/30 decoration-4 underline-offset-8">Reception.</span>
             </h1>
             <p className="text-[11px] text-slate-500 font-medium max-w-lg leading-relaxed font-sans">
@@ -508,7 +526,7 @@ export default function IntelligenceHubPage() {
         >
           {mode === 'table'  && <DataLedger observations={filteredObservations} onViewPhoto={setLightboxUrl} />}
           {mode === 'gallery' && (
-            <div className="p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            <div className="p-6 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
               {filteredObservations.filter(o => o.photo_url).length === 0 ? (
                 <div className="col-span-full py-20 text-center">
                   <Camera size={40} className="mx-auto text-slate-200 mb-4" />
@@ -557,6 +575,12 @@ export default function IntelligenceHubPage() {
               className="absolute -top-12 right-0 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
             >
               <X size={24} className="text-white" />
+            </button>
+            <button
+              onClick={() => handleDownloadImage(lightboxUrl)}
+              className="absolute -top-12 right-14 px-4 h-10 bg-emerald-600 hover:bg-emerald-500 rounded-full flex items-center justify-center gap-2 transition-colors text-white font-black text-[10px] uppercase tracking-widest"
+            >
+              <Download size={14} /> Download Asset
             </button>
             <img src={lightboxUrl} alt="Field Evidence" className="max-w-full max-h-[80vh] rounded-3xl shadow-2xl border border-white/10 object-contain" />
             <div className="mt-6 text-center space-y-1">

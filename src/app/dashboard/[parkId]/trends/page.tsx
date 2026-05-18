@@ -109,7 +109,7 @@ export default function TrendAnalysisPage({ params }: { params: Promise<{ parkId
                         </div>
                         
                         <div className="flex items-center gap-4">
-                            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight font-display">
+                            <h1 className="text-3xl md:text-4xl font-display font-black text-slate-900 tracking-tight leading-none uppercase">
                                 Population Trends
                             </h1>
                             <div className="h-8 w-px bg-slate-200 hidden sm:block" />

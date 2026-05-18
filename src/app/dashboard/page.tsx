@@ -98,7 +98,7 @@ export default function NationalDashboard() {
               </div>
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-display font-black tracking-tight leading-none text-slate-900">
+            <h1 className="text-3xl md:text-4xl font-display font-black text-slate-900 tracking-tight leading-none uppercase">
               Zimbabwe <span className="text-emerald-600">Game Counts.</span>
             </h1>
 
