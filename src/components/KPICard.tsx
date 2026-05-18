@@ -27,11 +27,11 @@ export default function KPICard({ title, value, icon: Icon, trend, color = '#22c
                 )}
             </div>
             
-            <div>
-                <div className="text-xl font-mono font-bold text-slate-900 tracking-tight leading-none">
+            <div className="relative z-10">
+                <div className="text-2xl font-mono font-black text-slate-900 tracking-tighter leading-none flex items-baseline gap-1 drop-shadow-sm">
                   {value}
                 </div>
-                <div className="mt-1">
+                <div className="mt-1.5">
                     <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{title}</div>
                 </div>
             </div>

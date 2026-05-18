@@ -68,7 +68,7 @@ export default function Sidebar() {
     return (
         <aside className="sidebar">
             {/* Logo */}
-            <div style={{ padding: '32px 24px 24px', borderBottom: '1px solid var(--wez-slate-100)' }}>
+            <div style={{ padding: '32px 24px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                     <div style={{
                         width: 48,
@@ -93,8 +93,8 @@ export default function Sidebar() {
                         />
                     </div>
                     <div>
-                        <div style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 20, color: 'var(--wez-slate-900)', lineHeight: 1, letterSpacing: '-0.02em' }}>WEZ</div>
-                        <div style={{ fontSize: 9, color: 'var(--wez-green)', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 800, marginTop: 4 }}>Game Counts</div>
+                        <div style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 20, color: '#f8fafc', lineHeight: 1, letterSpacing: '-0.02em' }}>WEZ</div>
+                        <div style={{ fontSize: 9, color: '#34d399', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 800, marginTop: 4 }}>Game Counts</div>
                     </div>
                 </div>
             </div>
@@ -153,8 +153,8 @@ export default function Sidebar() {
             </nav>
 
             {/* Footer */}
-            <div style={{ padding: '20px 24px', borderTop: '1px solid var(--wez-slate-100)', background: 'var(--wez-slate-50)' }}>
-                <div style={{ fontSize: 10, color: '#475569', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Operational Unit</div>
+            <div style={{ padding: '20px 24px', borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.2)' }}>
+                <div style={{ fontSize: 10, color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Operational Unit</div>
                 <div style={{ color: '#94a3b8', fontWeight: 700, fontSize: 11 }}>Wildlife & Environment Zimbabwe</div>
                 <div style={{ fontSize: 9, color: '#475569', marginTop: 4 }}>v1.2.1 • Digital Perimeter</div>
             </div>

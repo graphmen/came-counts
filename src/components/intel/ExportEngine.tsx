@@ -42,13 +42,13 @@ export default function ExportEngine({ observations, parkName }: { observations:
   const downloadCSV = () => {
     if (observations.length === 0) return;
     const headers = [
-      'ID','Date','Day','Period','Time','Park','Observer','SurveyType','Location',
-      'Species','Class','TotalCount','Male','Female','Unknown','Adult','SubAdult','Juvenile',
-      'Latitude','Longitude','Distance_m','Bearing_deg','Activity','Habitat','HasPhoto'
+      'ID', 'Date', 'Day', 'Period', 'Time', 'Park', 'Observer', 'SurveyType', 'Location',
+      'Species', 'Class', 'TotalCount', 'Male', 'Female', 'Unknown', 'Adult', 'SubAdult', 'Juvenile',
+      'Latitude', 'Longitude', 'Distance_m', 'Bearing_deg', 'Activity', 'Habitat', 'HasPhoto'
     ];
     const rows = observations.map(obs => [
       obs.id, obs.date, obs.day_of_week, obs.period_of_day, obs.time, parkName, obs.observer, obs.type, obs.location,
-      obs.species, obs.class, obs.count, obs.male_count, obs.female_count, obs.unknown_count, 
+      obs.species, obs.class, obs.count, obs.male_count, obs.female_count, obs.unknown_count,
       obs.matrix.adult, obs.matrix.sub, obs.matrix.juv,
       obs.lat || '', obs.lng || '', obs.distance || '0', obs.bearing || '0',
       obs.activity, obs.habitat, obs.photo_url ? 'Yes' : 'No'
@@ -126,7 +126,7 @@ export default function ExportEngine({ observations, parkName }: { observations:
     ${placemarks}
   </Document>
 </kml>`;
-    
+
     const href = 'data:application/vnd.google-earth.kml+xml;charset=utf-8,' + encodeURIComponent(kml);
     const filename = `WEZ_GIS_${(parkName || 'export').replace(/\s+/g, '_')}.kml`;
     triggerDownload(href, filename, 'kml');
@@ -209,11 +209,11 @@ export default function ExportEngine({ observations, parkName }: { observations:
 
         {/* Header */}
         <div className="text-center space-y-4">
-           <div className="flex items-center justify-center gap-3">
-              <div className="h-px w-12 bg-slate-200" />
-              <Download size={16} className="text-emerald-600" />
-              <div className="h-px w-12 bg-slate-200" />
-           </div>
+          <div className="flex items-center justify-center gap-3">
+            <div className="h-px w-12 bg-slate-200" />
+            <Download size={16} className="text-emerald-600" />
+            <div className="h-px w-12 bg-slate-200" />
+          </div>
           <h2 className="text-3xl font-display font-black text-slate-900 tracking-tight uppercase">Intelligence Export Engine</h2>
           <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em]">Generate secure archives for external analysis & GIS integration</p>
         </div>
@@ -230,7 +230,7 @@ export default function ExportEngine({ observations, parkName }: { observations:
             <div key={s.label} className="text-center space-y-2">
               <div className="text-2xl font-black text-slate-900 leading-none font-mono tracking-tighter">{s.val}</div>
               <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1.5">
-                 <s.icon size={10} className={s.color} /> {s.label}
+                <s.icon size={10} className={s.color} /> {s.label}
               </div>
             </div>
           ))}
@@ -247,8 +247,8 @@ export default function ExportEngine({ observations, parkName }: { observations:
               <div className="flex flex-col items-center gap-6">
                 <div className={`w-16 h-16 ${fmt.iconBg} rounded-[1.5rem] flex items-center justify-center border shadow-sm group-hover:scale-110 transition-all duration-500`}>
                   {isLoading ? <Loader2 size={32} className="animate-spin" /> :
-                   isDone ? <CheckCircle2 size={32} className="text-emerald-600 animate-bounce" /> :
-                   <Icon size={32} />}
+                    isDone ? <CheckCircle2 size={32} className="text-emerald-600 animate-bounce" /> :
+                      <Icon size={32} />}
                 </div>
                 <div className="text-center space-y-1">
                   <div className="text-[11px] font-black text-slate-900 uppercase tracking-[0.1em]">{fmt.label}</div>
@@ -264,9 +264,9 @@ export default function ExportEngine({ observations, parkName }: { observations:
             if ('isPdf' in fmt && fmt.isPdf) {
               return (
                 <div key={fmt.id} className="w-full">
-                  <PDFExportButton 
-                    parkName={parkName} 
-                    observations={observations} 
+                  <PDFExportButton
+                    parkName={parkName}
+                    observations={observations}
                     speciesData={speciesSummary}
                     isFullWidth={true}
                   />
@@ -292,7 +292,7 @@ export default function ExportEngine({ observations, parkName }: { observations:
         {observations.length === 0 && (
           <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 text-center backdrop-blur-md">
             <p className="text-[11px] font-black text-amber-500 uppercase tracking-[0.3em] flex items-center justify-center gap-3">
-               <Info size={16} /> NO INTELLIGENCE RECORDS IN CURRENT BUFFER — ADJUST FILTERS OR SYNC NODES.
+              <Info size={16} /> NO INTELLIGENCE RECORDS IN CURRENT BUFFER — ADJUST FILTERS OR SYNC NODES.
             </p>
           </div>
         )}

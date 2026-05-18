@@ -80,9 +80,9 @@ export default function SpeciesAnalysisPage({ params }: { params: Promise<{ park
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6 topographic-bg min-h-screen">
       {/* ── Header ────────────────────────────────────────── */}
-      <header className="relative p-6 rounded-3xl bg-white border border-slate-200 shadow-sm overflow-hidden group">
+      <header className="relative p-6 rounded-3xl glass-card bg-white/80 overflow-hidden group">
         
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
@@ -135,7 +135,7 @@ export default function SpeciesAnalysisPage({ params }: { params: Promise<{ park
       </header>
 
       {/* ── Filters ─────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-4 glass-card bg-white/80 p-3 rounded-xl">
         <div className="flex items-center gap-3 flex-1 min-w-[300px]">
           <div className="relative flex-1 max-w-xs">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />

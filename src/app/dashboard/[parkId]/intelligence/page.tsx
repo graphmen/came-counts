@@ -315,10 +315,10 @@ export default function IntelligenceHubPage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
+    <div className="max-w-7xl mx-auto px-4 py-4 space-y-4 topographic-bg min-h-screen">
       {/* ── Header ───────────────────────────────────────────── */}
-      <header className="bg-white p-6 rounded-3xl text-slate-900 relative overflow-hidden shadow-sm border border-slate-200">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -mr-32 -mt-32" />
+      <header className="glass-card bg-white/80 p-6 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-32 -mt-32 transition-all duration-700 group-hover:scale-150" />
         
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">

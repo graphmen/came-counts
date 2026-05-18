@@ -44,12 +44,12 @@ export default function HomePage() {
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-12">
       
       {/* ── Hero Section ──────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-white rounded-[2rem] p-8 md:p-12 text-slate-900 border border-slate-200 shadow-sm group">
+      <section className="relative overflow-hidden topographic-bg rounded-[2rem] p-8 md:p-12 text-slate-900 border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group">
         {/* Dynamic Background */}
         <div className="absolute top-0 right-0 w-2/3 h-full opacity-5 pointer-events-none">
-          <Globe className="w-full h-full transform translate-x-1/4 -translate-y-1/4 text-emerald-500" />
+          <Globe className="w-full h-full transform translate-x-1/4 -translate-y-1/4 text-emerald-900" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50/50 to-emerald-50/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-slate-50/80 to-emerald-50/50 backdrop-blur-sm" />
         
         <div className="relative z-10 max-w-3xl space-y-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 font-black text-[9px] uppercase tracking-widest">
@@ -90,18 +90,20 @@ export default function HomePage() {
           { label: 'Verified Sightings', value: sightingsCount, icon: ShieldCheck, color: 'bg-sky-50 text-sky-600' },
           { label: 'Expert Observers', value: '142', icon: Users, color: 'bg-amber-50 text-amber-600' },
           { label: 'Species Cataloged', value: '31', icon: Database, color: 'bg-rose-50 text-rose-600' },
-        ].map((stat) => (
-          <Card key={stat.label} className="p-4 border-slate-100 bg-white shadow-sm hover:shadow-md transition-all rounded-2xl group">
-             <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all group-hover:scale-105 shrink-0 ${stat.color}`}>
-                  <stat.icon size={16} />
-                </div>
-                <div>
-                  <div className="text-lg font-display font-black text-slate-900 tracking-tight leading-none">{loading ? '...' : stat.value}</div>
-                  <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">{stat.label}</div>
-                </div>
-             </div>
-          </Card>
+        ].map((stat, idx) => (
+          <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1, duration: 0.4 }}>
+            <Card className="p-4 border-slate-200 glass-card bg-white/80 hover:shadow-lg transition-all rounded-2xl group">
+               <div className="flex items-center gap-3 relative z-10">
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all group-hover:scale-105 shrink-0 ${stat.color} shadow-sm`}>
+                    <stat.icon size={16} />
+                  </div>
+                  <div>
+                    <div className="text-xl font-mono font-black text-slate-900 tracking-tighter leading-none drop-shadow-sm">{loading ? '...' : stat.value}</div>
+                    <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">{stat.label}</div>
+                  </div>
+               </div>
+            </Card>
+          </motion.div>
         ))}
       </section>
 
@@ -117,48 +119,49 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            {PARKS.map((park) => (
-              <Card key={park.id} className={`group overflow-hidden border-slate-200 rounded-2xl transition-all hover:ring-2 hover:ring-emerald-500/10 bg-white shadow-sm hover:shadow-md`}>
-                 <div className="p-4 space-y-4">
-                    <div className="flex justify-between items-center">
-                      <div className="text-2xl p-3 bg-slate-50 rounded-xl group-hover:bg-emerald-50 transition-colors shrink-0">{park.icon}</div>
-                      <div className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${park.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                        {park.status === 'active' ? 'Operational' : 'Sync Pending'}
+            {PARKS.map((park, idx) => (
+              <motion.div key={park.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 + idx * 0.1, duration: 0.4 }}>
+                <Card className={`group h-full overflow-hidden border-slate-200 rounded-2xl transition-all hover:ring-2 hover:ring-emerald-500/20 glass-card bg-white/90`}>
+                   <div className="p-4 space-y-4 relative z-10">
+                      <div className="flex justify-between items-center">
+                        <div className="text-2xl p-3 bg-white rounded-xl shadow-sm border border-slate-100 group-hover:bg-emerald-50 transition-colors shrink-0">{park.icon}</div>
+                        <div className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full shadow-sm ${park.status === 'active' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
+                          {park.status === 'active' ? 'Operational' : 'Sync Pending'}
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="space-y-0.5">
-                      <h3 className="text-lg font-display font-black text-slate-900 tracking-tight leading-none">{park.name}</h3>
-                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest leading-none">{park.area} · Node {park.id.split('-')[0].toUpperCase()}</p>
-                    </div>
+                      <div className="space-y-0.5">
+                        <h3 className="text-lg font-display font-black text-slate-900 tracking-tight leading-none">{park.name}</h3>
+                        <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest leading-none">{park.area} · Node {park.id.split('-')[0].toUpperCase()}</p>
+                      </div>
 
-                    <div className="grid grid-cols-2 gap-2">
-                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                          <div className="text-base font-display font-black text-emerald-600 leading-none">{(park.sightings || 0).toLocaleString()}</div>
-                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1 leading-none">Sightings</div>
-                        </div>
-                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                          <div className="text-base font-display font-black text-slate-900 leading-none">{park.latest || 0}</div>
-                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1 leading-none">Cycle</div>
-                        </div>
-                    </div>
+                      <div className="grid grid-cols-2 gap-2">
+                          <div className="bg-white/50 p-3 rounded-xl border border-slate-200/60 shadow-sm">
+                            <div className="text-xl font-mono font-black text-emerald-700 tracking-tighter leading-none">{(park.sightings || 0).toLocaleString()}</div>
+                            <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-1.5 leading-none">Sightings</div>
+                          </div>
+                          <div className="bg-white/50 p-3 rounded-xl border border-slate-200/60 shadow-sm">
+                            <div className="text-xl font-mono font-black text-slate-900 tracking-tighter leading-none">{park.latest || 0}</div>
+                            <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-1.5 leading-none">Cycle</div>
+                          </div>
+                      </div>
 
-                    <Link href={park.status === 'active' ? `/dashboard/${park.id}` : '#'} className="block">
+                    <Link href={park.status === 'active' ? `/dashboard/${park.id}` : '#'} className="block relative z-10">
                       <Button 
                         disabled={park.status !== 'active'}
                         className={cn(
-                          "w-full h-10 rounded-lg font-black uppercase tracking-widest text-[9px] gap-2 transition-all",
+                          "w-full h-10 rounded-xl font-black uppercase tracking-widest text-[9px] gap-2 transition-all shadow-md",
                           park.status === 'active' 
-                            ? "bg-slate-900 text-white group-hover:bg-emerald-600 shadow-sm" 
+                            ? "bg-slate-900 hover:bg-emerald-700 text-white hover:shadow-emerald-700/20" 
                             : "bg-slate-100 text-slate-400"
                         )}
                       >
-                        {park.status === 'active' ? 'Open Dashboard' : 'Restricted'} 
-                        {park.status === 'active' && <ArrowUpRight size={12} />}
+                        Enter Node <ArrowUpRight size={14} />
                       </Button>
                     </Link>
                  </div>
-              </Card>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </section>
