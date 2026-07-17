@@ -67,9 +67,19 @@ export default function Sidebar() {
 
     return (
         <aside className="sidebar">
-            <div className="px-5 pt-6 pb-5 border-b border-[var(--wez-border)]">
-                <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-md bg-wez-stone flex items-center justify-center overflow-hidden border border-[var(--wez-border)] shrink-0">
+            <div className="relative px-4 pt-5 pb-4 overflow-hidden border-b border-[var(--wez-border)]">
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background:
+                            'linear-gradient(135deg, var(--wez-mint) 0%, var(--wez-sunset-soft) 55%, #fff 100%)',
+                    }}
+                />
+                <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-wez-green/10 blur-2xl pointer-events-none" />
+                <div className="absolute -left-4 bottom-0 w-16 h-16 rounded-full bg-wez-sunset/15 blur-xl pointer-events-none" />
+
+                <Link href="/" className="relative z-10 flex items-center gap-3 group">
+                    <div className="w-12 h-12 rounded-md bg-white flex items-center justify-center overflow-hidden border-2 border-wez-green/25 shadow-card shrink-0 ring-2 ring-wez-sunset/20 group-hover:ring-wez-sunset/40 transition-all">
                         <img
                             src="/wez-logo.jpg"
                             alt="WEZ Logo"
@@ -77,10 +87,17 @@ export default function Sidebar() {
                         />
                     </div>
                     <div className="min-w-0">
-                        <div className="font-display font-bold text-lg text-wez-ink tracking-tight leading-none">WEZ</div>
-                        <div className="text-xs text-wez-muted mt-1 font-medium">Game Counts</div>
+                        <div className="font-display font-extrabold text-xl text-wez-green tracking-tight leading-none">
+                            WEZ
+                        </div>
+                        <div className="mt-1.5 flex items-center gap-1.5">
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-wez-sunset" />
+                            <span className="text-xs font-semibold text-wez-sunset tracking-wide">
+                                Game Counts
+                            </span>
+                        </div>
                     </div>
-                </div>
+                </Link>
             </div>
 
             <nav className="flex-1 overflow-y-auto py-5">
@@ -140,10 +157,10 @@ export default function Sidebar() {
                 </div>
             </nav>
 
-            <div className="px-5 py-4 border-t border-[var(--wez-border)] bg-wez-stone/50">
+            <div className="px-4 py-4 border-t border-[var(--wez-border)] bg-gradient-to-r from-wez-mint/80 to-wez-sunset-soft/60">
                 <div className="flex items-center gap-2 mb-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-wez-green-light" />
-                    <span className="text-xs font-medium text-wez-green">Connected</span>
+                    <span className="text-xs font-semibold text-wez-green">Connected</span>
                 </div>
                 <div className="text-xs text-wez-muted leading-snug">Wildlife & Environment Zimbabwe</div>
             </div>

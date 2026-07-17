@@ -39,9 +39,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning className="font-sans bg-wez-stone antialiased overflow-x-hidden text-wez-ink">
         <Suspense fallback={
           <aside className="sidebar">
-            <div className="px-5 pt-7 pb-5 border-b border-wez-border">
-              <div className="font-display font-bold text-xl text-wez-ink tracking-tight">WEZ</div>
-              <div className="text-xs text-wez-muted mt-1">Loading…</div>
+            <div className="px-4 pt-5 pb-4 border-b border-[var(--wez-border)] bg-gradient-to-br from-wez-mint to-wez-sunset-soft">
+              <div className="font-display font-extrabold text-xl text-wez-green tracking-tight">WEZ</div>
+              <div className="text-xs font-semibold text-wez-sunset mt-1.5">Game Counts</div>
             </div>
           </aside>
         }>
