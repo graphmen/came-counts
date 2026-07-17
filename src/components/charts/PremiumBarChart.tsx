@@ -30,8 +30,8 @@ export default function PremiumBarChart({ data }: Props) {
                 backgroundColor: (context: any) => {
                     const ctx = context.chart.ctx;
                     const gradient = ctx.createLinearGradient(0, 0, 400, 0);
-                    gradient.addColorStop(0, '#0f4c3a');
-                    gradient.addColorStop(1, '#1a6b52');
+                    gradient.addColorStop(0, '#1f3a1c');
+                    gradient.addColorStop(1, '#3f6b24');
                     return gradient;
                 },
                 borderRadius: 6,

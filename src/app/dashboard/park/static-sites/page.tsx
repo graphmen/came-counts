@@ -180,28 +180,28 @@ function StaticSitesPageContent() {
                 title="Location Biodiversity" 
                 value={siteData.length} 
                 icon={Leaf} 
-                color="#0f4c3a"
+                color="#1f3a1c"
                 description={`Verified taxa at ${selectedSite}`}
              />
              <KPICard 
                 title="Aggregate Census" 
                 value={siteData.reduce((a, b) => a + b.total_count, 0).toLocaleString()} 
                 icon={Activity} 
-                color="#1a6b52"
+                color="#3f6b24"
                 description="Total sightings recorded"
              />
              <KPICard 
                 title="Site status" 
                 value="Active" 
                 icon={Zap} 
-                color="#0f4c3a"
+                color="#1f3a1c"
                 description="Monitoring site selected"
              />
              <KPICard 
                 title="Data coverage" 
                 value="98.2%" 
                 icon={Shield} 
-                color="#1a6b52"
+                color="#3f6b24"
                 description="Records with valid counts"
              />
         </div>

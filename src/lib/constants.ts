@@ -5,7 +5,7 @@ export const WILDLIFE_METADATA: Record<string, { emoji: string; color: string; b
     'Zebra': { emoji: '🦓', color: '#2563eb', bgLight: 'bg-blue-50' },
     'Waterbuck': { emoji: '🦌', color: '#0891b2', bgLight: 'bg-cyan-50' }, // Antelope family
     'Baboon': { emoji: '🐒', color: '#db2777', bgLight: 'bg-pink-50' },
-    'Eland': { emoji: '🐂', color: '#b45309', bgLight: 'bg-orange-50' }, // Large bovine-like antelope
+    'Eland': { emoji: '🐂', color: '#c46a14', bgLight: 'bg-orange-50' }, // Large bovine-like antelope
     'Greater Kudu': { emoji: '🦌', color: '#16a34a', bgLight: 'bg-green-50' }, // Antelope family
     'Hippopotamus': { emoji: '🦛', color: '#475569', bgLight: 'bg-slate-50' },
     'Warthog': { emoji: '🐗', color: '#92400e', bgLight: 'bg-amber-50' },

@@ -59,10 +59,10 @@ export default function HomePage() {
       </header>
 
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <KPICard title="Active sectors" value="06" icon={MapIcon} color="#0f4c3a" />
-        <KPICard title="Verified sightings" value={loading ? '…' : sightingsCount} icon={ShieldCheck} color="#1a6b52" />
-        <KPICard title="Expert observers" value="142" icon={Users} color="#b45309" />
-        <KPICard title="Species cataloged" value="31" icon={Database} color="#0f4c3a" />
+        <KPICard title="Active sectors" value="06" icon={MapIcon} color="#1f3a1c" />
+        <KPICard title="Verified sightings" value={loading ? '…' : sightingsCount} icon={ShieldCheck} color="#3f6b24" />
+        <KPICard title="Expert observers" value="142" icon={Users} color="#c46a14" />
+        <KPICard title="Species cataloged" value="31" icon={Database} color="#1f3a1c" />
       </section>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">

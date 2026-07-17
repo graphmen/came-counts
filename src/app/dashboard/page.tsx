@@ -95,10 +95,10 @@ export default function NationalDashboard() {
       </header>
 
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <KPICard title="Verified sightings" value={nationalStats.totalSightings.toLocaleString()} icon={ShieldCheck} color="#0f4c3a" />
-        <KPICard title="Hectares managed" value={`${(nationalStats.totalArea / 1000).toFixed(0)}k`} icon={MapIcon} color="#1a6b52" />
-        <KPICard title="Species recorded" value={nationalStats.uniqueSpecies} icon={Database} color="#0f4c3a" />
-        <KPICard title="Active parks" value={nationalStats.activeNodes} icon={Activity} color="#b45309" />
+        <KPICard title="Verified sightings" value={nationalStats.totalSightings.toLocaleString()} icon={ShieldCheck} color="#1f3a1c" />
+        <KPICard title="Hectares managed" value={`${(nationalStats.totalArea / 1000).toFixed(0)}k`} icon={MapIcon} color="#3f6b24" />
+        <KPICard title="Species recorded" value={nationalStats.uniqueSpecies} icon={Database} color="#1f3a1c" />
+        <KPICard title="Active parks" value={nationalStats.activeNodes} icon={Activity} color="#c46a14" />
       </section>
 
       <section className="surface-panel p-1 overflow-hidden">

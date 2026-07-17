@@ -3,37 +3,42 @@
 @tailwind utilities;
 
 :root {
-  /* Zambezi river-green — single primary */
-  --wez-green: #0f4c3a;
-  --wez-green-mid: #1a6b52;
-  --wez-green-light: #2d8a6a;
-  --wez-mint: #e8f5f0;
-  --wez-mint-hover: #d4ebe3;
-  --wez-green-soft: #f0faf6;
-  --wez-green-glow: rgba(15, 76, 58, 0.18);
+  /* Hwange poster ecology — forest + leaf + sunset */
+  --wez-green: #1f3a1c;
+  --wez-green-mid: #3f6b24;
+  --wez-green-light: #5a8a3a;
+  --wez-mint: #eef4e8;
+  --wez-mint-hover: #e0ead6;
+  --wez-green-soft: #f4f8f0;
+  --wez-green-glow: rgba(31, 58, 28, 0.18);
 
-  /* Warm stone canvas */
-  --wez-stone-50: #f7f6f3;
-  --wez-stone-100: #efeee9;
-  --wez-stone-200: #e2e0d8;
-  --wez-ink: #1a2420;
-  --wez-ink-muted: #5c6b64;
-  --wez-ink-faint: #8a968f;
+  --wez-sunset: #c46a14;
+  --wez-sunset-mid: #e08a30;
+  --wez-sunset-soft: #fdf6eb;
+  --wez-earth: #2b1b10;
 
-  --wez-background: #f7f6f3;
-  --wez-foreground: #1a2420;
+  /* Warm savanna sand canvas */
+  --wez-stone-50: #f8f4ec;
+  --wez-stone-100: #f0e9dc;
+  --wez-stone-200: #e2d8c8;
+  --wez-ink: #1c1a14;
+  --wez-ink-muted: #6b6458;
+  --wez-ink-faint: #9a9186;
+
+  --wez-background: #f8f4ec;
+  --wez-foreground: #1c1a14;
   --wez-card: #ffffff;
-  --wez-border: rgba(26, 36, 32, 0.08);
+  --wez-border: rgba(43, 27, 16, 0.09);
 
   --sidebar-bg: #ffffff;
   --sidebar-item-active: var(--wez-mint);
-  --sidebar-text: #5c6b64;
-  --sidebar-text-active: #0f4c3a;
+  --sidebar-text: #6b6458;
+  --sidebar-text-active: #1f3a1c;
 
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --shadow-card: 0 1px 3px rgba(26, 36, 32, 0.04), 0 4px 12px rgba(26, 36, 32, 0.03);
+  --shadow-card: 0 1px 3px rgba(43, 27, 16, 0.04), 0 4px 12px rgba(43, 27, 16, 0.03);
 
   --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
@@ -127,7 +132,7 @@ h1, h2, h3, h4, h5 {
 .glass-card:hover,
 .wez-card:hover {
   box-shadow: 0 2px 8px rgba(26, 36, 32, 0.06), 0 8px 20px rgba(26, 36, 32, 0.04);
-  border-color: rgba(15, 76, 58, 0.15);
+  border-color: rgba(31, 58, 28, 0.15);
 }
 
 /* KPI Cards — Titan-style uniform strip */
@@ -144,7 +149,7 @@ h1, h2, h3, h4, h5 {
 
 .kpi-card:hover {
   box-shadow: 0 2px 8px rgba(26, 36, 32, 0.06), 0 8px 20px rgba(26, 36, 32, 0.04);
-  border-color: rgba(15, 76, 58, 0.18);
+  border-color: rgba(31, 58, 28, 0.18);
 }
 
 /* Sidebar — light Titan-like shell */
@@ -235,7 +240,13 @@ h1, h2, h3, h4, h5 {
 .badge-green {
   background: var(--wez-mint);
   color: var(--wez-green);
-  border: 1px solid rgba(15, 76, 58, 0.12);
+  border: 1px solid rgba(31, 58, 28, 0.14);
+}
+
+.badge-sunset {
+  background: var(--wez-sunset-soft);
+  color: var(--wez-sunset);
+  border: 1px solid rgba(196, 106, 20, 0.18);
 }
 
 .badge-amber {
@@ -310,7 +321,7 @@ h1, h2, h3, h4, h5 {
 .category-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-card);
-  border-color: rgba(15, 76, 58, 0.2);
+  border-color: rgba(31, 58, 28, 0.2);
 }
 
 .sighting-summary-box {

@@ -13,7 +13,7 @@ interface KPICardProps {
     color?: string;
 }
 
-export default function KPICard({ title, value, icon: Icon, trend, color = '#0f4c3a' }: KPICardProps) {
+export default function KPICard({ title, value, icon: Icon, trend, color = '#1f3a1c' }: KPICardProps) {
     return (
         <div className="kpi-card group p-4 flex flex-col justify-between">
             <div className="flex items-start justify-between gap-2">

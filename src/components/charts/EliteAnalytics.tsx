@@ -42,26 +42,26 @@ export default function EliteAnalytics({ stats }: { stats: StatsProps }) {
           title="Verified sightings" 
           value={stats.totalSightings.toLocaleString()} 
           icon={Activity}
-          color="#0f4c3a"
+          color="#1f3a1c"
           trend={hasData ? { value: 12, isPositive: true } : undefined}
         />
         <KPICard 
           title="Active observers" 
           value={hasData ? stats.observerCount : 0} 
           icon={Users}
-          color="#1a6b52"
+          color="#3f6b24"
         />
         <KPICard 
           title="Species catalog" 
           value={stats.speciesCount} 
           icon={Leaf}
-          color="#0f4c3a"
+          color="#1f3a1c"
         />
         <KPICard 
           title="Metric density" 
           value={hasData ? `+${stats.dataPointGrowth}%` : '0%'} 
           icon={TrendingUp}
-          color="#b45309"
+          color="#c46a14"
           trend={hasData ? { value: 4, isPositive: true } : undefined}
         />
       </div>
@@ -79,15 +79,15 @@ export default function EliteAnalytics({ stats }: { stats: StatsProps }) {
             {hasData ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#5c6b64', fontSize: 11, fontWeight: 500 }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#5c6b64', fontSize: 11 }} tickFormatter={(val) => Intl.NumberFormat('us').format(val)} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6b6458', fontSize: 11, fontWeight: 500 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6b6458', fontSize: 11 }} tickFormatter={(val) => Intl.NumberFormat('us').format(val)} />
                   <Tooltip 
-                    cursor={{ fill: 'rgba(15, 76, 58, 0.05)' }}
-                    contentStyle={{ borderRadius: '8px', border: '1px solid rgba(26,36,32,0.08)', boxShadow: '0 4px 12px rgba(26,36,32,0.06)', fontSize: '12px', fontFamily: 'Outfit, sans-serif' }}
+                    cursor={{ fill: 'rgba(31, 58, 28, 0.05)' }}
+                    contentStyle={{ borderRadius: '8px', border: '1px solid rgba(43,27,16,0.08)', boxShadow: '0 4px 12px rgba(43,27,16,0.06)', fontSize: '12px', fontFamily: 'Outfit, sans-serif' }}
                   />
                   <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={24}>
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill="#0f4c3a" />
+                      <Cell key={`cell-${index}`} fill={index % 3 === 2 ? '#c46a14' : index % 2 === 1 ? '#3f6b24' : '#1f3a1c'} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -115,25 +115,25 @@ export default function EliteAnalytics({ stats }: { stats: StatsProps }) {
                     return (
                         <>
                             <div className="h-2.5 w-full bg-wez-stone-100 rounded-full overflow-hidden flex">
-                                <div style={{ width: `${(males/total)*100}%` }} className="bg-sky-600 h-full" title="Males" />
-                                <div style={{ width: `${(females/total)*100}%` }} className="bg-rose-400 h-full" title="Females" />
+                                <div style={{ width: `${(males/total)*100}%` }} className="bg-wez-green h-full" title="Males" />
+                                <div style={{ width: `${(females/total)*100}%` }} className="bg-wez-sunset h-full" title="Females" />
                                 <div style={{ width: `${(unknown/total)*100}%` }} className="bg-wez-stone-200 h-full" title="Unknown" />
                             </div>
                             
                             <div className="grid grid-cols-1 gap-2">
-                                <div className="flex items-center justify-between p-2.5 bg-sky-50/60 rounded-sm border border-sky-100/60">
+                                <div className="flex items-center justify-between p-2.5 bg-wez-mint/70 rounded-sm border border-wez-green/10">
                                     <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-sky-600" />
+                                        <div className="w-2 h-2 rounded-full bg-wez-green" />
                                         <span className="text-xs font-medium text-wez-muted">Male</span>
                                     </div>
-                                    <span className="text-sm font-semibold tabular-nums text-sky-800">{males.toLocaleString()}</span>
+                                    <span className="text-sm font-semibold tabular-nums text-wez-green">{males.toLocaleString()}</span>
                                 </div>
-                                <div className="flex items-center justify-between p-2.5 bg-rose-50/60 rounded-sm border border-rose-100/60">
+                                <div className="flex items-center justify-between p-2.5 bg-wez-sunset-soft rounded-sm border border-wez-sunset/15">
                                     <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-rose-400" />
+                                        <div className="w-2 h-2 rounded-full bg-wez-sunset" />
                                         <span className="text-xs font-medium text-wez-muted">Female</span>
                                     </div>
-                                    <span className="text-sm font-semibold tabular-nums text-rose-700">{females.toLocaleString()}</span>
+                                    <span className="text-sm font-semibold tabular-nums text-wez-sunset">{females.toLocaleString()}</span>
                                 </div>
                                 <div className="flex items-center justify-between p-2.5 bg-wez-stone/80 rounded-sm border border-[var(--wez-border)]">
                                     <div className="flex items-center gap-2">

@@ -26,7 +26,7 @@ const SPECIES_LIST = [
     { name: 'Zebra', emoji: '🦓', color: '#2563eb', bgLight: 'bg-blue-50', border: '#2563eb' },
     { name: 'Waterbuck', emoji: '🦌', color: '#0891b2', bgLight: 'bg-cyan-50', border: '#0891b2' },
     { name: 'Baboon', emoji: '🐒', color: '#db2777', bgLight: 'bg-pink-50', border: '#db2777' },
-    { name: 'Eland', emoji: '🐂', color: '#b45309', bgLight: 'bg-orange-50', border: '#b45309' },
+    { name: 'Eland', emoji: '🐂', color: '#c46a14', bgLight: 'bg-orange-50', border: '#c46a14' },
 ];
 
 interface PredictiveTrendEngineProps {

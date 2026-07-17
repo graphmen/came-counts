@@ -54,8 +54,8 @@ interface Observation {
 }
 
 const COLORS = {
-  emerald: '#0f4c3a',
-  green: '#1a6b52',
+  emerald: '#1f3a1c',
+  green: '#3f6b24',
   indigo: '#6366f1',
   amber: '#f59e0b',
   rose: '#f43f5e',
