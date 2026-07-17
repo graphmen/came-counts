@@ -1,24 +1,14 @@
 import type { Metadata } from 'next';
-import { Inter, Outfit, Space_Grotesk } from 'next/font/google';
+import { Outfit } from 'next/font/google';
 import './globals.css';
 import Sidebar from '@/components/Sidebar';
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
+import { Suspense } from 'react';
 
 const outfit = Outfit({
   subsets: ['latin'],
   variable: '--font-outfit',
   display: 'swap',
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-space',
-  display: 'swap',
+  weight: ['400', '500', '600', '700', '800'],
 });
 
 export const metadata: Metadata = {
@@ -31,7 +21,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'WEZ Conservation Tech Team' }],
   openGraph: {
     title: 'WEZ Game Counts | Wildlife Game Count',
-    description: 'Modernizing Zimbabwe\'s wildlife monitoring with elite digital intelligence.',
+    description: 'Modernizing Zimbabwe\'s wildlife monitoring with digital intelligence.',
     url: 'https://wez-platform.vercel.app',
     siteName: 'WEZ Wildlife Platform',
     locale: 'en_ZW',
@@ -45,9 +35,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable}`}>
-      <body suppressHydrationWarning className="font-sans bg-slate-50 antialiased overflow-x-hidden">
-        <Sidebar />
+    <html lang="en" suppressHydrationWarning className={outfit.variable}>
+      <body suppressHydrationWarning className="font-sans bg-wez-stone antialiased overflow-x-hidden text-wez-ink">
+        <Suspense fallback={
+          <aside className="sidebar">
+            <div className="px-5 pt-7 pb-5 border-b border-wez-border">
+              <div className="font-display font-bold text-xl text-wez-ink tracking-tight">WEZ</div>
+              <div className="text-xs text-wez-muted mt-1">Loading…</div>
+            </div>
+          </aside>
+        }>
+          <Sidebar />
+        </Suspense>
         <main className="main-content min-h-screen">
           {children}
         </main>

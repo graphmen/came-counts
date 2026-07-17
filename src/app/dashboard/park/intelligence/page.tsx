@@ -2,7 +2,7 @@
 
 
 
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gc } from '@/lib/supabase';
 import { 
@@ -34,7 +34,7 @@ const IntelligenceRecon = dynamic(() => import('@/components/intel/IntelligenceR
 
 const SurveyMap = dynamic(() => import('@/components/intel/SurveyMap'), { 
   ssr: false,
-  loading: () => <div className="h-[500px] bg-slate-50 rounded-2xl flex items-center justify-center animate-pulse text-slate-400 font-bold uppercase tracking-widest text-xs">Initializing Map Node...</div>
+  loading: () => <div className="h-[500px] bg-wez-stone/40 rounded-md flex items-center justify-center animate-pulse text-wez-muted text-sm font-medium">Loading map…</div>
 });
 
 /**
@@ -132,9 +132,9 @@ function normalizeObservation(o: any) {
   };
 }
 
-export default function IntelligenceHubPage() {
-  const { parkId: routeParkId } = useParams();
+function IntelligenceHubPageContent() {
   const searchParams = useSearchParams();
+  const routeParkId = searchParams.get('parkId') || 'mana-pools-national-park';
   const router = useRouter();
   
   const [mode, setMode] = useState<'map' | 'table' | 'export' | 'analytics' | 'gallery'>('table');
@@ -288,66 +288,65 @@ export default function IntelligenceHubPage() {
   const uniqueObservers = useMemo(() => new Set(observations.map(o => o.observer)).size, [observations]);
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
-      <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-      <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em]">Syncing Intelligence Hub...</p>
+    <div className="flex flex-col items-center justify-center h-[60vh] gap-3">
+      <div className="w-10 h-10 border-wez-green border-t-transparent rounded-full animate-spin" style={{ borderWidth: 3 }} />
+      <p className="text-wez-muted text-sm font-medium">Loading intelligence hub…</p>
     </div>
   );
 
   if (syncError && observations.length === 0) return (
-    <div className="flex flex-col items-center justify-center h-[60vh] gap-6 text-center px-4">
-      <div className="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 border border-rose-100 shadow-sm">
-        <Wifi size={32} className="opacity-50" />
+    <div className="flex flex-col items-center justify-center h-[60vh] gap-5 text-center px-4">
+      <div className="w-14 h-14 bg-rose-50 rounded-md flex items-center justify-center text-rose-500 border border-rose-100">
+        <Wifi size={28} className="opacity-60" />
       </div>
       <div className="space-y-2">
-        <h3 className="text-xl font-display font-black text-slate-900 uppercase">Synchronisation Interrupted</h3>
-        <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest max-w-xs mx-auto">
-          Connection to the field node timed out. Registry verification may be incomplete.
+        <h3 className="page-title text-xl">Connection interrupted</h3>
+        <p className="page-subtitle max-w-sm mx-auto mt-0">
+          Could not reach the field data source. Some records may be incomplete.
         </p>
       </div>
       <button 
         onClick={() => window.location.reload()}
-        className="px-8 py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-slate-800 transition-all"
+        className="btn-primary px-6 py-2.5 text-sm"
       >
-        Retry Registry Sync
+        Retry sync
       </button>
     </div>
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4 space-y-4 topographic-bg min-h-screen">
+    <div className="max-w-7xl mx-auto px-4 py-4 space-y-4 min-h-screen">
       {/* ── Header ───────────────────────────────────────────── */}
-      <header className="glass-card bg-white/80 p-6 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-32 -mt-32 transition-all duration-700 group-hover:scale-150" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 rounded-full border border-emerald-100">
-                <Radar size={10} className="text-emerald-600 animate-pulse" />
-                <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest">Field Intelligence Hub</span>
-              </div>
-              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-50 rounded-full border border-slate-100">
-                <Globe size={10} className="text-slate-400" />
-                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{parkName || mobileParkId}</span>
-              </div>
+      <header className="surface-panel rounded-md border-[var(--wez-border)] p-5 overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-5">
+          <div>
+            <h1 className="page-title">Intelligence hub</h1>
+            <p className="page-subtitle">
+              Field-verified sightings from WEZ-Mobile survey nodes.
+            </p>
+            <p className="page-meta flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="inline-flex items-center gap-1.5">
+                <Radar size={13} className="text-wez-green" strokeWidth={1.75} />
+                Field intelligence
+              </span>
+              <span className="text-wez-stone-200">·</span>
+              <span className="inline-flex items-center gap-1.5">
+                <Globe size={13} className="text-wez-muted" strokeWidth={1.75} />
+                {parkName || mobileParkId}
+              </span>
               {liveCount > 0 && (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 rounded-full border border-emerald-200 animate-pulse">
-                  <Wifi size={10} className="text-emerald-500" />
-                  <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest">+{liveCount} Live</span>
-                </div>
+                <>
+                  <span className="text-wez-stone-200">·</span>
+                  <span className="inline-flex items-center gap-1.5 text-wez-green">
+                    <Wifi size={13} strokeWidth={1.75} />
+                    +{liveCount} live
+                  </span>
+                </>
               )}
-            </div>
-            
-            <h1 className="text-3xl md:text-4xl font-display font-black text-slate-900 tracking-tight leading-none uppercase">
-              Raw Intelligence <span className="text-emerald-600 underline decoration-emerald-600/30 decoration-4 underline-offset-8">Reception.</span>
-            </h1>
-            <p className="text-[11px] text-slate-500 font-medium max-w-lg leading-relaxed font-sans">
-              Field-verified sightings from WEZ-Mobile survey nodes. Live longitudinal audit of jurisdictional sectors.
             </p>
           </div>
 
-            <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-2xl border border-slate-200 shadow-inner">
+          <div className="flex flex-wrap items-center gap-1.5">
             {[
               { id: 'table', label: 'Data Ledger', icon: TableIcon },
               { id: 'gallery', label: 'Evidence Gallery', icon: ImageIcon },
@@ -358,144 +357,115 @@ export default function IntelligenceHubPage() {
               <button
                 key={btn.id}
                 onClick={() => setMode(btn.id as any)}
-                className={"flex items-center gap-2 px-4 py-2 rounded-xl transition-all " + (mode === btn.id ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50")}
+                className={"flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-medium transition-all " + (mode === btn.id ? "bg-wez-green text-white" : "bg-white border border-[var(--wez-border)] text-wez-ink hover:border-wez-green/30")}
               >
-                <btn.icon size={14} />
-                <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap font-display">{btn.label}</span>
+                <btn.icon size={14} strokeWidth={1.75} />
+                <span className="whitespace-nowrap">{btn.label}</span>
               </button>
             ))}
           </div>
         </div>
         
         {/* Ticker integration in header area or just below */}
-        <div className="mt-6 -mx-6 -mb-6">
+        <div className="mt-5 -mx-5 -mb-5 border-t border-[var(--wez-border)]">
            <LiveTicker observations={observations} />
         </div>
       </header>
 
       {/* ── Stats Strip ───────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
-          <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 shrink-0">
-            <Activity size={18} />
-          </div>
-          <div>
-            <div className="text-lg font-mono font-black text-slate-900 leading-none">{observations.length.toLocaleString()}</div>
-            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 font-display">Sightings</div>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
-          <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center text-violet-600 shrink-0">
-            <Zap size={18} />
-          </div>
-          <div>
-            <div className="text-lg font-mono font-black text-slate-900 leading-none">{totalAnimals.toLocaleString()}</div>
-            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 font-display">Total Animals</div>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
-            <Users size={18} />
-          </div>
-          <div>
-            <div className="text-lg font-mono font-black text-slate-900 leading-none">
-                {observations.reduce((s, o) => s + (o.male_count || 0), 0).toLocaleString()}
-            </div>
-            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 font-display">Male Aggregation</div>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
-          <div className="w-10 h-10 bg-pink-50 rounded-xl flex items-center justify-center text-pink-600 shrink-0">
-            <Users size={18} />
-          </div>
-          <div>
-            <div className="text-lg font-mono font-black text-slate-900 leading-none">
-                {observations.reduce((s, o) => s + (o.female_count || 0), 0).toLocaleString()}
-            </div>
-            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 font-display">Female Aggregation</div>
-          </div>
-        </div>
+        <KPICard title="Sightings" value={observations.length.toLocaleString()} icon={Activity} color="#0f4c3a" />
+        <KPICard title="Total animals" value={totalAnimals.toLocaleString()} icon={Zap} color="#1a6b52" />
+        <KPICard
+          title="Male aggregation"
+          value={observations.reduce((s, o) => s + (o.male_count || 0), 0).toLocaleString()}
+          icon={Users}
+          color="#0f4c3a"
+        />
+        <KPICard
+          title="Female aggregation"
+          value={observations.reduce((s, o) => s + (o.female_count || 0), 0).toLocaleString()}
+          icon={Users}
+          color="#1a6b52"
+        />
       </div>
 
       {/* ── Filters ───────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm space-y-4">
+      <div className="surface-panel rounded-md border-[var(--wez-border)] p-4 space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-wez-muted" size={14} />
             <input
               type="text"
               placeholder="Search sightings, locations, or notes..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
+              className="w-full pl-9 pr-4 py-2 bg-wez-stone/40 border border-[var(--wez-border)] rounded-md text-sm text-wez-ink focus:ring-2 focus:ring-wez-green/20 focus:border-wez-green outline-none transition"
             />
           </div>
           
           <div className="flex flex-wrap items-center gap-2">
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Species</label>
+              <label className="label-muted px-1">Species</label>
               <select 
                 value={filters.species}
                 onChange={(e) => setFilters(prev => ({ ...prev, species: e.target.value }))}
-                className="block w-32 px-3 py-2 text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+                className="block w-32 px-3 py-2 text-sm bg-white border border-[var(--wez-border)] rounded-md outline-none focus:ring-2 focus:ring-wez-green/20 focus:border-wez-green"
               >
                 {filterOptions.species.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Observer</label>
+              <label className="label-muted px-1">Observer</label>
               <select 
                 value={filters.observer}
                 onChange={(e) => setFilters(prev => ({ ...prev, observer: e.target.value }))}
-                className="block w-32 px-3 py-2 text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+                className="block w-32 px-3 py-2 text-sm bg-white border border-[var(--wez-border)] rounded-md outline-none focus:ring-2 focus:ring-wez-green/20 focus:border-wez-green"
               >
                 {filterOptions.observers.map(o => <option key={o} value={o}>{o}</option>)}
               </select>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Survey Type</label>
+              <label className="label-muted px-1">Survey type</label>
               <select 
                 value={filters.type}
                 onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
-                className="block w-32 px-3 py-2 text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+                className="block w-32 px-3 py-2 text-sm bg-white border border-[var(--wez-border)] rounded-md outline-none focus:ring-2 focus:ring-wez-green/20 focus:border-wez-green"
               >
                 {filterOptions.types.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Classification</label>
+              <label className="label-muted px-1">Classification</label>
               <select 
                 value={filters.class}
                 onChange={(e) => setFilters(prev => ({ ...prev, class: e.target.value }))}
-                className="block w-32 px-3 py-2 text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+                className="block w-32 px-3 py-2 text-sm bg-white border border-[var(--wez-border)] rounded-md outline-none focus:ring-2 focus:ring-wez-green/20 focus:border-wez-green"
               >
                 {filterOptions.classes.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Habitat</label>
+              <label className="label-muted px-1">Habitat</label>
               <select 
                 value={filters.habitat}
                 onChange={(e) => setFilters(prev => ({ ...prev, habitat: e.target.value }))}
-                className="block w-32 px-3 py-2 text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+                className="block w-32 px-3 py-2 text-sm bg-white border border-[var(--wez-border)] rounded-md outline-none focus:ring-2 focus:ring-wez-green/20 focus:border-wez-green"
               >
                 {filterOptions.habitats.map(h => <option key={h} value={h}>{h}</option>)}
               </select>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Activity</label>
+              <label className="label-muted px-1">Activity</label>
               <select 
                 value={filters.activity}
                 onChange={(e) => setFilters(prev => ({ ...prev, activity: e.target.value }))}
-                className="block w-32 px-3 py-2 text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"
+                className="block w-32 px-3 py-2 text-sm bg-white border border-[var(--wez-border)] rounded-md outline-none focus:ring-2 focus:ring-wez-green/20 focus:border-wez-green"
               >
                 {filterOptions.activities.map(a => <option key={a} value={a}>{a}</option>)}
               </select>
@@ -506,7 +476,7 @@ export default function IntelligenceHubPage() {
                 setSearch('');
                 setFilters({ species: 'All', observer: 'All', type: 'All', class: 'All', habitat: 'All', activity: 'All' });
               }}
-              className="mt-4 px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-rose-500 transition-colors"
+              className="mt-4 px-3 py-2 label-muted hover:text-rose-600 transition-colors"
             >
               Reset
             </button>
@@ -522,35 +492,35 @@ export default function IntelligenceHubPage() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm min-h-[500px]"
+          className="surface-panel rounded-md border-[var(--wez-border)] overflow-hidden min-h-[500px]"
         >
           {mode === 'table'  && <DataLedger observations={filteredObservations} onViewPhoto={setLightboxUrl} />}
           {mode === 'gallery' && (
-            <div className="p-6 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+            <div className="p-5 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
               {filteredObservations.filter(o => o.photo_url).length === 0 ? (
-                <div className="col-span-full py-20 text-center">
-                  <Camera size={40} className="mx-auto text-slate-200 mb-4" />
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">No Field Evidence Photos Found</p>
+                <div className="col-span-full py-16 text-center">
+                  <Camera size={36} className="mx-auto text-wez-faint mb-3" strokeWidth={1.5} />
+                  <p className="label-muted">No field evidence photos found</p>
                 </div>
               ) : (
                 filteredObservations.filter(o => o.photo_url).map(obs => (
                   <button 
                     key={obs.id} 
                     onClick={() => setLightboxUrl(obs.photo_url!)}
-                    className="group relative bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 hover:shadow-xl transition-all aspect-square text-left"
+                    className="group relative bg-wez-stone/30 rounded-md overflow-hidden border border-[var(--wez-border)] hover:border-wez-green/25 transition-all aspect-square text-left"
                   >
                     <img 
                       src={obs.photo_url} 
                       alt={obs.species} 
-                      className="w-full h-full object-cover transition-transform group-hover:scale-110" 
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105" 
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Error';
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
-                      <p className="text-[10px] font-black text-white uppercase truncate">{obs.species}</p>
-                      <p className="text-[8px] font-bold text-emerald-400 uppercase tracking-widest">{obs.observer}</p>
-                      <p className="text-[7px] text-slate-300 mt-1">{obs.date}</p>
+                    <div className="absolute inset-0 bg-gradient-to-t from-wez-ink/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2.5">
+                      <p className="text-sm font-semibold text-white truncate">{obs.species}</p>
+                      <p className="text-xs text-wez-mint">{obs.observer}</p>
+                      <p className="text-xs text-white/60 mt-0.5">{obs.date}</p>
                     </div>
                   </button>
                 ))
@@ -566,7 +536,7 @@ export default function IntelligenceHubPage() {
       {/* ── Photo Lightbox ───────────────────────────────────── */}
       {lightboxUrl && (
         <div
-          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-8"
+          className="fixed inset-0 z-[100] bg-wez-ink/85 backdrop-blur-md flex items-center justify-center p-4 md:p-8"
           onClick={() => setLightboxUrl(null)}
         >
           <div className="relative max-w-5xl w-full flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
@@ -574,28 +544,41 @@ export default function IntelligenceHubPage() {
               onClick={() => setLightboxUrl(null)}
               className="absolute -top-12 right-0 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
             >
-              <X size={24} className="text-white" />
+              <X size={22} className="text-white" strokeWidth={1.75} />
             </button>
             <button
               onClick={() => handleDownloadImage(lightboxUrl)}
-              className="absolute -top-12 right-14 px-4 h-10 bg-emerald-600 hover:bg-emerald-500 rounded-full flex items-center justify-center gap-2 transition-colors text-white font-black text-[10px] uppercase tracking-widest"
+              className="absolute -top-12 right-14 px-4 h-10 bg-wez-green hover:bg-wez-green/90 rounded-full flex items-center justify-center gap-2 transition-colors text-white text-sm font-medium"
             >
-              <Download size={14} /> Download Asset
+              <Download size={14} strokeWidth={1.75} /> Download
             </button>
-            <img src={lightboxUrl} alt="Field Evidence" className="max-w-full max-h-[80vh] rounded-3xl shadow-2xl border border-white/10 object-contain" />
-            <div className="mt-6 text-center space-y-1">
-              <p className="text-white font-black text-xs uppercase tracking-[0.3em]">Field Intelligence Evidence</p>
-              <p className="text-emerald-500 font-bold text-[10px] uppercase tracking-widest">Authenticated WEZ Mobile Node Sighting</p>
+            <img src={lightboxUrl} alt="Field Evidence" className="max-w-full max-h-[80vh] rounded-md shadow-2xl border border-white/10 object-contain" />
+            <div className="mt-5 text-center space-y-1">
+              <p className="text-white text-sm font-semibold">Field evidence</p>
+              <p className="text-wez-mint text-xs">Authenticated WEZ Mobile sighting</p>
             </div>
           </div>
         </div>
       )}
 
-      <footer className="pt-4 pb-2 border-t border-slate-100 text-center">
-        <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.4em]">
-          WEZ FIELD INTELLIGENCE · LIVE DATA FROM gamecount.field_observations
+      <footer className="pt-4 pb-2 border-t border-[var(--wez-border)] text-center">
+        <p className="label-muted">
+          WEZ Field Intelligence · Live data from gamecount.field_observations
         </p>
       </footer>
     </div>
+  );
+}
+
+export default function IntelligenceHubPage(props: any) {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center h-[60vh] gap-3">
+        <div className="w-10 h-10 border-wez-green border-t-transparent rounded-full animate-spin" style={{ borderWidth: 3 }} />
+        <p className="text-wez-muted text-sm font-medium">Loading intelligence hub…</p>
+      </div>
+    }>
+      <IntelligenceHubPageContent {...props} />
+    </Suspense>
   );
 }

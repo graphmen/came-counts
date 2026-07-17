@@ -21,11 +21,9 @@ export default function YearSelector({ parkId, selectedYear, onYearChange }: Yea
             try {
                 let resolvedParkId = parkId;
                 
-                // Check if parkId is a slug (not a UUID)
                 const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(parkId);
                 
                 if (!isUUID) {
-                    // Resolve slug to UUID
                     const { data: parkData } = await supabase
                         .from('parks')
                         .select('id')
@@ -35,7 +33,7 @@ export default function YearSelector({ parkId, selectedYear, onYearChange }: Yea
                     if (parkData) {
                         resolvedParkId = parkData.id;
                     } else {
-                        return; // Cannot resolve parkId
+                        return;
                     }
                 }
 
@@ -57,27 +55,25 @@ export default function YearSelector({ parkId, selectedYear, onYearChange }: Yea
         fetchYears();
     }, [parkId]);
 
-    if (isLoading) return <div className="h-10 w-32 bg-slate-100 animate-pulse rounded-lg"></div>;
+    if (isLoading) return <div className="h-9 w-36 bg-wez-stone-100 animate-pulse rounded-sm" />;
 
     return (
-        <div className="relative inline-block text-left">
-            <div className="flex items-center space-x-2">
-                <label className="text-sm font-medium text-slate-500 flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4" />
-                    Survey Year:
-                </label>
-                <select
-                    value={selectedYear}
-                    onChange={(e) => onYearChange(Number(e.target.value))}
-                    className="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-wez-green focus:border-wez-green block w-full p-2.5 font-semibold transition-all hover:bg-slate-50 shadow-sm"
-                >
-                    {years.map((year) => (
-                        <option key={year} value={year}>
-                            {year}
-                        </option>
-                    ))}
-                </select>
-            </div>
+        <div className="flex items-center gap-2.5">
+            <label className="label-muted flex items-center gap-1.5 whitespace-nowrap">
+                <Calendar className="w-3.5 h-3.5" strokeWidth={1.75} />
+                Survey year
+            </label>
+            <select
+                value={selectedYear}
+                onChange={(e) => onYearChange(Number(e.target.value))}
+                className="bg-white border border-[var(--wez-border)] text-wez-ink text-sm rounded-sm focus:outline-none focus:ring-2 focus:ring-[var(--wez-green-glow)] focus:border-wez-green-mid px-3 py-2 font-semibold min-w-[5.5rem] shadow-card"
+            >
+                {years.map((year) => (
+                    <option key={year} value={year}>
+                        {year}
+                    </option>
+                ))}
+            </select>
         </div>
     );
 }

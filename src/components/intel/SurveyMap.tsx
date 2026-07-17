@@ -28,6 +28,33 @@ const STYLES = {
     layers: [
       { id: 'google-hybrid', type: 'raster', source: 'google-hybrid', minzoom: 0, maxzoom: 22 }
     ]
+  },
+  offline: {
+    version: 8,
+    sources: {
+      'mana-basemap-source': {
+        type: 'image',
+        url: '/data/mana_basemap.png',
+        coordinates: [
+          [29.228484, -15.698782], // top-left
+          [29.399975, -15.701678], // top-right
+          [29.397902, -15.819162], // bottom-right
+          [29.22631,  -15.816243]  // bottom-left
+        ]
+      }
+    },
+    layers: [
+      {
+        id: 'background',
+        type: 'background',
+        paint: { 'background-color': '#0f172a' }
+      },
+      {
+        id: 'mana-basemap-layer',
+        type: 'raster',
+        source: 'mana-basemap-source'
+      }
+    ]
   }
 };
 
@@ -43,7 +70,7 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
   const map = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<maplibregl.Marker[]>([]);
   
-  const [styleType, setStyleType] = useState<'vector' | 'hybrid'>('vector');
+  const [styleType, setStyleType] = useState<'vector' | 'hybrid' | 'offline'>('offline');
   const [visibleLayers, setVisibleLayers] = useState({
     boundary: true,
     transects: true,
@@ -64,11 +91,11 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
       m.addSource('boundary', { type: 'geojson', data: '/data/mana_pools_boundary.json' });
       m.addLayer({
         id: 'boundary-fill', type: 'fill', source: 'boundary',
-        paint: { 'fill-color': '#10b981', 'fill-opacity': 0.05 }
+        paint: { 'fill-color': '#0f4c3a', 'fill-opacity': 0.05 }
       });
       m.addLayer({
         id: 'boundary-outline', type: 'line', source: 'boundary',
-        paint: { 'line-color': '#10b981', 'line-width': 2, 'line-dasharray': [2, 1] }
+        paint: { 'line-color': '#0f4c3a', 'line-width': 2, 'line-dasharray': [2, 1] }
       });
     }
 
@@ -142,7 +169,7 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
 
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: STYLES.vector as any,
+      style: (styleType === 'offline' ? STYLES.offline : styleType === 'vector' ? STYLES.vector : STYLES.hybrid) as any,
       center: [29.36, -15.73],
       zoom: 10,
     });
@@ -165,7 +192,11 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
   useEffect(() => {
     if (!map.current) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    map.current.setStyle(styleType === 'vector' ? STYLES.vector : STYLES.hybrid as any);
+    map.current.setStyle(
+      styleType === 'vector' ? STYLES.vector : 
+      styleType === 'hybrid' ? STYLES.hybrid as any : 
+      STYLES.offline as any
+    );
   }, [styleType]);
 
   // Handle layer visibility
@@ -286,7 +317,7 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
       geoObservations.forEach(obs => bounds.extend([parseFloat(obs.lng), parseFloat(obs.lat)]));
       map.current.fitBounds(bounds, { padding: 80, maxZoom: 13 });
     }
-  }, [geoObservations, visibleLayers.observations]);
+  }, [geoObservations, visibleLayers.observations, styleType]);
 
   const toggleLayer = (layer: keyof typeof visibleLayers) => {
     setVisibleLayers(prev => ({ ...prev, [layer]: !prev[layer] }));
@@ -299,6 +330,12 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
       {/* Style Toggle */}
       <div className="absolute top-4 right-14 z-10">
         <div className="bg-white p-1 rounded-xl shadow-xl border border-slate-200 flex gap-1">
+          <button 
+            onClick={() => setStyleType('offline')}
+            className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all font-display ${styleType === 'offline' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-50'}`}
+          >
+            Offline PDF Map
+          </button>
           <button 
             onClick={() => setStyleType('vector')}
             className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all font-display ${styleType === 'vector' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-50'}`}
@@ -363,7 +400,7 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
         <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 shadow-xl">
           <div className="flex items-center gap-2 mb-3">
             <Compass size={14} className="text-emerald-600 animate-pulse" />
-            <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest font-display">Geospatial Intelligence</span>
+            <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest font-display">Geospatial Intel</span>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -371,7 +408,7 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
               <div className="text-[8px] text-slate-500 font-black uppercase tracking-wider font-display">Live Nodes</div>
             </div>
             <div>
-              <div className="text-xl font-black text-emerald-600 font-display leading-none">{styleType === 'hybrid' ? 'Satellite' : 'Topo'}</div>
+              <div className="text-xl font-black text-emerald-600 font-display leading-none">{styleType === 'offline' ? 'Offline' : styleType === 'hybrid' ? 'Satellite' : 'Topo'}</div>
               <div className="text-[8px] text-slate-500 font-black uppercase tracking-wider font-display">Context</div>
             </div>
           </div>

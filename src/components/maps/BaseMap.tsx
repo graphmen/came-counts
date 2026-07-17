@@ -13,7 +13,7 @@ export default function BaseMap({ center = [29.39, -15.77], zoom = 10 }: BaseMap
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const [activeLayers, setActiveLayers] = React.useState<string[]>(['park-boundary-fill', 'park-boundary-outline', 'river-layer', 'roads-layer', 'campsites-layer']);
-  const [mapStyle, setMapStyle] = React.useState<'satellite' | 'terrain'>('satellite');
+  const [mapStyle, setMapStyle] = React.useState<'satellite' | 'terrain' | 'offline'>('offline');
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
@@ -34,9 +34,24 @@ export default function BaseMap({ center = [29.39, -15.77], zoom = 10 }: BaseMap
             tiles: ['https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=7c352c8ff4764407914f69973a4c414a'],
             tileSize: 256,
             attribution: 'Thunderforest',
+          },
+          'mana-basemap-source': {
+            type: 'image',
+            url: '/data/mana_basemap.png',
+            coordinates: [
+              [29.228484, -15.698782], // top-left
+              [29.399975, -15.701678], // top-right
+              [29.397902, -15.819162], // bottom-right
+              [29.22631,  -15.816243]  // bottom-left
+            ]
           }
         },
         layers: [
+          {
+            id: 'background',
+            type: 'background',
+            paint: { 'background-color': '#0f172a' }
+          },
           {
             id: 'satellite-base',
             type: 'raster',
@@ -48,6 +63,12 @@ export default function BaseMap({ center = [29.39, -15.77], zoom = 10 }: BaseMap
             type: 'raster',
             source: 'osm-terrain',
             layout: { visibility: mapStyle === 'terrain' ? 'visible' : 'none' }
+          },
+          {
+            id: 'mana-basemap-layer',
+            type: 'raster',
+            source: 'mana-basemap-source',
+            layout: { visibility: mapStyle === 'offline' ? 'visible' : 'none' }
           }
         ],
       },
@@ -68,13 +89,13 @@ export default function BaseMap({ center = [29.39, -15.77], zoom = 10 }: BaseMap
         id: 'park-boundary-fill',
         type: 'fill',
         source: 'park-boundary',
-        paint: { 'fill-color': '#10b981', 'fill-opacity': 0.05 }
+        paint: { 'fill-color': '#0f4c3a', 'fill-opacity': 0.05 }
       });
       map.current.addLayer({
         id: 'park-boundary-outline',
         type: 'line',
         source: 'park-boundary',
-        paint: { 'line-color': '#10b981', 'line-width': 2, 'line-dasharray': [2, 2] }
+        paint: { 'line-color': '#0f4c3a', 'line-width': 2, 'line-dasharray': [2, 2] }
       });
 
       // River
@@ -144,6 +165,9 @@ export default function BaseMap({ center = [29.39, -15.77], zoom = 10 }: BaseMap
     if (map.current.getLayer('terrain-base')) {
         map.current.setLayoutProperty('terrain-base', 'visibility', mapStyle === 'terrain' ? 'visible' : 'none');
     }
+    if (map.current.getLayer('mana-basemap-layer')) {
+        map.current.setLayoutProperty('mana-basemap-layer', 'visibility', mapStyle === 'offline' ? 'visible' : 'none');
+    }
   }, [activeLayers, mapStyle]);
 
   const toggleLayer = (id: string) => {
@@ -182,19 +206,27 @@ export default function BaseMap({ center = [29.39, -15.77], zoom = 10 }: BaseMap
           </div>
 
           <div className="pt-2 border-t border-slate-100">
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-col">
               <button 
-                onClick={() => setMapStyle('satellite')}
-                className={`flex-1 py-1 rounded-md text-[8px] font-black uppercase tracking-tighter border transition-all ${mapStyle === 'satellite' ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-400 border-slate-200'}`}
+                onClick={() => setMapStyle('offline')}
+                className={`w-full py-1.5 rounded-md text-[8px] font-black uppercase tracking-tighter border transition-all ${mapStyle === 'offline' ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20' : 'bg-slate-50 text-slate-400 border-slate-200'}`}
               >
-                Satellite
+                Offline PDF Map
               </button>
-              <button 
-                onClick={() => setMapStyle('terrain')}
-                className={`flex-1 py-1 rounded-md text-[8px] font-black uppercase tracking-tighter border transition-all ${mapStyle === 'terrain' ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-400 border-slate-200'}`}
-              >
-                Terrain
-              </button>
+              <div className="flex gap-1 mt-1">
+                <button 
+                  onClick={() => setMapStyle('satellite')}
+                  className={`flex-1 py-1 rounded-md text-[8px] font-black uppercase tracking-tighter border transition-all ${mapStyle === 'satellite' ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-400 border-slate-200'}`}
+                >
+                  Satellite
+                </button>
+                <button 
+                  onClick={() => setMapStyle('terrain')}
+                  className={`flex-1 py-1 rounded-md text-[8px] font-black uppercase tracking-tighter border transition-all ${mapStyle === 'terrain' ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-400 border-slate-200'}`}
+                >
+                  Terrain
+                </button>
+              </div>
             </div>
           </div>
         </div>

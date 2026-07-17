@@ -13,27 +13,26 @@ interface KPICardProps {
     color?: string;
 }
 
-export default function KPICard({ title, value, icon: Icon, trend, color = '#22c55e' }: KPICardProps) {
+export default function KPICard({ title, value, icon: Icon, trend, color = '#0f4c3a' }: KPICardProps) {
     return (
-        <div className="kpi-card glass-card relative overflow-hidden group p-3">
-            <div className="flex items-center justify-between mb-2">
-                <div className="p-1.5 rounded-lg transition-all group-hover:scale-105" style={{ backgroundColor: `${color}10`, border: `1px solid ${color}20` }}>
-                    <Icon size={14} style={{ color }} />
+        <div className="kpi-card group p-4 flex flex-col justify-between">
+            <div className="flex items-start justify-between gap-2">
+                <div
+                    className="p-2 rounded-sm shrink-0"
+                    style={{ backgroundColor: `${color}14` }}
+                >
+                    <Icon size={18} strokeWidth={1.75} style={{ color }} />
                 </div>
                 {trend && (
-                    <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${trend.isPositive ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100'}`}>
+                    <div className={`text-xs font-semibold tabular-nums ${trend.isPositive ? 'text-wez-green-mid' : 'text-rose-600'}`}>
                         {trend.isPositive ? '↑' : '↓'} {trend.value}%
                     </div>
                 )}
             </div>
-            
-            <div className="relative z-10">
-                <div className="text-2xl font-mono font-black text-slate-900 tracking-tighter leading-none flex items-baseline gap-1 drop-shadow-sm">
-                  {value}
-                </div>
-                <div className="mt-1.5">
-                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{title}</div>
-                </div>
+
+            <div className="mt-3">
+                <div className="kpi-value">{value}</div>
+                <div className="label-muted mt-1.5">{title}</div>
             </div>
         </div>
     );

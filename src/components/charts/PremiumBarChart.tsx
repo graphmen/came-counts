@@ -30,12 +30,12 @@ export default function PremiumBarChart({ data }: Props) {
                 backgroundColor: (context: any) => {
                     const ctx = context.chart.ctx;
                     const gradient = ctx.createLinearGradient(0, 0, 400, 0);
-                    gradient.addColorStop(0, '#1a7a4a');
-                    gradient.addColorStop(1, '#22c55e');
+                    gradient.addColorStop(0, '#0f4c3a');
+                    gradient.addColorStop(1, '#1a6b52');
                     return gradient;
                 },
-                borderRadius: 8,
-                barThickness: 32,
+                borderRadius: 6,
+                barThickness: 28,
             }
         ]
     };
@@ -47,11 +47,11 @@ export default function PremiumBarChart({ data }: Props) {
         plugins: {
             legend: { display: false },
             tooltip: {
-                backgroundColor: '#0f172a',
+                backgroundColor: '#1a2420',
                 padding: 12,
-                cornerRadius: 12,
-                titleFont: { family: 'Outfit, sans-serif', size: 13, weight: 800 },
-                bodyFont: { family: 'Inter, sans-serif', size: 12, weight: 600 },
+                cornerRadius: 8,
+                titleFont: { family: 'Outfit, sans-serif', size: 13, weight: 600 },
+                bodyFont: { family: 'Outfit, sans-serif', size: 12, weight: 500 },
                 callbacks: {
                     label: (item: any) => `  ${item.raw.toLocaleString()} individuals`,
                     title: (items: any) => {

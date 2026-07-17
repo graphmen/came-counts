@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Park } from '@/types';
 import {
@@ -20,8 +20,8 @@ import {
 
 export default function Sidebar() {
     const pathname = usePathname();
-    const params = useParams();
-    const parkId = params?.parkId as string;
+    const searchParams = useSearchParams();
+    const parkId = searchParams.get('parkId') || '';
 
     const [parks, setParks] = useState<Park[]>([]);
     const [currentPark, setCurrentPark] = useState<Park | null>(null);
@@ -44,119 +44,108 @@ export default function Sidebar() {
     }, [parkId]);
 
     const globalNav = [
-        { label: 'WEZ Overview', href: '/', icon: <Globe size={18} /> },
-        { label: 'All Parks', href: '/dashboard', icon: <LayoutDashboard size={18} /> },
+        { label: 'WEZ Overview', href: '/', icon: <Globe size={18} strokeWidth={1.75} /> },
+        { label: 'All Parks', href: '/dashboard', icon: <LayoutDashboard size={18} strokeWidth={1.75} /> },
     ];
 
     const parkNav = parkId ? [
-        { label: 'Dashboard', href: `/dashboard/${parkId}`, icon: <Navigation size={18} /> },
-        { label: 'Operational Intel', href: `/dashboard/${parkId}/intelligence`, icon: <Radar size={18} /> },
-        { label: 'Species Analysis', href: `/dashboard/${parkId}/species`, icon: <BarChart3 size={18} /> },
-        { label: 'Trend Analysis', href: `/dashboard/${parkId}/trends`, icon: <TrendingUp size={18} /> },
-        { label: 'Static Sites', href: `/dashboard/${parkId}/static-sites`, icon: <Droplets size={18} /> },
-        { label: 'Generate Report', href: `/dashboard/${parkId}/reports`, icon: <FileText size={18} /> },
+        { label: 'Dashboard', href: `/dashboard/park?parkId=${parkId}`, icon: <Navigation size={18} strokeWidth={1.75} /> },
+        { label: 'Operational Intel', href: `/dashboard/park/intelligence?parkId=${parkId}`, icon: <Radar size={18} strokeWidth={1.75} /> },
+        { label: 'Species Analysis', href: `/dashboard/park/species?parkId=${parkId}`, icon: <BarChart3 size={18} strokeWidth={1.75} /> },
+        { label: 'Trend Analysis', href: `/dashboard/park/trends?parkId=${parkId}`, icon: <TrendingUp size={18} strokeWidth={1.75} /> },
+        { label: 'Static Sites', href: `/dashboard/park/static-sites?parkId=${parkId}`, icon: <Droplets size={18} strokeWidth={1.75} /> },
+        { label: 'Generate Report', href: `/dashboard/park/reports?parkId=${parkId}`, icon: <FileText size={18} strokeWidth={1.75} /> },
     ] : [];
 
     const dataNav = [
         {
             label: 'New Survey',
-            href: parkId ? `/dashboard/${parkId}/surveys/new` : '/dashboard/mana-pools-national-park/surveys/new',
-            icon: <PlusCircle size={18} />
+            href: parkId ? `/dashboard/park/surveys/new?parkId=${parkId}` : '/dashboard/park/surveys/new?parkId=mana-pools-national-park',
+            icon: <PlusCircle size={18} strokeWidth={1.75} />
         },
     ];
 
     return (
         <aside className="sidebar">
-            {/* Logo */}
-            <div style={{ padding: '32px 24px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <div style={{
-                        width: 48,
-                        height: 48,
-                        background: '#fff',
-                        padding: '4px',
-                        borderRadius: '14px',
-                        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'hidden'
-                    }}>
+            <div className="px-5 pt-6 pb-5 border-b border-[var(--wez-border)]">
+                <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-md bg-wez-stone flex items-center justify-center overflow-hidden border border-[var(--wez-border)] shrink-0">
                         <img
                             src="/wez-logo.jpg"
                             alt="WEZ Logo"
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'contain'
-                            }}
+                            className="w-full h-full object-contain"
                         />
                     </div>
-                    <div>
-                        <div style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 20, color: '#f8fafc', lineHeight: 1, letterSpacing: '-0.02em' }}>WEZ</div>
-                        <div style={{ fontSize: 9, color: '#34d399', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 800, marginTop: 4 }}>Game Counts</div>
+                    <div className="min-w-0">
+                        <div className="font-display font-bold text-lg text-wez-ink tracking-tight leading-none">WEZ</div>
+                        <div className="text-xs text-wez-muted mt-1 font-medium">Game Counts</div>
                     </div>
                 </div>
             </div>
 
-            {/* Navigation */}
-            <nav style={{ flex: 1, overflowY: 'auto', padding: '24px 0' }}>
-                {/* Global */}
-                <div style={{ marginBottom: 28 }}>
-                    <div className="sidebar-group-label">Core Systems</div>
+            <nav className="flex-1 overflow-y-auto py-5">
+                <div className="mb-6">
+                    <div className="sidebar-group-label">National</div>
                     {globalNav.map(item => (
                         <Link key={item.href} href={item.href} className={`sidebar-item ${pathname === item.href ? 'active' : ''}`}>
-                            <span style={{ opacity: pathname === item.href ? 1 : 0.7 }}>{item.icon}</span>
+                            <span className="shrink-0">{item.icon}</span>
                             <span>{item.label}</span>
                         </Link>
                     ))}
                 </div>
 
-                {/* Current Park Context */}
                 {parkId && (
-                    <div style={{ marginBottom: 28 }}>
-                        <div className="sidebar-group-label">{currentPark?.name || 'Current Node'}</div>
-                        {parkNav.map(item => (
-                            <Link key={item.href} href={item.href} className={`sidebar-item ${pathname === item.href ? 'active' : ''}`}>
-                                <span style={{ opacity: pathname === item.href ? 1 : 0.7 }}>{item.icon}</span>
-                                <span>{item.label}</span>
-                            </Link>
-                        ))}
+                    <div className="mb-6">
+                        <div className="sidebar-group-label truncate" title={currentPark?.name || 'Current Park'}>
+                            {currentPark?.name || 'Current Park'}
+                        </div>
+                        {parkNav.map(item => {
+                            const isItemActive = pathname === item.href.split('?')[0];
+                            return (
+                                <Link key={item.href} href={item.href} className={`sidebar-item ${isItemActive ? 'active' : ''}`}>
+                                    <span className="shrink-0">{item.icon}</span>
+                                    <span>{item.label}</span>
+                                </Link>
+                            );
+                        })}
                     </div>
                 )}
 
-                {/* Park Explorer */}
-                <div style={{ marginBottom: 28 }}>
-                    <div className="sidebar-group-label">Ecological Nodes</div>
+                <div className="mb-6">
+                    <div className="sidebar-group-label">Parks</div>
                     {parks.filter(p => p.id !== currentPark?.id).map(p => {
                         const slug = p.name.toLowerCase().replace(/\s+/g, '-');
-                        const href = `/dashboard/${slug}`;
+                        const href = `/dashboard/park?parkId=${slug}`;
+                        const isExplorerActive = pathname === '/dashboard/park' && searchParams.get('parkId') === slug;
                         return (
-                            <Link key={p.id} href={href} className={`sidebar-item ${pathname === href ? 'active' : ''}`}>
-                                <MapPin size={18} style={{ opacity: 0.6, flexShrink: 0 }} />
-                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={p.name}>{p.name}</span>
+                            <Link key={p.id} href={href} className={`sidebar-item ${isExplorerActive ? 'active' : ''}`}>
+                                <MapPin size={18} strokeWidth={1.75} className="shrink-0 opacity-70" />
+                                <span className="truncate" title={p.name}>{p.name}</span>
                             </Link>
                         );
                     })}
                 </div>
 
-                {/* Data Management */}
-                <div style={{ marginBottom: 28 }}>
-                    <div className="sidebar-group-label">Intelligence</div>
-                    {dataNav.map(item => (
-                        <Link key={item.href} href={item.href} className={`sidebar-item ${pathname === item.href ? 'active' : ''}`}>
-                            <span style={{ opacity: pathname === item.href ? 1 : 0.7 }}>{item.icon}</span>
-                            <span>{item.label}</span>
-                        </Link>
-                    ))}
+                <div className="mb-6">
+                    <div className="sidebar-group-label">Surveys</div>
+                    {dataNav.map(item => {
+                        const isItemActive = pathname === item.href.split('?')[0];
+                        return (
+                            <Link key={item.href} href={item.href} className={`sidebar-item ${isItemActive ? 'active' : ''}`}>
+                                <span className="shrink-0">{item.icon}</span>
+                                <span>{item.label}</span>
+                            </Link>
+                        );
+                    })}
                 </div>
             </nav>
 
-            {/* Footer */}
-            <div style={{ padding: '20px 24px', borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.2)' }}>
-                <div style={{ fontSize: 10, color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Operational Unit</div>
-                <div style={{ color: '#94a3b8', fontWeight: 700, fontSize: 11 }}>Wildlife & Environment Zimbabwe</div>
-                <div style={{ fontSize: 9, color: '#475569', marginTop: 4 }}>v1.2.1 • Digital Perimeter</div>
+            <div className="px-5 py-4 border-t border-[var(--wez-border)] bg-wez-stone/50">
+                <div className="flex items-center gap-2 mb-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-wez-green-light" />
+                    <span className="text-xs font-medium text-wez-green">Connected</span>
+                </div>
+                <div className="text-xs text-wez-muted leading-snug">Wildlife & Environment Zimbabwe</div>
             </div>
         </aside>
     );

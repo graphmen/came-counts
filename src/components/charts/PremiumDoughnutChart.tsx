@@ -15,7 +15,7 @@ interface Props {
     data: { name: string; value: number }[];
 }
 
-const COLORS = ['#1a7a4a', '#3b82f6', '#d97706', '#a855f7', '#06b6d4'];
+const COLORS = ['#0f4c3a', '#1a6b52', '#b45309', '#0e7490', '#5c6b64'];
 
 export default function PremiumDoughnutChart({ data }: Props) {
     const chartData = {
@@ -42,16 +42,16 @@ export default function PremiumDoughnutChart({ data }: Props) {
                     usePointStyle: true,
                     pointStyle: 'circle',
                     padding: 24,
-                    font: { family: 'Outfit, sans-serif', size: 12, weight: 700 },
-                    color: '#64748b'
+                    font: { family: 'Outfit, sans-serif', size: 12, weight: 500 },
+                    color: '#5c6b64'
                 }
             },
             tooltip: {
-                backgroundColor: '#0f172a',
-                padding: 14,
-                cornerRadius: 16,
-                titleFont: { family: 'Outfit, sans-serif', size: 13, weight: 800 },
-                bodyFont: { family: 'Inter, sans-serif', size: 12, weight: 600 },
+                backgroundColor: '#1a2420',
+                padding: 12,
+                cornerRadius: 8,
+                titleFont: { family: 'Outfit, sans-serif', size: 13, weight: 600 },
+                bodyFont: { family: 'Outfit, sans-serif', size: 12, weight: 500 },
                 callbacks: {
                     label: (item: any) => `  ${item.raw.toLocaleString()} individuals`,
                 }

@@ -9,19 +9,36 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        inter: ["Inter", "sans-serif"],
-        outfit: ["Outfit", "sans-serif"],
+        sans: ["var(--font-outfit)", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["var(--font-outfit)", "ui-sans-serif", "system-ui", "sans-serif"],
+        outfit: ["var(--font-outfit)", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
+      borderRadius: {
+        sm: "8px",
+        md: "12px",
+        lg: "16px",
+      },
+      boxShadow: {
+        card: "0 1px 3px rgba(26, 36, 32, 0.04), 0 4px 12px rgba(26, 36, 32, 0.03)",
       },
       colors: {
         wez: {
-          green: "#1a7a4a",
-          "green-light": "#22c55e",
-          "green-soft": "#f0fdf4",
-          gold: "#d97706",
+          green: "#0f4c3a",
+          "green-mid": "#1a6b52",
+          "green-light": "#2d8a6a",
+          mint: "#e8f5f0",
+          "green-soft": "#f0faf6",
+          stone: "#f7f6f3",
+          "stone-100": "#efeee9",
+          "stone-200": "#e2e0d8",
+          ink: "#1a2420",
+          muted: "#5c6b64",
+          faint: "#8a968f",
+          gold: "#b45309",
           earth: "#78350f",
-          savanna: "#fbbf24",
-          background: "#f8fafc",
-          foreground: "#0f172a",
+          savanna: "#d97706",
+          background: "#f7f6f3",
+          foreground: "#1a2420",
         },
       },
       backgroundImage: {

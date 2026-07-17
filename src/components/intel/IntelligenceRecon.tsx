@@ -54,7 +54,8 @@ interface Observation {
 }
 
 const COLORS = {
-  emerald: '#10b981',
+  emerald: '#0f4c3a',
+  green: '#1a6b52',
   indigo: '#6366f1',
   amber: '#f59e0b',
   rose: '#f43f5e',
@@ -258,23 +259,27 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
   }
 
   return (
-    <div className="bg-white p-6 space-y-8 text-slate-900 min-h-[700px] animate-in fade-in duration-700 rounded-3xl border border-slate-200 shadow-sm">
-
+    <div className="glass-card bg-gradient-to-br from-white/95 to-emerald-50/20 p-6 space-y-8 text-slate-900 min-h-[700px] animate-in fade-in duration-700 rounded-3xl border border-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] relative overflow-hidden">
+      {/* Active Glowing Background */}
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-400/5 rounded-full blur-[100px] -mr-96 -mt-96 pointer-events-none" />
 
       {/* ── Main Intel Hub: 3-Column Layout ────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[540px] gap-0 border border-slate-200 rounded-3xl overflow-hidden shadow-2xl relative z-10 bg-white">
+      <div className="grid grid-cols-1 lg:grid-cols-12 lg:h-[540px] gap-0 border border-slate-200/60 rounded-3xl overflow-hidden shadow-[0_15px_40px_rgba(15,23,42,0.08)] relative z-10 bg-white/90 backdrop-blur-xl">
 
-        {/* Col 1: Species Sidebar (Balanced for V3.3) */}
-        <div className="lg:col-span-3 flex flex-col border-r border-slate-200 bg-white h-[500px] lg:h-full">
-          <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+        {/* Col 1: Species Sidebar */}
+        <div className="lg:col-span-3 flex flex-col border-r border-slate-200/60 bg-white/60 h-[500px] lg:h-full">
+          <div className="p-5 border-b border-slate-200/50 flex items-center justify-between bg-gradient-to-r from-emerald-50/50 to-white">
             <div>
               <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Asset Recognition</h3>
-              <p className="text-[8px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1">
-                <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+              <p className="text-[8px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1 mt-0.5">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </span>
                 Tactical V3.0 Active
               </p>
             </div>
-            <div className="px-2.5 py-1 bg-slate-900 text-white text-[8px] font-black rounded-lg border border-slate-700 shadow-sm">
+            <div className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[8px] font-black rounded-lg border border-emerald-100 shadow-sm">
               {speciesData.length} NODES
             </div>
           </div>
@@ -301,9 +306,9 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
               <button
                 key={s.name}
                 onClick={() => setSelectedSpecies(s.name)}
-                className={`w-full p-3.5 flex items-center gap-4 transition-all rounded-2xl group border ${selectedSpecies === s.name ? 'bg-emerald-600 border-emerald-500 shadow-lg shadow-emerald-600/30' : 'bg-white border-transparent hover:border-slate-200 hover:bg-slate-50 shadow-sm'}`}
+                className={`w-full p-3.5 flex items-center gap-4 transition-all rounded-2xl group border relative overflow-hidden ${selectedSpecies === s.name ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 border-emerald-400 shadow-md shadow-emerald-500/20' : 'bg-white/80 border-transparent hover:border-emerald-100 hover:bg-emerald-50/50 hover:shadow-sm'}`}
               >
-                <div className={`w-10 h-10 rounded-xl overflow-hidden border flex-shrink-0 transition-transform group-hover:scale-105 ${selectedSpecies === s.name ? 'border-white/20 bg-emerald-500 shadow-inner' : 'border-slate-100 bg-slate-50'}`}>
+                <div className={`w-10 h-10 rounded-xl overflow-hidden border flex-shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:shadow-lg ${selectedSpecies === s.name ? 'border-white/30 bg-emerald-400 shadow-inner' : 'border-slate-100 bg-slate-50'}`}>
                   <SpecimenImage speciesName={s.name} />
                 </div>
                 <div className="flex-1 text-left min-w-0">
@@ -326,49 +331,50 @@ export default function IntelligenceRecon({ observations = [], parkName = 'MANA 
           </div>
         </div>
 
-        {/* Col 2: High-Priority Specimen Spotlight (Balanced for V3.3) */}
-        <div className="lg:col-span-5 relative bg-slate-950 overflow-hidden h-[500px] lg:h-full group">
+        {/* Col 2: High-Priority Specimen Spotlight */}
+        <div className="lg:col-span-5 relative bg-gradient-to-b from-white to-slate-50 overflow-hidden h-[500px] lg:h-full group flex items-center justify-center">
           <AnimatePresence mode="wait">
             {selectedSpecies && (
               <motion.div
                 key={selectedSpecies + '_img'}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.05 }}
+                transition={{ duration: 0.5, type: 'spring', stiffness: 100 }}
                 className="absolute inset-0 flex items-center justify-center p-0"
               >
-                {/* Containerized image for perfect centering - P-4 for professional margins */}
-                <div className="w-full h-full relative z-10 flex items-center justify-center p-4">
+                {/* Tactical grid backdrop (Light) */}
+                <div className="absolute inset-0 opacity-20 pointer-events-none"
+                  style={{ backgroundImage: 'radial-gradient(circle, #059669 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+                  
+                {/* Containerized image with glowing shadow */}
+                <div className="w-full h-full relative z-10 flex items-center justify-center p-8 transition-transform duration-700 group-hover:scale-105">
                   {(() => {
                     const portrait = getSpeciesPortrait(selectedSpecies);
                     const fieldPhoto = speciesProfile?.observations?.find(o => o.photo_url)?.photo_url;
                     return (
                       <img
                         src={portrait || fieldPhoto || ''}
-                        className="max-w-full max-h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                        className="max-w-full max-h-full object-contain drop-shadow-[0_30px_40px_rgba(5,150,105,0.15)] filter contrast-105"
                         alt={selectedSpecies}
                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                       />
                     );
                   })()}
                 </div>
-                {/* Tactical grid backdrop */}
-                <div className="absolute inset-0 opacity-10 pointer-events-none"
-                  style={{ backgroundImage: 'radial-gradient(circle, #334155 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
               </motion.div>
             )}
             {!selectedSpecies && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/50">
-                <Activity size={48} className="text-slate-700 animate-pulse mb-4" />
-                <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em]">Awaiting Link</p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/50 backdrop-blur-sm">
+                <Activity size={48} className="text-emerald-500 animate-pulse mb-4" />
+                <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.5em]">Awaiting Link</p>
               </div>
             )}
           </AnimatePresence>
         </div>
 
-        {/* Col 3: Comprehensive Analytics Panel (Restored for V3.3) */}
-        <div className="lg:col-span-4 flex flex-col border-l border-slate-200 bg-white h-[500px] lg:h-full overflow-hidden">
+        {/* Col 3: Comprehensive Analytics Panel */}
+        <div className="lg:col-span-4 flex flex-col border-l border-slate-200/60 bg-white/80 h-[500px] lg:h-full overflow-hidden">
           <AnimatePresence mode="wait">
             {speciesProfile ? (
               <motion.div

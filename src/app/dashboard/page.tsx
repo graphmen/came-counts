@@ -2,23 +2,18 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { gc, supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { Park } from '@/types';
 import { 
-  Globe, 
   Map as MapIcon, 
-  TrendingUp, 
   ShieldCheck, 
-  Users, 
   Database,
   ArrowUpRight,
-  ChevronRight,
   Activity,
-  Zap,
-  Lock
 } from 'lucide-react';
 import Link from 'next/link';
 import EliteAnalytics from '@/components/charts/EliteAnalytics';
+import KPICard from '@/components/KPICard';
 
 export default function NationalDashboard() {
   const [parks, setParks] = useState<Park[]>([]);
@@ -69,80 +64,44 @@ export default function NationalDashboard() {
   }, [allSightings]);
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
-      <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-      <p className="text-slate-500 font-bold text-sm tracking-wide">Syncing National Registry...</p>
+    <div className="flex flex-col items-center justify-center h-[60vh] gap-3">
+      <div className="w-10 h-10 border-3 border-wez-green border-t-transparent rounded-full animate-spin" style={{ borderWidth: 3 }} />
+      <p className="text-wez-muted text-sm font-medium">Loading national overview…</p>
     </div>
   );
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      className="max-w-6xl mx-auto px-4 py-4 space-y-6"
+      transition={{ duration: 0.45 }}
+      className="max-w-6xl mx-auto space-y-8"
     >
-      {/* -- National Header -- */}
-      <header className="relative rounded-[2rem] bg-white text-slate-900 border border-slate-200 shadow-sm overflow-hidden group">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px] -mr-40 -mt-40" />
-        
-        <div className="relative z-10 p-8 md:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-full border border-emerald-100">
-                <ShieldCheck size={10} className="text-emerald-600" />
-                <span className="text-[9px] font-black text-emerald-700 uppercase tracking-[0.2em]">National Grid Active</span>
-              </div>
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-full border border-slate-200">
-                <span className="text-[9px] font-mono font-black text-slate-500 uppercase tracking-[0.2em]">HUB_ZIM_CENTRAL</span>
-              </div>
-            </div>
-            
-            <h1 className="text-3xl md:text-4xl font-display font-black text-slate-900 tracking-tight leading-none uppercase">
-              Zimbabwe <span className="text-emerald-600">Game Counts.</span>
-            </h1>
-
-            <p className="text-slate-500 font-bold max-w-lg text-[10px] uppercase tracking-widest leading-relaxed opacity-70">
-              Aggregated longitudinal wildlife intelligence across all operational sectors.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-          <div className="bg-slate-50 p-5 rounded-3xl border border-slate-100 shadow-sm min-w-[140px]">
-              <div className="text-3xl font-display font-black text-emerald-600">{nationalStats.totalSightings.toLocaleString()}</div>
-              <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Verified Sightings</div>
-            </div>
-            <div className="bg-slate-50 p-5 rounded-3xl border border-slate-100 shadow-sm min-w-[140px]">
-              <div className="text-3xl font-display font-black text-slate-900">{(nationalStats.totalArea / 1000).toFixed(0)}k</div>
-              <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Hectares Managed</div>
-            </div>
-          </div>
-        </div>
-
-        {/* -- Status Bar -- */}
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 px-10 py-4 border-t border-slate-100 bg-slate-50/50">
-          <div className="flex items-center gap-2">
-            <Activity size={10} className="text-emerald-600" />
-            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Global Status</span>
-            <span className="text-[9px] font-mono font-bold text-emerald-600">OPERATIONAL</span>
-          </div>
-          <div className="w-1 h-1 rounded-full bg-slate-200" />
-          <div className="flex items-center gap-2">
-            <Zap size={10} className="text-amber-600" />
-            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Nodes Sync</span>
-            <span className="text-[9px] font-mono font-bold text-amber-600">{nationalStats.activeNodes} Sectors</span>
-          </div>
-          <div className="w-1 h-1 rounded-full bg-slate-200" />
-          <div className="flex items-center gap-2">
-            <Lock size={10} className="text-blue-600" />
-            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Protocol</span>
-            <span className="text-[9px] font-mono font-bold text-blue-600">WEZ-SECURE</span>
-          </div>
+      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+        <div>
+          <h1 className="page-title">National dashboard</h1>
+          <p className="page-subtitle max-w-lg">
+            Aggregated wildlife counts across all WEZ operational parks.
+          </p>
+          <p className="page-meta flex items-center gap-2 flex-wrap">
+            <span className="inline-flex items-center gap-1.5">
+              <Activity size={12} className="text-wez-green" />
+              {nationalStats.activeNodes} parks
+            </span>
+            <span className="text-wez-stone-200">·</span>
+            <span>Zimbabwe</span>
+          </p>
         </div>
       </header>
 
-      {/* -- Global Analytics -- */}
-      <section className="bg-white rounded-3xl border border-slate-100 p-1">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <KPICard title="Verified sightings" value={nationalStats.totalSightings.toLocaleString()} icon={ShieldCheck} color="#0f4c3a" />
+        <KPICard title="Hectares managed" value={`${(nationalStats.totalArea / 1000).toFixed(0)}k`} icon={MapIcon} color="#1a6b52" />
+        <KPICard title="Species recorded" value={nationalStats.uniqueSpecies} icon={Database} color="#0f4c3a" />
+        <KPICard title="Active parks" value={nationalStats.activeNodes} icon={Activity} color="#b45309" />
+      </section>
+
+      <section className="surface-panel p-1 overflow-hidden">
         <EliteAnalytics stats={{
           parkName: 'National Overview',
           totalSightings: nationalStats.totalSightings,
@@ -153,50 +112,41 @@ export default function NationalDashboard() {
         }} />
       </section>
 
-      {/* -- Jurisdictions Grid -- */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-          <div>
-            <h2 className="text-lg font-display font-black text-slate-900 tracking-tight leading-none">Regional Node Distribution</h2>
-          </div>
-          <div className="hidden sm:flex items-center gap-2 text-[8px] font-black text-slate-400 uppercase tracking-widest">
-            <Database size={10} className="text-emerald-500" />
-            Verified Registry
-          </div>
+        <div>
+          <h2 className="section-title">Parks</h2>
+          <p className="label-muted mt-1">Open a park for detailed game count analysis</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
           {parks.map((park) => {
             const parkSightings = allSightings.filter(s => s.park_id === park.id).reduce((acc, curr) => acc + curr.total_count, 0);
             return (
-              <Link key={park.id} href={`/dashboard/${park.name.toLowerCase().replace(/\s+/g, '-')}`}>
+              <Link key={park.id} href={`/dashboard/park?parkId=${park.name.toLowerCase().replace(/\s+/g, '-')}`}>
                 <motion.div 
                   whileHover={{ y: -2 }}
-                  className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-emerald-500/20 transition-all group"
+                  className="surface-panel p-4 h-full hover:border-wez-green/25 transition-all group"
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xl border border-slate-100 group-hover:border-emerald-200 group-hover:bg-emerald-50 transition-all shadow-sm">
-                      {park.name.includes('Pools') ? '🐘' : park.name.includes('Hwange') ? '🦁' : '🌳'}
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="w-9 h-9 rounded-sm bg-wez-mint flex items-center justify-center text-wez-green">
+                      <MapIcon size={16} strokeWidth={1.75} />
                     </div>
-                    <ArrowUpRight size={14} className="text-slate-300 group-hover:text-emerald-500 transition-colors" />
+                    <ArrowUpRight size={14} className="text-wez-faint group-hover:text-wez-green transition-colors" />
                   </div>
 
-                  <div className="space-y-0.5 mb-4">
-                    <h3 className="text-base font-display font-black text-slate-900 leading-tight">{park.name}</h3>
-                    <div className="flex items-center gap-1.5 text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                      <MapIcon size={10} className="text-emerald-500" />
-                      {park.region || 'Zimbabwe Central'}
-                    </div>
-                  </div>
+                  <h3 className="font-display font-semibold text-wez-ink leading-tight">{park.name}</h3>
+                  <p className="label-muted mt-1 flex items-center gap-1">
+                    {park.region || 'Zimbabwe'}
+                  </p>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-slate-50/50 p-3 rounded-xl border border-slate-50 group-hover:bg-white transition-colors">
-                      <div className="text-sm font-display font-black text-emerald-600 leading-none">{parkSightings.toLocaleString()}</div>
-                      <div className="text-[7px] font-black text-slate-400 uppercase tracking-widest mt-1">Sightings</div>
+                  <div className="grid grid-cols-2 gap-2 mt-4">
+                    <div className="bg-wez-stone/70 rounded-sm p-2.5 border border-[var(--wez-border)]">
+                      <div className="text-sm font-semibold tabular-nums text-wez-green">{parkSightings.toLocaleString()}</div>
+                      <div className="label-muted mt-0.5">Sightings</div>
                     </div>
-                    <div className="bg-slate-50/50 p-3 rounded-xl border border-slate-50 group-hover:bg-white transition-colors">
-                      <div className="text-sm font-display font-black text-slate-900 leading-none">{park.area_ha ? (park.area_ha / 1000).toFixed(0) + 'k' : '0k'}</div>
-                      <div className="text-[7px] font-black text-slate-400 uppercase tracking-widest mt-1">Ha</div>
+                    <div className="bg-wez-stone/70 rounded-sm p-2.5 border border-[var(--wez-border)]">
+                      <div className="text-sm font-semibold tabular-nums text-wez-ink">{park.area_ha ? (park.area_ha / 1000).toFixed(0) + 'k' : '—'}</div>
+                      <div className="label-muted mt-0.5">Hectares</div>
                     </div>
                   </div>
                 </motion.div>
@@ -206,10 +156,8 @@ export default function NationalDashboard() {
         </div>
       </section>
 
-      <footer className="pt-6 pb-4 border-t border-slate-100 text-center">
-        <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.3em]">
-          National Wildlife Intelligence Grid - Zimbabwe Authority
-        </p>
+      <footer className="pt-4 border-t border-[var(--wez-border)] text-center">
+        <p className="label-muted">Wildlife & Environment Zimbabwe · National game counts</p>
       </footer>
     </motion.div>
   );

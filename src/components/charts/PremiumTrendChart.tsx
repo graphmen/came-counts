@@ -34,7 +34,7 @@ export default function PremiumTrendChart({ data, selectedSpecies, speciesList =
     const chartData: ChartData<'line'> = {
         labels,
         datasets: selectedSpecies.map(species => {
-            const hexColor = colorMap[species] || '#1a7a4a';
+            const hexColor = colorMap[species] || '#0f4c3a';
             const rgb = hexToRgb(hexColor);
             return {
                 label: species,
@@ -68,17 +68,17 @@ export default function PremiumTrendChart({ data, selectedSpecies, speciesList =
         plugins: {
             legend: { display: false },
             tooltip: {
-                backgroundColor: '#0f172a',
-                titleColor: '#f8fafc',
-                bodyColor: '#94a3b8',
+                backgroundColor: '#1a2420',
+                titleColor: '#f7f6f3',
+                bodyColor: '#c5c9c4',
                 borderColor: 'rgba(255,255,255,0.08)',
                 borderWidth: 1,
-                padding: 16,
-                boxPadding: 8,
-                cornerRadius: 16,
+                padding: 12,
+                boxPadding: 6,
+                cornerRadius: 8,
                 usePointStyle: true,
-                titleFont: { family: 'Outfit, sans-serif', size: 14, weight: 800 },
-                bodyFont: { family: 'Inter, sans-serif', size: 13, weight: 600 },
+                titleFont: { family: 'Outfit, sans-serif', size: 13, weight: 600 },
+                bodyFont: { family: 'Outfit, sans-serif', size: 12, weight: 500 },
                 callbacks: {
                     title: (items) => `Year ${items[0].label}`,
                     label: (ctx: any) =>
@@ -93,9 +93,9 @@ export default function PremiumTrendChart({ data, selectedSpecies, speciesList =
                 grid: { display: false },
                 border: { display: false },
                 ticks: {
-                    font: { family: 'Inter, sans-serif', size: 10, weight: 800 },
-                    color: '#64748b',
-                    padding: 14,
+                    font: { family: 'Outfit, sans-serif', size: 11, weight: 500 },
+                    color: '#5c6b64',
+                    padding: 12,
                     // Show every 5 years so it doesn't crowd
                     callback: (_, i, ticks) => {
                         const year = Number(labels[i]);
@@ -106,11 +106,11 @@ export default function PremiumTrendChart({ data, selectedSpecies, speciesList =
             y: {
                 beginAtZero: false,
                 border: { display: false },
-                grid: { color: 'rgba(255, 255, 255, 0.04)', lineWidth: 1 },
+                grid: { color: 'rgba(26, 36, 32, 0.06)', lineWidth: 1 },
                 ticks: {
-                    font: { family: 'Inter, sans-serif', size: 10, weight: 800 },
-                    color: '#64748b',
-                    padding: 14,
+                    font: { family: 'Outfit, sans-serif', size: 11, weight: 500 },
+                    color: '#5c6b64',
+                    padding: 12,
                     callback: (v: any) => v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v,
                 }
             }
