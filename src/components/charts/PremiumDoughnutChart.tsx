@@ -15,7 +15,7 @@ interface Props {
     data: { name: string; value: number }[];
 }
 
-const COLORS = ['#1f3a1c', '#3f6b24', '#c46a14', '#e08a30', '#6b6458'];
+const COLORS = ['#486830', '#5a7c3a', '#6b8f48', '#8aa35c', '#6b6458'];
 
 export default function PremiumDoughnutChart({ data }: Props) {
     const chartData = {

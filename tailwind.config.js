@@ -23,11 +23,11 @@ module.exports = {
       },
       colors: {
         wez: {
-          green: "#1f3a1c",
-          "green-mid": "#3f6b24",
-          "green-light": "#5a8a3a",
-          mint: "#eef4e8",
-          "green-soft": "#f4f8f0",
+          green: "#486830",
+          "green-mid": "#5a7c3a",
+          "green-light": "#6b8f48",
+          mint: "#eef2e6",
+          "green-soft": "#f4f6ef",
           sunset: "#c46a14",
           "sunset-mid": "#e08a30",
           "sunset-soft": "#fdf6eb",

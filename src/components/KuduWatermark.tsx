@@ -4,7 +4,7 @@
 export default function KuduWatermark() {
   return (
     <div className="kudu-watermark" aria-hidden>
-      <img src="/KUDU.jpg" alt="" className="kudu-watermark-img" />
+        <img src="/KUDU.png" alt="" className="kudu-watermark-img" />
     </div>
   );
 }

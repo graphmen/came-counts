@@ -42,20 +42,20 @@ export default function EliteAnalytics({ stats }: { stats: StatsProps }) {
           title="Verified sightings" 
           value={stats.totalSightings.toLocaleString()} 
           icon={Activity}
-          color="#1f3a1c"
+          color="#486830"
           trend={hasData ? { value: 12, isPositive: true } : undefined}
         />
         <KPICard 
           title="Active observers" 
           value={hasData ? stats.observerCount : 0} 
           icon={Users}
-          color="#3f6b24"
+          color="#5a7c3a"
         />
         <KPICard 
           title="Species catalog" 
           value={stats.speciesCount} 
           icon={Leaf}
-          color="#1f3a1c"
+          color="#486830"
         />
         <KPICard 
           title="Metric density" 
@@ -82,12 +82,12 @@ export default function EliteAnalytics({ stats }: { stats: StatsProps }) {
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6b6458', fontSize: 11, fontWeight: 500 }} dy={10} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6b6458', fontSize: 11 }} tickFormatter={(val) => Intl.NumberFormat('us').format(val)} />
                   <Tooltip 
-                    cursor={{ fill: 'rgba(31, 58, 28, 0.05)' }}
+                    cursor={{ fill: 'rgba(72, 104, 48, 0.05)' }}
                     contentStyle={{ borderRadius: '8px', border: '1px solid rgba(43,27,16,0.08)', boxShadow: '0 4px 12px rgba(43,27,16,0.06)', fontSize: '12px', fontFamily: 'Outfit, sans-serif' }}
                   />
                   <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={24}>
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={index % 3 === 2 ? '#c46a14' : index % 2 === 1 ? '#3f6b24' : '#1f3a1c'} />
+                      <Cell key={`cell-${index}`} fill={index % 3 === 2 ? '#6b8f48' : index % 2 === 1 ? '#5a7c3a' : '#486830'} />
                     ))}
                   </Bar>
                 </BarChart>

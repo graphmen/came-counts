@@ -54,7 +54,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <aside className="sidebar">
             <div className="px-4 pt-5 pb-4 border-b border-[var(--wez-border)] bg-gradient-to-br from-wez-mint to-wez-sunset-soft">
               <div className="font-display font-extrabold text-xl text-wez-green tracking-tight">WEZ</div>
-              <div className="text-xs font-semibold text-wez-sunset mt-1.5">Game Counts</div>
+              <div className="text-xs font-semibold text-wez-green-mid mt-1.5">Game Counts</div>
             </div>
           </aside>
         }

@@ -34,7 +34,7 @@ export default function PremiumTrendChart({ data, selectedSpecies, speciesList =
     const chartData: ChartData<'line'> = {
         labels,
         datasets: selectedSpecies.map(species => {
-            const hexColor = colorMap[species] || '#1f3a1c';
+            const hexColor = colorMap[species] || '#486830';
             const rgb = hexToRgb(hexColor);
             return {
                 label: species,

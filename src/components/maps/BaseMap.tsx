@@ -89,13 +89,13 @@ export default function BaseMap({ center = [29.39, -15.77], zoom = 10 }: BaseMap
         id: 'park-boundary-fill',
         type: 'fill',
         source: 'park-boundary',
-        paint: { 'fill-color': '#1f3a1c', 'fill-opacity': 0.05 }
+        paint: { 'fill-color': '#486830', 'fill-opacity': 0.05 }
       });
       map.current.addLayer({
         id: 'park-boundary-outline',
         type: 'line',
         source: 'park-boundary',
-        paint: { 'line-color': '#1f3a1c', 'line-width': 2, 'line-dasharray': [2, 2] }
+        paint: { 'line-color': '#486830', 'line-width': 2, 'line-dasharray': [2, 2] }
       });
 
       // River

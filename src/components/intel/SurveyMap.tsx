@@ -91,11 +91,11 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
       m.addSource('boundary', { type: 'geojson', data: '/data/mana_pools_boundary.json' });
       m.addLayer({
         id: 'boundary-fill', type: 'fill', source: 'boundary',
-        paint: { 'fill-color': '#1f3a1c', 'fill-opacity': 0.05 }
+        paint: { 'fill-color': '#486830', 'fill-opacity': 0.05 }
       });
       m.addLayer({
         id: 'boundary-outline', type: 'line', source: 'boundary',
-        paint: { 'line-color': '#1f3a1c', 'line-width': 2, 'line-dasharray': [2, 1] }
+        paint: { 'line-color': '#486830', 'line-width': 2, 'line-dasharray': [2, 1] }
       });
     }
 

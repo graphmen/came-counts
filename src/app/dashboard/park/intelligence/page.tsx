@@ -374,19 +374,19 @@ function IntelligenceHubPageContent() {
 
       {/* ── Stats Strip ───────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KPICard title="Sightings" value={observations.length.toLocaleString()} icon={Activity} color="#1f3a1c" />
-        <KPICard title="Total animals" value={totalAnimals.toLocaleString()} icon={Zap} color="#3f6b24" />
+        <KPICard title="Sightings" value={observations.length.toLocaleString()} icon={Activity} color="#486830" />
+        <KPICard title="Total animals" value={totalAnimals.toLocaleString()} icon={Zap} color="#5a7c3a" />
         <KPICard
           title="Male aggregation"
           value={observations.reduce((s, o) => s + (o.male_count || 0), 0).toLocaleString()}
           icon={Users}
-          color="#1f3a1c"
+          color="#486830"
         />
         <KPICard
           title="Female aggregation"
           value={observations.reduce((s, o) => s + (o.female_count || 0), 0).toLocaleString()}
           icon={Users}
-          color="#3f6b24"
+          color="#5a7c3a"
         />
       </div>
 

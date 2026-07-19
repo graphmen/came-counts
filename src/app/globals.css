@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  /* Hwange poster ecology — forest + leaf + sunset */
-  --wez-green: #1f3a1c;
-  --wez-green-mid: #3f6b24;
-  --wez-green-light: #5a8a3a;
-  --wez-mint: #eef4e8;
-  --wez-mint-hover: #e0ead6;
-  --wez-green-soft: #f4f8f0;
-  --wez-green-glow: rgba(31, 58, 28, 0.18);
+  /* Official WEZ logo green (#486830) — brand dominant + ecological accents */
+  --wez-green: #486830;
+  --wez-green-mid: #5a7c3a;
+  --wez-green-light: #6b8f48;
+  --wez-mint: #eef2e6;
+  --wez-mint-hover: #e2e8d6;
+  --wez-green-soft: #f4f6ef;
+  --wez-green-glow: rgba(72, 104, 48, 0.2);
 
   --wez-sunset: #c46a14;
   --wez-sunset-mid: #e08a30;
@@ -33,7 +33,7 @@
   --sidebar-bg: #ffffff;
   --sidebar-item-active: var(--wez-mint);
   --sidebar-text: #6b6458;
-  --sidebar-text-active: #1f3a1c;
+  --sidebar-text-active: #486830;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -132,7 +132,7 @@ h1, h2, h3, h4, h5 {
 .glass-card:hover,
 .wez-card:hover {
   box-shadow: 0 2px 8px rgba(26, 36, 32, 0.06), 0 8px 20px rgba(26, 36, 32, 0.04);
-  border-color: rgba(31, 58, 28, 0.15);
+  border-color: rgba(72, 104, 48, 0.15);
 }
 
 /* KPI Cards — Titan-style uniform strip */
@@ -149,7 +149,7 @@ h1, h2, h3, h4, h5 {
 
 .kpi-card:hover {
   box-shadow: 0 2px 8px rgba(26, 36, 32, 0.06), 0 8px 20px rgba(26, 36, 32, 0.04);
-  border-color: rgba(31, 58, 28, 0.18);
+  border-color: rgba(72, 104, 48, 0.18);
 }
 
 /* Sidebar — light Titan-like shell */
@@ -247,8 +247,7 @@ h1, h2, h3, h4, h5 {
   width: min(52vh, 460px);
   max-width: 70%;
   height: auto;
-  opacity: 0.12;
-  mix-blend-mode: multiply;
+  opacity: 0.16;
   object-fit: contain;
   user-select: none;
 }
@@ -290,7 +289,7 @@ h1, h2, h3, h4, h5 {
 .badge-green {
   background: var(--wez-mint);
   color: var(--wez-green);
-  border: 1px solid rgba(31, 58, 28, 0.14);
+  border: 1px solid rgba(72, 104, 48, 0.14);
 }
 
 .badge-sunset {
@@ -371,7 +370,7 @@ h1, h2, h3, h4, h5 {
 .category-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-card);
-  border-color: rgba(31, 58, 28, 0.2);
+  border-color: rgba(72, 104, 48, 0.2);
 }
 
 .sighting-summary-box {

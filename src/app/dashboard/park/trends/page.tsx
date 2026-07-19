@@ -124,7 +124,7 @@ function TrendAnalysisPageContent() {
                         title="Latest count" 
                         value={metrics.t.toLocaleString()} 
                         icon={Activity} 
-                        color="#1f3a1c"
+                        color="#486830"
                         trend={{ value: Math.abs(metrics.change), isPositive: metrics.change >= 0 }}
                         description={`From ${selected.length} species`}
                     />
@@ -132,21 +132,21 @@ function TrendAnalysisPageContent() {
                         title="Historical peak" 
                         value={metrics.peak.toLocaleString()} 
                         icon={TrendingUp} 
-                        color="#3f6b24"
+                        color="#5a7c3a"
                         description="Max recorded in cycle"
                     />
                     <KPICard 
                         title="Survey years" 
                         value={metrics.yrs} 
                         icon={CalendarDays} 
-                        color="#1f3a1c"
+                        color="#486830"
                         description="Years with data"
                     />
                     <KPICard 
                         title="Species tracked" 
                         value={selected.length} 
                         icon={Leaf} 
-                        color="#3f6b24"
+                        color="#5a7c3a"
                         description="Current selection"
                     />
                 </div>

@@ -86,9 +86,9 @@ export default function Sidebar({ mobileOpen = false, onNavigate }: SidebarProps
                 <div className="absolute -left-4 bottom-0 w-16 h-16 rounded-full bg-wez-sunset/15 blur-xl pointer-events-none" />
 
                 <Link href="/" onClick={navClick} className="relative z-10 flex items-center gap-3 group">
-                    <div className="w-12 h-12 rounded-md bg-white flex items-center justify-center overflow-hidden border-2 border-wez-green/25 shadow-card shrink-0 ring-2 ring-wez-sunset/20 group-hover:ring-wez-sunset/40 transition-all">
+                    <div className="w-12 h-12 rounded-md bg-white flex items-center justify-center overflow-hidden border-2 border-wez-green/35 shadow-card shrink-0 ring-2 ring-wez-green/15 group-hover:ring-wez-green/30 transition-all">
                         <img
-                            src="/wez-logo.jpg"
+                            src="/wez-logo2.jpg"
                             alt="WEZ Logo"
                             className="w-full h-full object-contain"
                         />
@@ -98,8 +98,8 @@ export default function Sidebar({ mobileOpen = false, onNavigate }: SidebarProps
                             WEZ
                         </div>
                         <div className="mt-1.5 flex items-center gap-1.5">
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-wez-sunset" />
-                            <span className="text-xs font-semibold text-wez-sunset tracking-wide">
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-wez-green-light" />
+                            <span className="text-xs font-semibold text-wez-green-mid tracking-wide">
                                 Game Counts
                             </span>
                         </div>
