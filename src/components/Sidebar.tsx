@@ -18,13 +18,20 @@ import {
     Radar
 } from 'lucide-react';
 
-export default function Sidebar() {
+interface SidebarProps {
+    mobileOpen?: boolean;
+    onNavigate?: () => void;
+}
+
+export default function Sidebar({ mobileOpen = false, onNavigate }: SidebarProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const parkId = searchParams.get('parkId') || '';
 
     const [parks, setParks] = useState<Park[]>([]);
     const [currentPark, setCurrentPark] = useState<Park | null>(null);
+
+    const navClick = () => onNavigate?.();
 
     useEffect(() => {
         async function fetchParks() {
@@ -66,7 +73,7 @@ export default function Sidebar() {
     ];
 
     return (
-        <aside className="sidebar">
+        <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}>
             <div className="relative px-4 pt-5 pb-4 overflow-hidden border-b border-[var(--wez-border)]">
                 <div
                     className="absolute inset-0 pointer-events-none"
@@ -78,7 +85,7 @@ export default function Sidebar() {
                 <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-wez-green/10 blur-2xl pointer-events-none" />
                 <div className="absolute -left-4 bottom-0 w-16 h-16 rounded-full bg-wez-sunset/15 blur-xl pointer-events-none" />
 
-                <Link href="/" className="relative z-10 flex items-center gap-3 group">
+                <Link href="/" onClick={navClick} className="relative z-10 flex items-center gap-3 group">
                     <div className="w-12 h-12 rounded-md bg-white flex items-center justify-center overflow-hidden border-2 border-wez-green/25 shadow-card shrink-0 ring-2 ring-wez-sunset/20 group-hover:ring-wez-sunset/40 transition-all">
                         <img
                             src="/wez-logo.jpg"
@@ -104,7 +111,7 @@ export default function Sidebar() {
                 <div className="mb-6">
                     <div className="sidebar-group-label">National</div>
                     {globalNav.map(item => (
-                        <Link key={item.href} href={item.href} className={`sidebar-item ${pathname === item.href ? 'active' : ''}`}>
+                        <Link key={item.href} href={item.href} onClick={navClick} className={`sidebar-item ${pathname === item.href ? 'active' : ''}`}>
                             <span className="shrink-0">{item.icon}</span>
                             <span>{item.label}</span>
                         </Link>
@@ -119,7 +126,7 @@ export default function Sidebar() {
                         {parkNav.map(item => {
                             const isItemActive = pathname === item.href.split('?')[0];
                             return (
-                                <Link key={item.href} href={item.href} className={`sidebar-item ${isItemActive ? 'active' : ''}`}>
+                                <Link key={item.href} href={item.href} onClick={navClick} className={`sidebar-item ${isItemActive ? 'active' : ''}`}>
                                     <span className="shrink-0">{item.icon}</span>
                                     <span>{item.label}</span>
                                 </Link>
@@ -135,7 +142,7 @@ export default function Sidebar() {
                         const href = `/dashboard/park?parkId=${slug}`;
                         const isExplorerActive = pathname === '/dashboard/park' && searchParams.get('parkId') === slug;
                         return (
-                            <Link key={p.id} href={href} className={`sidebar-item ${isExplorerActive ? 'active' : ''}`}>
+                            <Link key={p.id} href={href} onClick={navClick} className={`sidebar-item ${isExplorerActive ? 'active' : ''}`}>
                                 <MapPin size={18} strokeWidth={1.75} className="shrink-0 opacity-70" />
                                 <span className="truncate" title={p.name}>{p.name}</span>
                             </Link>
@@ -148,7 +155,7 @@ export default function Sidebar() {
                     {dataNav.map(item => {
                         const isItemActive = pathname === item.href.split('?')[0];
                         return (
-                            <Link key={item.href} href={item.href} className={`sidebar-item ${isItemActive ? 'active' : ''}`}>
+                            <Link key={item.href} href={item.href} onClick={navClick} className={`sidebar-item ${isItemActive ? 'active' : ''}`}>
                                 <span className="shrink-0">{item.icon}</span>
                                 <span>{item.label}</span>
                             </Link>

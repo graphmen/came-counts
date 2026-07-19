@@ -39,22 +39,8 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="relative max-w-6xl mx-auto space-y-8 fade-in">
-      {/* Kudu watermark — ecological presence behind the home canvas */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 overflow-hidden select-none"
-      >
-        <img
-          src="/KUDU.jpg"
-          alt=""
-          className="absolute -right-8 top-8 w-[min(52%,420px)] max-w-none opacity-[0.14] mix-blend-multiply object-contain object-top"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--wez-background)] via-[var(--wez-background)]/70 to-transparent w-[55%]" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[var(--wez-background)] to-transparent" />
-      </div>
-
-      <header className="relative z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+    <div className="max-w-6xl mx-auto space-y-8 fade-in">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <h1 className="page-title">WEZ Game Counts</h1>
           <p className="page-subtitle max-w-xl">
@@ -72,14 +58,14 @@ export default function HomePage() {
         </Link>
       </header>
 
-      <section className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KPICard title="Active sectors" value="06" icon={MapIcon} color="#1f3a1c" />
         <KPICard title="Verified sightings" value={loading ? '…' : sightingsCount} icon={ShieldCheck} color="#3f6b24" />
         <KPICard title="Expert observers" value="142" icon={Users} color="#c46a14" />
         <KPICard title="Species cataloged" value="31" icon={Database} color="#1f3a1c" />
       </section>
 
-      <div className="relative z-10 grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <section className="xl:col-span-2 space-y-4">
           <div>
             <h2 className="section-title">Conservation parks</h2>
@@ -172,7 +158,7 @@ export default function HomePage() {
         </aside>
       </div>
 
-      <footer className="relative z-10 pt-6 border-t border-[var(--wez-border)] flex flex-col sm:flex-row justify-between gap-2 text-center sm:text-left">
+      <footer className="pt-6 border-t border-[var(--wez-border)] flex flex-col sm:flex-row justify-between gap-2 text-center sm:text-left">
         <p className="label-muted">Wildlife & Environment Zimbabwe · Game Counts</p>
         <p className="label-muted flex items-center justify-center sm:justify-end gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-wez-green-light" />
