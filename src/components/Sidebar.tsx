@@ -88,7 +88,7 @@ export default function Sidebar({ mobileOpen = false, onNavigate }: SidebarProps
                 <Link href="/" onClick={navClick} className="relative z-10 flex items-center gap-3 group">
                     <div className="w-12 h-12 rounded-md bg-white flex items-center justify-center overflow-hidden border-2 border-wez-green/35 shadow-card shrink-0 ring-2 ring-wez-green/15 group-hover:ring-wez-green/30 transition-all">
                         <img
-                            src="/wez-logo2.jpg"
+                            src="/wez-logo.jpg"
                             alt="WEZ Logo"
                             className="w-full h-full object-contain"
                         />
