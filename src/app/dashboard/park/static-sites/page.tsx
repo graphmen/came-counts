@@ -22,6 +22,7 @@ import YearSelector from '@/components/YearSelector';
 import PremiumBarChart from '@/components/charts/PremiumBarChart';
 import PremiumDoughnutChart from '@/components/charts/PremiumDoughnutChart';
 import KPICard from '@/components/KPICard';
+import { normalizeParkId } from '@/lib/park-routes';
 
 const fadeUp: any = {
   hidden: { opacity: 0, y: 15 },
@@ -34,7 +35,7 @@ const stagger = {
 
 function StaticSitesPageContent() {
   const searchParams = useSearchParams();
-  const routeParkId = searchParams.get('parkId') || 'mana-pools-national-park';
+  const routeParkId = normalizeParkId(searchParams.get('parkId'));
   const router = useRouter();
   const [sites, setSites] = useState<StaticSite[]>([]);
   const [parkId, setParkId] = useState<string>('');

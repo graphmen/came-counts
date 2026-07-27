@@ -7,6 +7,7 @@ import { ArrowUpRight, ArrowDownRight, Leaf, CalendarDays, Activity, TrendingUp 
 import PremiumTrendChart from '@/components/charts/PremiumTrendChart';
 import { useRouter, useSearchParams } from 'next/navigation';
 import KPICard from '@/components/KPICard';
+import { normalizeParkId } from '@/lib/park-routes';
 
 const SPECIES_LIST = [
     { name: 'Impala', emoji: '🦌', color: '#f59e0b', bgLight: 'bg-amber-50', border: '#f59e0b' },
@@ -25,7 +26,7 @@ const fadeUp: any = {
 
 function TrendAnalysisPageContent() {
     const searchParams = useSearchParams();
-    const routeParkId = searchParams.get('parkId') || 'mana-pools-national-park';
+    const routeParkId = normalizeParkId(searchParams.get('parkId'));
     const [history, setHistory] = useState<any[]>([]);
     const [selected, setSelected] = useState<string[]>(['Impala', 'Elephant', 'Cape Buffalo']);
     const [park, setPark] = useState<any>(null);

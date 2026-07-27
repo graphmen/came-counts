@@ -29,6 +29,7 @@ import DataLedger from '@/components/intel/DataLedger';
 import ExportEngine from '@/components/intel/ExportEngine';
 import dynamic from 'next/dynamic';
 import LiveTicker from '@/components/intel/LiveTicker';
+import { normalizeParkId } from '@/lib/park-routes';
 
 const IntelligenceRecon = dynamic(() => import('@/components/intel/IntelligenceRecon'), { ssr: false });
 
@@ -134,7 +135,7 @@ function normalizeObservation(o: any) {
 
 function IntelligenceHubPageContent() {
   const searchParams = useSearchParams();
-  const routeParkId = searchParams.get('parkId') || 'mana-pools-national-park';
+  const routeParkId = normalizeParkId(searchParams.get('parkId'));
   const router = useRouter();
   
   const [mode, setMode] = useState<'map' | 'table' | 'export' | 'analytics' | 'gallery'>('table');

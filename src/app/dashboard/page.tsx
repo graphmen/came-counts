@@ -14,6 +14,7 @@ import {
 import Link from 'next/link';
 import EliteAnalytics from '@/components/charts/EliteAnalytics';
 import KPICard from '@/components/KPICard';
+import { parkPath, slugFromParkName } from '@/lib/park-routes';
 
 export default function NationalDashboard() {
   const [parks, setParks] = useState<Park[]>([]);
@@ -122,7 +123,7 @@ export default function NationalDashboard() {
           {parks.map((park) => {
             const parkSightings = allSightings.filter(s => s.park_id === park.id).reduce((acc, curr) => acc + curr.total_count, 0);
             return (
-              <Link key={park.id} href={`/dashboard/park?parkId=${park.name.toLowerCase().replace(/\s+/g, '-')}`}>
+              <Link key={park.id} href={parkPath('/dashboard/park', slugFromParkName(park.name))} prefetch={false}>
                 <motion.div 
                   whileHover={{ y: -2 }}
                   className="surface-panel p-4 h-full hover:border-wez-green/25 transition-all group"

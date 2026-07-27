@@ -12,11 +12,12 @@ import {
     ExternalLink
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { normalizeParkId } from '@/lib/park-routes';
 
 function NewSurveyPageContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const parkId = searchParams.get('parkId') || 'mana-pools-national-park';
+    const parkId = normalizeParkId(searchParams.get('parkId'));
 
     return (
         <div className="max-w-7xl mx-auto space-y-6 flex flex-col items-center justify-center min-h-[70vh] py-8">

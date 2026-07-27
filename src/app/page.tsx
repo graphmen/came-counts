@@ -102,7 +102,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <Link href={park.status === 'active' ? `/dashboard/park?parkId=${park.id}` : '#'} className="block mt-auto">
+                <Link href={park.status === 'active' ? `/dashboard/park?parkId=${encodeURIComponent(park.id)}` : '#'} className="block mt-auto" prefetch={false}>
                   <Button
                     disabled={park.status !== 'active'}
                     className={cn(

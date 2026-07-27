@@ -12,6 +12,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://wezgamecounts.com'),
   title: {
     template: '%s | WEZ Wildlife Platform',
     default: 'WEZ Game Counts | Wildlife Game Count Zimbabwe',
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'WEZ Game Counts | Wildlife Game Count',
     description: 'Modernizing Zimbabwe\'s wildlife monitoring with digital intelligence.',
-    url: 'https://wez-platform.vercel.app',
+    url: 'https://wezgamecounts.com',
     siteName: 'WEZ Wildlife Platform',
     locale: 'en_ZW',
     type: 'website',

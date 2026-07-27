@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { normalizeParkId, parkPath, slugFromParkName } from '@/lib/park-routes';
 import { Park } from '@/types';
 import {
     LayoutDashboard,
@@ -26,7 +27,7 @@ interface SidebarProps {
 export default function Sidebar({ mobileOpen = false, onNavigate }: SidebarProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const parkId = searchParams.get('parkId') || '';
+    const parkId = normalizeParkId(searchParams.get('parkId'), '');
 
     const [parks, setParks] = useState<Park[]>([]);
     const [currentPark, setCurrentPark] = useState<Park | null>(null);
@@ -41,7 +42,7 @@ export default function Sidebar({ mobileOpen = false, onNavigate }: SidebarProps
                 if (parkId) {
                     const active = data.find(p =>
                         p.id === parkId ||
-                        p.name.toLowerCase().replace(/\s+/g, '-') === parkId.toLowerCase()
+                        slugFromParkName(p.name) === parkId
                     );
                     setCurrentPark(active || null);
                 }
@@ -56,18 +57,18 @@ export default function Sidebar({ mobileOpen = false, onNavigate }: SidebarProps
     ];
 
     const parkNav = parkId ? [
-        { label: 'Dashboard', href: `/dashboard/park?parkId=${parkId}`, icon: <Navigation size={18} strokeWidth={1.75} /> },
-        { label: 'Operational Intel', href: `/dashboard/park/intelligence?parkId=${parkId}`, icon: <Radar size={18} strokeWidth={1.75} /> },
-        { label: 'Species Analysis', href: `/dashboard/park/species?parkId=${parkId}`, icon: <BarChart3 size={18} strokeWidth={1.75} /> },
-        { label: 'Trend Analysis', href: `/dashboard/park/trends?parkId=${parkId}`, icon: <TrendingUp size={18} strokeWidth={1.75} /> },
-        { label: 'Static Sites', href: `/dashboard/park/static-sites?parkId=${parkId}`, icon: <Droplets size={18} strokeWidth={1.75} /> },
-        { label: 'Generate Report', href: `/dashboard/park/reports?parkId=${parkId}`, icon: <FileText size={18} strokeWidth={1.75} /> },
+        { label: 'Dashboard', href: parkPath('/dashboard/park', parkId), icon: <Navigation size={18} strokeWidth={1.75} /> },
+        { label: 'Operational Intel', href: parkPath('/dashboard/park/intelligence', parkId), icon: <Radar size={18} strokeWidth={1.75} /> },
+        { label: 'Species Analysis', href: parkPath('/dashboard/park/species', parkId), icon: <BarChart3 size={18} strokeWidth={1.75} /> },
+        { label: 'Trend Analysis', href: parkPath('/dashboard/park/trends', parkId), icon: <TrendingUp size={18} strokeWidth={1.75} /> },
+        { label: 'Static Sites', href: parkPath('/dashboard/park/static-sites', parkId), icon: <Droplets size={18} strokeWidth={1.75} /> },
+        { label: 'Generate Report', href: parkPath('/dashboard/park/reports', parkId), icon: <FileText size={18} strokeWidth={1.75} /> },
     ] : [];
 
     const dataNav = [
         {
             label: 'New Survey',
-            href: parkId ? `/dashboard/park/surveys/new?parkId=${parkId}` : '/dashboard/park/surveys/new?parkId=mana-pools-national-park',
+            href: parkPath('/dashboard/park/surveys/new', parkId || 'mana-pools-national-park'),
             icon: <PlusCircle size={18} strokeWidth={1.75} />
         },
     ];
@@ -138,9 +139,9 @@ export default function Sidebar({ mobileOpen = false, onNavigate }: SidebarProps
                 <div className="mb-6">
                     <div className="sidebar-group-label">Parks</div>
                     {parks.filter(p => p.id !== currentPark?.id).map(p => {
-                        const slug = p.name.toLowerCase().replace(/\s+/g, '-');
-                        const href = `/dashboard/park?parkId=${slug}`;
-                        const isExplorerActive = pathname === '/dashboard/park' && searchParams.get('parkId') === slug;
+                        const slug = slugFromParkName(p.name);
+                        const href = parkPath('/dashboard/park', slug);
+                        const isExplorerActive = pathname === '/dashboard/park' && parkId === slug;
                         return (
                             <Link key={p.id} href={href} onClick={navClick} className={`sidebar-item ${isExplorerActive ? 'active' : ''}`}>
                                 <MapPin size={18} strokeWidth={1.75} className="shrink-0 opacity-70" />

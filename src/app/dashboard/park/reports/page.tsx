@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import YearSelector from '@/components/YearSelector';
+import { normalizeParkId } from '@/lib/park-routes';
 // Client-only dynamic import for PDF components
 const ManaPoolsPDFButton = dynamic(
   () => import('@/components/pdf/ManaPoolsPDFButton'),
@@ -29,7 +30,7 @@ const fadeUp: any = {
 
 function ReportsPageContent() {
   const searchParams = useSearchParams();
-  const routeParkId = searchParams.get('parkId') || 'mana-pools-national-park';
+  const routeParkId = normalizeParkId(searchParams.get('parkId'));
   const router = useRouter();
   const [park, setPark] = useState<Park | null>(null);
   const [survey, setSurvey] = useState<Survey | null>(null);

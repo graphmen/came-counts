@@ -10,13 +10,14 @@ import {
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import YearSelector from '@/components/YearSelector';
+import { normalizeParkId, parkPath } from '@/lib/park-routes';
 import dynamic from 'next/dynamic';
 const EliteAnalytics = dynamic(() => import('@/components/charts/EliteAnalytics'), { ssr: false });
 
 function ParkDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const parkId = searchParams.get('parkId') || 'mana-pools-national-park';
+  const parkId = normalizeParkId(searchParams.get('parkId'));
   const [park, setPark] = useState<Park | null>(null);
   const [speciesData, setSpeciesData] = useState<SpeciesSummaryRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,7 +110,7 @@ function ParkDashboardContent() {
             router.push(`/dashboard/park?${p.toString()}`);
           }} />
           <button
-            onClick={() => router.push(`/dashboard/park/intelligence?parkId=${parkId}`)}
+            onClick={() => router.push(parkPath('/dashboard/park/intelligence', parkId))}
             className="btn-primary flex items-center justify-center gap-2 h-10"
           >
             <Radar size={16} strokeWidth={1.75} />
