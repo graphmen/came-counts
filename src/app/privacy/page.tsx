@@ -148,7 +148,7 @@ const sections: { heading: string; body: ReactNode }[] = [
     body: (
       <p>
         The app is intended for authorised adult field volunteers and staff. It is not directed at
-        children under 13, and we do not knowingly collect personal data from children under 13.
+        children under 18, and we do not knowingly collect personal data from anyone under 18.
       </p>
     ),
   },
