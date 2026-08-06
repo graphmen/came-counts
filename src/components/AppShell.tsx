@@ -10,6 +10,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const isPublicLegal = pathname === '/privacy' || pathname?.startsWith('/privacy/');
 
   // Close drawer on navigation (path or query)
   useEffect(() => {
@@ -27,6 +28,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       document.body.style.overflow = '';
     };
   }, [mobileOpen]);
+
+  if (isPublicLegal) {
+    return <>{children}</>;
+  }
 
   return (
     <>

@@ -159,7 +159,12 @@ export default function HomePage() {
       </div>
 
       <footer className="pt-6 border-t border-[var(--wez-border)] flex flex-col sm:flex-row justify-between gap-2 text-center sm:text-left">
-        <p className="label-muted">Wildlife & Environment Zimbabwe · Game Counts</p>
+        <p className="label-muted">
+          Wildlife & Environment Zimbabwe · Game Counts ·{' '}
+          <Link href="/privacy" className="text-wez-green font-semibold hover:underline underline-offset-2">
+            Privacy Policy
+          </Link>
+        </p>
         <p className="label-muted flex items-center justify-center sm:justify-end gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-wez-green-light" />
           System operational
