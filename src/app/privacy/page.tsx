@@ -172,8 +172,8 @@ const sections: { heading: string; body: ReactNode }[] = [
           Platform:{' '}
           <a href="https://wezgamecounts.com/">wezgamecounts.com</a>
           <br />
-          Matabeleland membership enquiries:{' '}
-          <a href="mailto:wezmatmembers@gmail.com">wezmatmembers@gmail.com</a>
+          Matabeleland / Game Counts enquiries:{' '}
+          <a href="mailto:wezmanapoolsgamecount@gmail.com">wezmanapoolsgamecount@gmail.com</a>
         </p>
       </>
     ),
