@@ -164,6 +164,10 @@ export default function HomePage() {
           <Link href="/privacy" className="text-wez-green font-semibold hover:underline underline-offset-2">
             Privacy Policy
           </Link>
+          {' · '}
+          <Link href="/download" className="text-wez-green font-semibold hover:underline underline-offset-2">
+            Download App
+          </Link>
         </p>
         <p className="label-muted flex items-center justify-center sm:justify-end gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-wez-green-light" />

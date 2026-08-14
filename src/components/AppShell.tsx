@@ -10,7 +10,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const isPublicLegal = pathname === '/privacy' || pathname?.startsWith('/privacy/');
+  const isPublicLegal =
+    pathname === '/privacy' ||
+    pathname?.startsWith('/privacy/') ||
+    pathname === '/download' ||
+    pathname?.startsWith('/download/');
 
   // Close drawer on navigation (path or query)
   useEffect(() => {
