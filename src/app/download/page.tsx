@@ -21,26 +21,18 @@ export default function DownloadAppPage() {
   return (
     <div className="min-h-screen bg-wez-stone text-wez-ink">
       <header className="border-b border-[var(--wez-border)] bg-white/80 backdrop-blur-sm">
-        <div className="max-w-3xl mx-auto px-5 py-5 flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-3 group">
-            <img
-              src="/wez-logo.jpg"
-              alt="WEZ"
-              className="w-10 h-10 rounded-md object-contain border border-wez-green/30 bg-white"
-            />
-            <div>
-              <div className="font-display font-extrabold text-lg text-wez-green tracking-tight leading-none">
-                WEZ Game Counts
-              </div>
-              <div className="text-xs text-wez-muted mt-1">Android download</div>
+        <div className="max-w-3xl mx-auto px-5 py-5 flex items-center gap-3">
+          <img
+            src="/wez-logo.jpg"
+            alt="WEZ"
+            className="w-10 h-10 rounded-md object-contain border border-wez-green/30 bg-white"
+          />
+          <div>
+            <div className="font-display font-extrabold text-lg text-wez-green tracking-tight leading-none">
+              WEZ Game Counts
             </div>
-          </Link>
-          <Link
-            href="/"
-            className="text-sm font-semibold text-wez-green hover:text-wez-green-mid transition-colors"
-          >
-            Back to platform
-          </Link>
+            <div className="text-xs text-wez-muted mt-1">Android download</div>
+          </div>
         </div>
       </header>
 
