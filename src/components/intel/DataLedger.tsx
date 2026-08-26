@@ -26,13 +26,16 @@ interface Observation {
   male_count: number;
   female_count: number;
   unknown_count: number;
+  young_count?: number;
   habitat: string;
   activity: string;
   photo_url?: string;
+  temperatures?: Record<string, string> | null;
   matrix: {
     adult: number;
     sub: number;
     juv: number;
+    young?: number;
   };
 }
 
@@ -138,6 +141,29 @@ export default function DataLedger({ observations, onViewPhoto }: { observations
                 </td>
 
                 <td className="px-6 py-5 align-top">
+                   {obs.type === 'Static' ? (
+                   <div className="flex items-end gap-4">
+                      <div className="text-2xl font-semibold tabular-nums text-wez-ink leading-none">{obs.count}</div>
+                      <div className="flex gap-3 mb-0.5">
+                         <div className="flex flex-col items-center">
+                            <span className="label-muted mb-1">M</span>
+                            <span className="text-xs font-semibold text-wez-muted tabular-nums">{obs.male_count}</span>
+                         </div>
+                         <div className="flex flex-col items-center border-l border-[var(--wez-border)] pl-3">
+                            <span className="label-muted mb-1">F</span>
+                            <span className="text-xs font-semibold text-wez-muted tabular-nums">{obs.female_count}</span>
+                         </div>
+                         <div className="flex flex-col items-center border-l border-[var(--wez-border)] pl-3">
+                            <span className="label-muted mb-1">U</span>
+                            <span className="text-xs font-semibold text-wez-muted tabular-nums">{obs.unknown_count}</span>
+                         </div>
+                         <div className="flex flex-col items-center border-l border-[var(--wez-border)] pl-3">
+                            <span className="label-muted mb-1">Y</span>
+                            <span className="text-xs font-semibold text-wez-muted tabular-nums">{obs.young_count || obs.matrix.young || 0}</span>
+                         </div>
+                      </div>
+                   </div>
+                   ) : (
                    <div className="flex items-end gap-4">
                       <div className="text-2xl font-semibold tabular-nums text-wez-ink leading-none">{obs.count}</div>
                       <div className="flex gap-3 mb-0.5">
@@ -155,6 +181,7 @@ export default function DataLedger({ observations, onViewPhoto }: { observations
                          </div>
                       </div>
                    </div>
+                   )}
                 </td>
 
                 <td className="px-6 py-5 align-top">
@@ -188,14 +215,37 @@ export default function DataLedger({ observations, onViewPhoto }: { observations
                       <span className="text-xs font-medium tabular-nums">{obs.lat}, {obs.lng}</span>
                     </div>
                     <div className="flex flex-wrap gap-3 text-xs text-wez-faint">
-                       <span>Dist <span className="text-wez-ink font-medium">{obs.distance || '0'} m</span></span>
-                       <span>Brg <span className="text-wez-ink font-medium">{obs.bearing || '0'}°</span></span>
-                       <span>Acc <span className="text-wez-green font-medium">±{obs.accuracy || '5'} m</span></span>
+                       {obs.type === 'Static' ? (
+                         <>
+                           <span>Pan <span className="text-wez-ink font-medium">{obs.location}</span></span>
+                           {obs.time ? <span>Time <span className="text-wez-ink font-medium">{obs.time}</span></span> : null}
+                           <span>Acc <span className="text-wez-green font-medium">±{obs.accuracy || '5'} m</span></span>
+                         </>
+                       ) : (
+                         <>
+                           <span>Dist <span className="text-wez-ink font-medium">{obs.distance || '0'} m</span></span>
+                           <span>Brg <span className="text-wez-ink font-medium">{obs.bearing || '0'}°</span></span>
+                           <span>Acc <span className="text-wez-green font-medium">±{obs.accuracy || '5'} m</span></span>
+                         </>
+                       )}
                     </div>
                   </div>
                 </td>
 
                 <td className="px-6 py-5 align-top text-right">
+                   {obs.type === 'Static' ? (
+                   <div className="flex flex-col items-end gap-1.5">
+                      <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-50/80 rounded-md border border-amber-100/80">
+                         <Zap size={10} className="text-amber-600" />
+                         <span className="text-xs font-medium text-amber-800">{obs.meta || '24 Hour'}</span>
+                      </div>
+                      {obs.temperatures && Object.values(obs.temperatures).some(Boolean) ? (
+                        <div className="text-[10px] text-wez-muted font-medium">
+                          {Object.entries(obs.temperatures).filter(([, v]) => v).map(([slot, v]) => `${slot} ${v}°`).join(' · ')}
+                        </div>
+                      ) : null}
+                   </div>
+                   ) : (
                    <div className="flex flex-col items-end gap-1.5">
                       <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-50/80 rounded-md border border-amber-100/80">
                          <Zap size={10} className="text-amber-600" />
@@ -206,6 +256,7 @@ export default function DataLedger({ observations, onViewPhoto }: { observations
                          <span className="text-xs font-medium text-wez-green">{obs.habitat || 'Woodland'}</span>
                       </div>
                    </div>
+                   )}
                 </td>
               </tr>
             ))

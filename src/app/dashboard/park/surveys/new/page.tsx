@@ -61,9 +61,10 @@ function NewSurveyPageContent() {
                         >
                             <ArrowLeft size={16} strokeWidth={1.75} /> Back to dashboard
                         </Button>
-                        <Button 
+                        <Button
                             variant="outline"
                             className="flex-1 h-11 gap-2"
+                            onClick={() => router.push('/download')}
                         >
                             <ExternalLink size={16} strokeWidth={1.75} /> Get mobile app
                         </Button>

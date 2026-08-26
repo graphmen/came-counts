@@ -30,6 +30,7 @@ import ExportEngine from '@/components/intel/ExportEngine';
 import dynamic from 'next/dynamic';
 import LiveTicker from '@/components/intel/LiveTicker';
 import { normalizeParkId } from '@/lib/park-routes';
+import { normalizeObservation } from '@/lib/field-observations';
 
 const IntelligenceRecon = dynamic(() => import('@/components/intel/IntelligenceRecon'), { ssr: false });
 
@@ -61,76 +62,6 @@ function routeParamToParkId(routeParam: string): string {
     'chewore-safari-area': 'chewore',
   };
   return MAP[routeParam] || routeParam;
-}
-
-function resolvePhotoUrl(url: string | null, payload?: any) {
-  if (!url && payload?.photo_uri) {
-    // If it's a local file path from mobile, extract the filename to try and find it in our cloud storage
-    if (payload.photo_uri.includes('ImagePicker') || payload.photo_uri.startsWith('file://')) {
-       const fileName = payload.photo_uri.split('/').pop();
-       url = fileName;
-    } else {
-       url = payload.photo_uri;
-    }
-  }
-  
-  if (!url) return null;
-  
-  // If it's already a full URL, return it
-  if (url.startsWith('http')) return url;
-  
-  // If it's a relative path (e.g. obs_123.jpg), prepend the Supabase public storage URL
-  // Project ID: pqfbcvxisrmtmhmuxbjk
-  const supabaseUrl = 'https://pqfbcvxisrmtmhmuxbjk.supabase.co';
-  
-  // Clean up the URL - remove leading slashes or 'photos/' if it's already there
-  let cleanUrl = url.startsWith('/') ? url.substring(1) : url;
-  if (cleanUrl.startsWith('photos/')) {
-    cleanUrl = cleanUrl.replace('photos/', '');
-  }
-  
-  return `${supabaseUrl}/storage/v1/object/public/photos/${cleanUrl}`;
-}
-
-function normalizeObservation(o: any) {
-  const p = o.payload || {};
-  const adultSum = (Number(p.adult_m)||0) + (Number(p.adult_f)||0) + (Number(p.adult_u)||0);
-  const subSum   = (Number(p.sub_adult_m)||0) + (Number(p.sub_adult_f)||0) + (Number(p.sub_adult_u)||0);
-  const juvSum   = (Number(p.juv_m)||0) + (Number(p.juv_f)||0) + (Number(p.juv_u)||0);
-  const total    = adultSum + subSum + juvSum;
-
-  return {
-    id:         o.id,
-    type:       o.survey_type   || p.survey_type   || 'Unknown',
-    species:    (o.species_name && o.species_name !== 'undefined') ? o.species_name : 
-                (p.species_name && p.species_name !== 'undefined') ? p.species_name : 
-                (p.other_species && p.other_species !== 'undefined') ? p.other_species : 
-                (o.species_id && o.species_id !== 'undefined') ? o.species_id : 'Unidentified',
-    class:      o.classification || p.classification || 'N/A',
-    count:      total || 1,
-    location:   o.transect_id  || o.static_site_id || p.transect_id || p.static_site_id || 'General',
-    meta:       p.session_slot || o.period_of_day || 'N/A',
-    time:       p.session_time || (o.synced_at || o.created_at || '').split('T')[1]?.substring(0, 5) || '',
-    sex:        'Mixed',
-    age:        'Mixed',
-    date:       p.session_date || (o.created_at || '').split('T')[0] || '',
-    day_of_week:   o.day_of_week   || p.day_of_week   || '',
-    period_of_day: o.period_of_day || p.period_of_day || '',
-    observer:   o.team_leader   || p.team_leader_name || 'Mobile Node',
-    distance:   p.distance || '0',
-    bearing:    p.bearing  || '0',
-    lat:        o.lat  || p.lat  || null,
-    lng:        o.long || p.long || null,
-    accuracy:   o.accuracy || p.accuracy || '5',
-    habitat:    p.habitat  || 'N/A',
-    activity:   p.activity || 'N/A',
-    photo_url:  resolvePhotoUrl(o.photo_url, p),
-    park_name:  o.park_name || p.park_name || o.park_id || '',
-    male_count:    o.male_count    || 0,
-    female_count:  o.female_count  || 0,
-    unknown_count: o.unknown_count || 0,
-    matrix: { adult: adultSum, sub: subSum, juv: juvSum }
-  };
 }
 
 function IntelligenceHubPageContent() {
@@ -279,8 +210,8 @@ function IntelligenceHubPageContent() {
     observers: ['All', ...Array.from(new Set(observations.map(o => o.observer))).filter(Boolean).sort()],
     types: ['All', ...Array.from(new Set(observations.map(o => o.type))).filter(Boolean).sort()],
     classes: ['All', ...Array.from(new Set(observations.map(o => o.class))).filter(Boolean).sort()],
-    habitats: ['All', ...Array.from(new Set(observations.map(o => o.habitat))).filter(Boolean).sort()],
-    activities: ['All', ...Array.from(new Set(observations.map(o => o.activity))).filter(Boolean).sort()]
+    habitats: ['All', ...Array.from(new Set(observations.map(o => o.habitat))).filter((h) => h && h !== 'N/A').sort()],
+    activities: ['All', ...Array.from(new Set(observations.map(o => o.activity))).filter((a) => a && a !== 'N/A').sort()]
   }), [observations]);
 
   // ── Computed stats ─────────────────────────────────────────────

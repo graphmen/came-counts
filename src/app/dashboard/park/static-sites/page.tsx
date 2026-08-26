@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gc, supabase } from '@/lib/supabase';
 import { StaticSite } from '@/types';
+import { MANA_24H_PANS, normalizeObservation, panDisplayName } from '@/lib/field-observations';
 import { 
   Droplets, 
   MapPin, 
@@ -41,6 +42,7 @@ function StaticSitesPageContent() {
   const [parkId, setParkId] = useState<string>('');
   const [selectedSite, setSelectedSite] = useState<string | null>(null);
   const [siteData, setSiteData] = useState<any[]>([]);
+  const [livePanCounts, setLivePanCounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const selectedYear = Number(searchParams.get('year')) || 2025;
@@ -72,6 +74,29 @@ function StaticSitesPageContent() {
       setLoading(false);
     }
     fetchData();
+  }, [routeParkId]);
+
+  useEffect(() => {
+    async function loadLivePans() {
+      const mobileParkId = routeParkId.replace(/-national-park$/, '').replace(/-safari-area$/, '');
+      const { data } = await gc
+        .from('field_observations')
+        .select('*')
+        .eq('park_id', mobileParkId)
+        .eq('survey_type', 'Static');
+
+      const grouped: Record<string, { pan: string; total: number; records: number; species: Record<string, number> }> = {};
+      for (const row of data || []) {
+        const obs = normalizeObservation(row);
+        const pan = panDisplayName(obs.location) || 'Pan';
+        if (!grouped[pan]) grouped[pan] = { pan, total: 0, records: 0, species: {} };
+        grouped[pan].total += obs.count || 0;
+        grouped[pan].records += 1;
+        grouped[pan].species[obs.species] = (grouped[pan].species[obs.species] || 0) + (obs.count || 0);
+      }
+      setLivePanCounts(Object.values(grouped).sort((a, b) => a.pan.localeCompare(b.pan)));
+    }
+    loadLivePans();
   }, [routeParkId]);
 
   useEffect(() => {
@@ -208,6 +233,33 @@ function StaticSitesPageContent() {
         </div>
       </div>
 
+      {livePanCounts.length > 0 && (
+        <section className="surface-panel p-6 sm:p-8">
+          <div className="mb-5">
+            <h3 className="section-title">Live 24-hour pan counts</h3>
+            <p className="label-muted mt-1.5">
+              Synced from the field app for {MANA_24H_PANS.map((p) => p.name).join(', ')}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
+            {livePanCounts.map((pan) => (
+              <div key={pan.pan} className="rounded-md border border-[var(--wez-border)] bg-wez-stone/20 p-4">
+                <p className="text-sm font-semibold text-wez-ink">{pan.pan}</p>
+                <p className="text-2xl font-semibold tabular-nums text-wez-green mt-2">{pan.total.toLocaleString()}</p>
+                <p className="text-xs text-wez-muted mt-1">{pan.records} sighting{pan.records === 1 ? '' : 's'}</p>
+                <p className="text-xs text-wez-faint mt-2 leading-relaxed">
+                  {Object.entries(pan.species)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 3)
+                    .map(([name, n]) => `${name} ${n}`)
+                    .join(' · ') || 'No species yet'}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* ── Analytics Section ──────────────────────────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
@@ -271,8 +323,10 @@ function StaticSitesPageContent() {
           <div className="space-y-1.5">
             <h4 className="section-title">About static site monitoring</h4>
             <p className="text-sm text-wez-muted leading-relaxed max-w-4xl">
-              Observation data for static sites is collected over full-day monitoring cycles.
-              Results here are aggregated from peak waterhole occupancy across surveyed transects.
+            Observation data for static sites is collected over full-day monitoring cycles
+            at pans such as Mhara, Nyamawani, Kavinga, Kanga, and Ingwe. Live counts come
+            from the WEZ Game Counts field app (M/F/U/Y and sighting time). Historical
+            charts on this page remain the annual waterhole survey totals.
             </p>
           </div>
         </div>

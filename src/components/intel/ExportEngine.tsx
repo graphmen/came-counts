@@ -17,7 +17,9 @@ interface Observation {
   lat: string; lng: string; habitat: string; activity: string; photo_url?: string;
   day_of_week: string; period_of_day: string;
   male_count: number; female_count: number; unknown_count: number;
-  matrix: { adult: number; sub: number; juv: number };
+  young_count?: number;
+  temperatures?: Record<string, string> | null;
+  matrix: { adult: number; sub: number; juv: number; young?: number };
 }
 
 export default function ExportEngine({ observations, parkName }: { observations: Observation[], parkName: string }) {
@@ -43,12 +45,12 @@ export default function ExportEngine({ observations, parkName }: { observations:
     if (observations.length === 0) return;
     const headers = [
       'ID', 'Date', 'Day', 'Period', 'Time', 'Park', 'Observer', 'SurveyType', 'Location',
-      'Species', 'Class', 'TotalCount', 'Male', 'Female', 'Unknown', 'Adult', 'SubAdult', 'Juvenile',
+      'Species', 'Class', 'TotalCount', 'Male', 'Female', 'Unknown', 'Young', 'Adult', 'SubAdult', 'Juvenile',
       'Latitude', 'Longitude', 'Distance_m', 'Bearing_deg', 'Activity', 'Habitat', 'HasPhoto'
     ];
     const rows = observations.map(obs => [
       obs.id, obs.date, obs.day_of_week, obs.period_of_day, obs.time, parkName, obs.observer, obs.type, obs.location,
-      obs.species, obs.class, obs.count, obs.male_count, obs.female_count, obs.unknown_count,
+      obs.species, obs.class, obs.count, obs.male_count, obs.female_count, obs.unknown_count, obs.young_count || obs.matrix.young || 0,
       obs.matrix.adult, obs.matrix.sub, obs.matrix.juv,
       obs.lat || '', obs.lng || '', obs.distance || '0', obs.bearing || '0',
       obs.activity, obs.habitat, obs.photo_url ? 'Yes' : 'No'
@@ -87,6 +89,7 @@ export default function ExportEngine({ observations, parkName }: { observations:
           day_of_week: obs.day_of_week, period_of_day: obs.period_of_day,
           habitat: obs.habitat, activity: obs.activity,
           male: obs.male_count, female: obs.female_count, unknown: obs.unknown_count,
+          young: obs.young_count || obs.matrix.young || 0,
           adult: obs.matrix.adult, sub_adult: obs.matrix.sub, juvenile: obs.matrix.juv,
           photo_url: obs.photo_url || null
         }

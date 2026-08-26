@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 };
 
 const APK_PATH = '/downloads/wez-game-counts.apk';
-const APK_VERSION = '1.0.0';
-const APK_SIZE = '~50 MB';
+const APK_VERSION = '1.1.0';
+const APK_SIZE = '~74 MB';
 
 export default function DownloadAppPage() {
   return (
@@ -42,9 +42,19 @@ export default function DownloadAppPage() {
           Download for Android
         </h1>
         <p className="mt-3 text-wez-muted text-sm sm:text-base leading-relaxed max-w-2xl">
-          Official field survey app for Wildlife &amp; Environment Zimbabwe. Capture game counts
-          offline, tag GPS locations, attach photos, and sync when you are back online.
+          Official field survey app for Wildlife &amp; Environment Zimbabwe. Capture transect
+          and 24-hour static pan counts offline, tag GPS once at the pan, and sync when you
+          are back online.
         </p>
+
+        <div className="mt-6 surface-panel p-5 sm:p-6">
+          <p className="text-xs font-semibold uppercase tracking-wide text-wez-green mb-2">What&apos;s new</p>
+          <ul className="text-sm text-wez-muted leading-relaxed space-y-1.5 list-disc pl-5">
+            <li>24-hour static pans for Mana Pools: Mhara, Nyamawani, Kavinga, Kanga, Ingwe</li>
+            <li>Paper-sheet counts: male, female, unsexed, young, plus sighting time</li>
+            <li>One GPS fix for the pan and three-hourly temperature slots</li>
+          </ul>
+        </div>
 
         <div className="mt-8 grid gap-6 sm:grid-cols-[1.2fr_0.8fr]">
           <section className="surface-panel p-5 sm:p-6 flex flex-col">
