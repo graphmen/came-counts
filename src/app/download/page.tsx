@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 };
 
 const APK_PATH = '/downloads/wez-game-counts.apk';
-const APK_VERSION = '1.1.1';
-const APK_SIZE = '~99 MB';
+const APK_VERSION = '1.1.2';
+const APK_SIZE = '~25 MB';
 
 export default function DownloadAppPage() {
   return (
