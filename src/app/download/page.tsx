@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 };
 
 const APK_PATH = '/downloads/wez-game-counts.apk';
-const APK_VERSION = '1.1.0';
-const APK_SIZE = '~74 MB';
+const APK_VERSION = '1.1.1';
+const APK_SIZE = '~99 MB';
 
 export default function DownloadAppPage() {
   return (
@@ -50,9 +50,10 @@ export default function DownloadAppPage() {
         <div className="mt-6 surface-panel p-5 sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-wide text-wez-green mb-2">What&apos;s new</p>
           <ul className="text-sm text-wez-muted leading-relaxed space-y-1.5 list-disc pl-5">
+            <li>Works fully offline: home screen opens without waiting on the network</li>
+            <li>Mana Pools map shows transect lines, tracks, and camps without signal</li>
             <li>24-hour static pans for Mana Pools: Mhara, Nyamawani, Kavinga, Kanga, Ingwe</li>
             <li>Paper-sheet counts: male, female, unsexed, young, plus sighting time</li>
-            <li>One GPS fix for the pan and three-hourly temperature slots</li>
           </ul>
         </div>
 
