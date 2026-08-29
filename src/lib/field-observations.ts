@@ -18,13 +18,67 @@ export function panDisplayName(idOrName?: string | null): string {
   return raw.replace(/^mana-/, '').replace(/-/g, ' ');
 }
 
+/** Columns needed by the dashboard. Omits `payload`, which historically
+ *  embeds camera data URLs and times out Postgres (`57014`). */
+export const FIELD_OBSERVATION_COLUMNS = [
+  'id', 'park_id', 'species_id', 'species_name', 'park_name', 'classification',
+  'photo_url', 'lat', 'long', 'accuracy', 'day_of_week', 'period_of_day',
+  'male_count', 'female_count', 'unknown_count', 'activity', 'habitat', 'notes',
+  'team_leader', 'survey_type', 'transect_id', 'static_site_id',
+  'observers', 'young_count', 'sighting_time', 'session_date', 'session_slot',
+  'static_site_name', 'temperatures', 'synced_at', 'created_at',
+].join(',');
+
+const LEGACY_FIELD_OBSERVATION_COLUMNS = [
+  'id', 'park_id', 'species_id', 'species_name', 'park_name', 'classification',
+  'photo_url', 'lat', 'long', 'accuracy', 'day_of_week', 'period_of_day',
+  'male_count', 'female_count', 'unknown_count', 'activity', 'habitat', 'notes',
+  'team_leader', 'survey_type', 'transect_id', 'static_site_id',
+  'synced_at', 'created_at',
+].join(',');
+
+function isMissingColumnError(error: { code?: string; message?: string } | null) {
+  if (!error) return false;
+  return error.code === 'PGRST204' || /column .* does not exist/i.test(error.message || '');
+}
+
+function isEmbeddedPhoto(value?: string | null) {
+  if (!value) return false;
+  return value.startsWith('data:') || value.startsWith('file://') || value.includes('ImagePicker');
+}
+
+export async function fetchParkFieldObservations(
+  client: any,
+  options: { parkId: string; surveyType?: string; abortSignal?: AbortSignal }
+) {
+  const run = (columns: string) => {
+    let query = client
+      .from('field_observations')
+      .select(columns)
+      .eq('park_id', options.parkId)
+      .order('created_at', { ascending: false });
+    if (options.surveyType) query = query.eq('survey_type', options.surveyType);
+    if (options.abortSignal) query = query.abortSignal(options.abortSignal);
+    return query;
+  };
+
+  let result = await run(FIELD_OBSERVATION_COLUMNS);
+  if (result.error && isMissingColumnError(result.error)) {
+    result = await run(LEGACY_FIELD_OBSERVATION_COLUMNS);
+  }
+  if (result.error) throw result.error;
+  return (result.data || []) as any[];
+}
+
+export function stripHeavyPayload(row: any) {
+  if (!row?.payload || typeof row.payload !== 'object') return row;
+  const { photo_uri, ...rest } = row.payload;
+  return { ...row, payload: rest };
+}
+
 export function resolvePhotoUrl(url: string | null, payload?: any) {
-  if (!url && payload?.photo_uri) {
-    if (payload.photo_uri.includes('ImagePicker') || payload.photo_uri.startsWith('file://')) {
-      url = payload.photo_uri.split('/').pop();
-    } else {
-      url = payload.photo_uri;
-    }
+  if (!url && payload?.photo_uri && !isEmbeddedPhoto(payload.photo_uri)) {
+    url = payload.photo_uri;
   }
 
   if (!url) return null;
@@ -59,9 +113,10 @@ export function normalizeObservation(o: any) {
   const female = num(o.female_count ?? p.female_count ?? p.adult_f);
   const unknown = num(o.unknown_count ?? p.unknown_count ?? p.adult_u);
 
+  const columnTotal = male + female + unknown;
   const total = isStatic
-    ? (adultSum || male + female + unknown) + young
-    : adultSum + subSum + juvSum || male + female + unknown;
+    ? (adultSum || columnTotal) + young
+    : adultSum + subSum + juvSum || columnTotal;
 
   const panName = panDisplayName(o.static_site_name || p.static_site_name || o.static_site_id || p.static_site_id);
 
@@ -101,7 +156,7 @@ export function normalizeObservation(o: any) {
     young_count: young,
     temperatures: o.temperatures || p.temperatures || null,
     matrix: isStatic
-      ? { adult: adultSum || male + female + unknown, sub: 0, juv: young, young }
-      : { adult: adultSum, sub: subSum, juv: juvSum, young: 0 },
+      ? { adult: adultSum || columnTotal, sub: 0, juv: young, young }
+      : { adult: adultSum || columnTotal, sub: subSum, juv: juvSum, young: 0 },
   };
 }

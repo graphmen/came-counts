@@ -30,7 +30,7 @@ import ExportEngine from '@/components/intel/ExportEngine';
 import dynamic from 'next/dynamic';
 import LiveTicker from '@/components/intel/LiveTicker';
 import { normalizeParkId } from '@/lib/park-routes';
-import { normalizeObservation } from '@/lib/field-observations';
+import { fetchParkFieldObservations, normalizeObservation, stripHeavyPayload } from '@/lib/field-observations';
 
 const IntelligenceRecon = dynamic(() => import('@/components/intel/IntelligenceRecon'), { ssr: false });
 
@@ -74,7 +74,8 @@ function IntelligenceHubPageContent() {
   const [parkName, setParkName] = useState('');
   const [observations, setObservations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [syncError, setSyncError] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [reloadToken, setReloadToken] = useState(0);
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState({
     species: 'All',
@@ -107,33 +108,29 @@ function IntelligenceHubPageContent() {
   };
 
   useEffect(() => {
+    if (!mobileParkId) return;
+
+    let cancelled = false;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     async function fetchIntel() {
-      if (!mobileParkId) return;
-      
       setLoading(true);
-      setSyncError(false);
-      
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => {
-        controller.abort();
-        console.warn('[Intel] Sync timeout - resolving with cached/empty state');
-        setLoading(false);
-      }, 10000);
+      setSyncError(null);
 
       try {
-        const { data: fieldObs, error } = await gc
-          .from('field_observations')
-          .select('*')
-          .eq('park_id', mobileParkId)
-          .order('created_at', { ascending: false });
+        const fieldObs = await fetchParkFieldObservations(gc, {
+          parkId: mobileParkId,
+          abortSignal: controller.signal,
+        });
 
-        if (error) throw error;
+        if (cancelled) return;
 
-        const normalized = (fieldObs || [])
+        const normalized = fieldObs
           .filter(Boolean)
           .map(o => {
             try {
-              return normalizeObservation(o);
+              return normalizeObservation(stripHeavyPayload(o));
             } catch (e) {
               console.error('[Intel] Normalization failed for record:', o.id, e);
               return null;
@@ -147,19 +144,26 @@ function IntelligenceHubPageContent() {
           setParkName(normalized[0].park_name || mobileParkId);
         }
       } catch (err) {
-        if (err instanceof Error && err.name === 'AbortError') {
-          console.warn('[Intel] Fetch aborted');
-        } else {
-          console.error('[Intel] Fetch error:', err);
-          setSyncError(true);
-        }
+        if (cancelled) return;
+        console.error('[Intel] Fetch error:', err);
+        const message = err instanceof Error ? err.message : 'Could not reach the field data source.';
+        const timedOut = err instanceof Error && (err.name === 'AbortError' || /aborted|57014|timeout/i.test(message));
+        setSyncError(timedOut
+          ? 'The field data request timed out. Retry to load a lighter copy of the records.'
+          : message);
       } finally {
         clearTimeout(timeoutId);
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetchIntel();
-  }, [mobileParkId]);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [mobileParkId, reloadToken]);
 
   // ── Real-Time Listener (gamecount schema) ──────────────────────
   useEffect(() => {
@@ -173,7 +177,7 @@ function IntelligenceHubPageContent() {
           table: 'field_observations',
         },
         (payload: any) => {
-          const o = payload.new;
+          const o = stripHeavyPayload(payload.new);
           // Only show records for this park
           if (o.park_id !== mobileParkId) return;
           setObservations(prev => [normalizeObservation(o), ...prev]);
@@ -234,11 +238,11 @@ function IntelligenceHubPageContent() {
       <div className="space-y-2">
         <h3 className="page-title text-xl">Connection interrupted</h3>
         <p className="page-subtitle max-w-sm mx-auto mt-0">
-          Could not reach the field data source. Some records may be incomplete.
+          {syncError || 'Could not reach the field data source. Some records may be incomplete.'}
         </p>
       </div>
       <button 
-        onClick={() => window.location.reload()}
+        onClick={() => setReloadToken((n) => n + 1)}
         className="btn-primary px-6 py-2.5 text-sm"
       >
         Retry sync

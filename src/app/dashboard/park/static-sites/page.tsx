@@ -4,7 +4,7 @@ import React, { useEffect, useState, useMemo, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gc, supabase } from '@/lib/supabase';
 import { StaticSite } from '@/types';
-import { MANA_24H_PANS, normalizeObservation, panDisplayName } from '@/lib/field-observations';
+import { MANA_24H_PANS, fetchParkFieldObservations, normalizeObservation, panDisplayName } from '@/lib/field-observations';
 import { 
   Droplets, 
   MapPin, 
@@ -78,23 +78,26 @@ function StaticSitesPageContent() {
 
   useEffect(() => {
     async function loadLivePans() {
-      const mobileParkId = routeParkId.replace(/-national-park$/, '').replace(/-safari-area$/, '');
-      const { data } = await gc
-        .from('field_observations')
-        .select('*')
-        .eq('park_id', mobileParkId)
-        .eq('survey_type', 'Static');
+      try {
+        const mobileParkId = routeParkId.replace(/-national-park$/, '').replace(/-safari-area$/, '');
+        const data = await fetchParkFieldObservations(gc, {
+          parkId: mobileParkId,
+          surveyType: 'Static',
+        });
 
-      const grouped: Record<string, { pan: string; total: number; records: number; species: Record<string, number> }> = {};
-      for (const row of data || []) {
-        const obs = normalizeObservation(row);
-        const pan = panDisplayName(obs.location) || 'Pan';
-        if (!grouped[pan]) grouped[pan] = { pan, total: 0, records: 0, species: {} };
-        grouped[pan].total += obs.count || 0;
-        grouped[pan].records += 1;
-        grouped[pan].species[obs.species] = (grouped[pan].species[obs.species] || 0) + (obs.count || 0);
+        const grouped: Record<string, { pan: string; total: number; records: number; species: Record<string, number> }> = {};
+        for (const row of data) {
+          const obs = normalizeObservation(row);
+          const pan = panDisplayName(obs.location) || 'Pan';
+          if (!grouped[pan]) grouped[pan] = { pan, total: 0, records: 0, species: {} };
+          grouped[pan].total += obs.count || 0;
+          grouped[pan].records += 1;
+          grouped[pan].species[obs.species] = (grouped[pan].species[obs.species] || 0) + (obs.count || 0);
+        }
+        setLivePanCounts(Object.values(grouped).sort((a, b) => a.pan.localeCompare(b.pan)));
+      } catch (error) {
+        console.error('Error loading live pan counts:', error);
       }
-      setLivePanCounts(Object.values(grouped).sort((a, b) => a.pan.localeCompare(b.pan)));
     }
     loadLivePans();
   }, [routeParkId]);
