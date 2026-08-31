@@ -5,13 +5,31 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Layers, Map as MapIcon, Compass, Eye, EyeOff, Info } from 'lucide-react';
 
+import { WILDLIFE_METADATA, DEFAULT_WILDLIFE } from '@/lib/constants';
+
 const SPECIES_EMOJI: Record<string, string> = {
   'Impala': '🦌', 'Elephant': '🐘', 'Buffalo': '🐃', 'Zebra': '🦓',
   'Waterbuck': '🦌', 'Baboon': '🐒', 'Eland': '🐂', 'Kudu': '🦌',
-  'Giraffe': '🦒', 'Hippo': '🦛', 'Warthog': '🐗', 'Lion': '🦁',
-  'Leopard': '🐆', 'Hyena': '🐺', 'Wild Dog': '🐕', 'Sable': '🐃',
-  'Crocodile': '🐊', 'Bird': '🦅', 'Eagle': '🦅', 'Vulture': '🦅',
+  'Giraffe': '🦒', 'Hippo': '🦛', 'Hippopotamus': '🦛', 'Warthog': '🐗',
+  'Lion': '🦁', 'Leopard': '🐆', 'Hyena': '🐺', 'Wild Dog': '🐕',
+  'Sable': '🐃', 'Crocodile': '🐊', 'Bird': '🦅', 'Eagle': '🦅',
+  'Vulture': '🦅', 'Goose': '🪿', 'Plover': '🐦', 'Stork': '🦩',
+  'Monkey': '🐒', 'Duiker': '🦌', 'Bushbuck': '🦌', 'Nyala': '🦌',
 };
+
+function getEmoji(species: string): string {
+  if (!species) return DEFAULT_WILDLIFE.emoji;
+  const named = WILDLIFE_METADATA[species];
+  if (named?.emoji) return named.emoji;
+  const lower = species.toLowerCase();
+  for (const [key, meta] of Object.entries(WILDLIFE_METADATA)) {
+    if (lower.includes(key.toLowerCase())) return meta.emoji;
+  }
+  for (const [key, emoji] of Object.entries(SPECIES_EMOJI)) {
+    if (lower.includes(key.toLowerCase())) return emoji;
+  }
+  return DEFAULT_WILDLIFE.emoji;
+}
 
 const STYLES = {
   vector: 'https://tiles.openfreemap.org/styles/bright',
@@ -57,13 +75,6 @@ const STYLES = {
     ]
   }
 };
-
-function getEmoji(species: string): string {
-  for (const [key, emoji] of Object.entries(SPECIES_EMOJI)) {
-    if (species?.toLowerCase().includes(key.toLowerCase())) return emoji;
-  }
-  return '🐾';
-}
 
 export default function SurveyMap({ observations }: { observations: any[] }) {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -250,17 +261,23 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
         cursor: pointer; transform: scale(${scale}); transform-origin: bottom center;
         transition: transform 0.2s ease;
       `;
+      const pinColor = isTransect ? '#486830' : '#c46a14';
       el.innerHTML = `
         <div style="
-          width: 36px; height: 36px; border-radius: 50% 50% 50% 0;
-          transform: rotate(-45deg);
-          background: ${isTransect ? '#6366f1' : '#f59e0b'};
-          border: 3px solid white;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          width: 34px; height: 34px; border-radius: 50%;
+          background: #fff;
+          border: 3px solid ${pinColor};
+          box-shadow: 0 3px 8px rgba(15,23,42,0.28);
           display: flex; align-items: center; justify-content: center;
         ">
-          <span style="transform: rotate(45deg); font-size: 16px;">${emoji}</span>
+          <span style="font-size: 18px; line-height: 1;">${emoji}</span>
         </div>
+        <div style="
+          width: 0; height: 0; margin-top: -1px;
+          border-left: 7px solid transparent;
+          border-right: 7px solid transparent;
+          border-top: 9px solid ${pinColor};
+        "></div>
         <div style="
           background: white; padding: 2px 6px; border-radius: 6px;
           font-size: 9px; font-weight: 900; color: #0f172a;
@@ -304,7 +321,7 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
           </div>
         `);
 
-      const marker = new maplibregl.Marker(el)
+      const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
         .setLngLat([parseFloat(obs.lng), parseFloat(obs.lat)])
         .setPopup(popup)
         .addTo(map.current!);
