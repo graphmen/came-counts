@@ -253,7 +253,7 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
       const emoji = getEmoji(obs.species);
       const isTransect = obs.type === 'Transect';
       const countSize = Math.min(Math.max(obs.count || 1, 1), 50);
-      const scale = 0.8 + (countSize / 50) * 0.7;
+      const scale = 0.85 + (countSize / 50) * 0.25;
 
       const el = document.createElement('div');
       el.style.cssText = `
@@ -264,31 +264,23 @@ export default function SurveyMap({ observations }: { observations: any[] }) {
       const pinColor = isTransect ? '#486830' : '#c46a14';
       el.innerHTML = `
         <div style="
-          width: 34px; height: 34px; border-radius: 50%;
+          width: 22px; height: 22px; border-radius: 50%;
           background: #fff;
-          border: 3px solid ${pinColor};
-          box-shadow: 0 3px 8px rgba(15,23,42,0.28);
+          border: 2px solid ${pinColor};
+          box-shadow: 0 2px 5px rgba(15,23,42,0.28);
           display: flex; align-items: center; justify-content: center;
         ">
-          <span style="font-size: 18px; line-height: 1;">${emoji}</span>
+          <span style="font-size: 12px; line-height: 1;">${emoji}</span>
         </div>
         <div style="
           width: 0; height: 0; margin-top: -1px;
-          border-left: 7px solid transparent;
-          border-right: 7px solid transparent;
-          border-top: 9px solid ${pinColor};
+          border-left: 4px solid transparent;
+          border-right: 4px solid transparent;
+          border-top: 5px solid ${pinColor};
         "></div>
-        <div style="
-          background: white; padding: 2px 6px; border-radius: 6px;
-          font-size: 9px; font-weight: 900; color: #0f172a;
-          margin-top: 2px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-          white-space: nowrap; letter-spacing: 0.05em; text-transform: uppercase;
-          max-width: 80px; overflow: hidden; text-overflow: ellipsis;
-          font-family: var(--font-display), sans-serif;
-        ">${obs.species && obs.species !== 'undefined' ? obs.species : 'Unidentified'}</div>
       `;
 
-      const popup = new maplibregl.Popup({ offset: 40, maxWidth: '220px' })
+      const popup = new maplibregl.Popup({ offset: 18, maxWidth: '220px' })
         .setHTML(`
           <div style="font-family: var(--font-sans), sans-serif; padding: 4px;">
             <div style="font-family: var(--font-display), sans-serif; font-size:9px;font-weight:900;text-transform:uppercase;color:#64748b;letter-spacing:0.08em;">${obs.type} Survey</div>
