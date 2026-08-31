@@ -51,23 +51,44 @@ export async function fetchParkFieldObservations(
   client: any,
   options: { parkId: string; surveyType?: string; abortSignal?: AbortSignal }
 ) {
-  const run = (columns: string) => {
+  const PAGE_SIZE = 1000;
+  const all: any[] = [];
+  let from = 0;
+  let columns = FIELD_OBSERVATION_COLUMNS;
+
+  const run = (selectColumns: string, start: number) => {
     let query = client
       .from('field_observations')
-      .select(columns)
+      .select(selectColumns)
       .eq('park_id', options.parkId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(start, start + PAGE_SIZE - 1);
     if (options.surveyType) query = query.eq('survey_type', options.surveyType);
     if (options.abortSignal) query = query.abortSignal(options.abortSignal);
     return query;
   };
 
-  let result = await run(FIELD_OBSERVATION_COLUMNS);
-  if (result.error && isMissingColumnError(result.error)) {
-    result = await run(LEGACY_FIELD_OBSERVATION_COLUMNS);
+  while (true) {
+    if (options.abortSignal?.aborted) {
+      const abortError = new Error('The field data request was aborted.');
+      abortError.name = 'AbortError';
+      throw abortError;
+    }
+
+    let result = await run(columns, from);
+    if (result.error && isMissingColumnError(result.error) && columns === FIELD_OBSERVATION_COLUMNS) {
+      columns = LEGACY_FIELD_OBSERVATION_COLUMNS;
+      result = await run(columns, from);
+    }
+    if (result.error) throw result.error;
+
+    const rows = (result.data || []) as any[];
+    all.push(...rows);
+    if (rows.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
   }
-  if (result.error) throw result.error;
-  return (result.data || []) as any[];
+
+  return all;
 }
 
 export function stripHeavyPayload(row: any) {
