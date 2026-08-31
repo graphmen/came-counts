@@ -17,6 +17,7 @@ import {
   Globe,
   Wifi,
   Users,
+  HelpCircle,
   Bird,
   Zap,
   Image as ImageIcon,
@@ -309,7 +310,7 @@ function IntelligenceHubPageContent() {
       </header>
 
       {/* ── Stats Strip ───────────────────────────────────── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <KPICard title="Sightings" value={observations.length.toLocaleString()} icon={Activity} color="#486830" />
         <KPICard title="Total animals" value={totalAnimals.toLocaleString()} icon={Zap} color="#5a7c3a" />
         <KPICard
@@ -323,6 +324,12 @@ function IntelligenceHubPageContent() {
           value={observations.reduce((s, o) => s + (o.female_count || 0), 0).toLocaleString()}
           icon={Users}
           color="#5a7c3a"
+        />
+        <KPICard
+          title="Unknown gender"
+          value={observations.reduce((s, o) => s + (o.unknown_count || 0), 0).toLocaleString()}
+          icon={HelpCircle}
+          color="#6b7c4a"
         />
       </div>
 
